@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" role="img" aria-label="An eSIM card connecting a phone to a globe">
+<defs>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#13A39B"/><stop offset="1" stop-color="#0A6E6E"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2CB5C"/><stop offset="1" stop-color="#D4A017"/></linearGradient>
+<linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B3A52"/><stop offset="1" stop-color="#0D1B2A"/></linearGradient>
+<radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#4FD1C5" stop-opacity=".45"/><stop offset="1" stop-color="#4FD1C5" stop-opacity="0"/></radialGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#0D1B2A" flood-opacity=".28"/></filter>
+<clipPath id="gl"><circle cx="318" cy="150" r="92"/></clipPath>
+</defs>
+<circle cx="318" cy="150" r="150" fill="url(#glow)"/>
+<ellipse cx="240" cy="296" rx="190" ry="16" fill="#0D1B2A" opacity=".1"/>
+<!-- globe -->
+<circle cx="318" cy="150" r="92" fill="url(#g1)"/>
+<g clip-path="url(#gl)" fill="none" stroke="#A8EDE6" stroke-opacity=".55" stroke-width="2">
+<ellipse cx="318" cy="150" rx="40" ry="92"/><ellipse cx="318" cy="150" rx="74" ry="92"/><line x1="318" y1="58" x2="318" y2="242"/>
+<path d="M226 150h184M234 112h168M234 188h168M252 78h132M252 222h132"/>
+</g>
+<g clip-path="url(#gl)" fill="#A8EDE6" fill-opacity=".38"><path d="M262 104c14-12 34-10 44 2s2 26-12 30-30-2-32-14z"/><path d="M330 150c16-6 36 2 40 18s-10 34-26 34-22-18-14-34z"/><path d="M286 196c8-4 18 0 18 8s-8 14-16 12-6-16-2-20z"/></g>
+<circle cx="318" cy="150" r="92" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3"/>
+<ellipse cx="290" cy="106" rx="34" ry="18" fill="#fff" opacity=".18" transform="rotate(-24 290 106)"/>
+<!-- orbit -->
+<path d="M120 236C170 292 330 300 420 208" fill="none" stroke="#D4A017" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+<circle cx="420" cy="208" r="9" fill="url(#g2)" stroke="#fff" stroke-width="3"/>
+<!-- phone -->
+<g filter="url(#sh)"><rect x="92" y="62" width="112" height="212" rx="22" fill="url(#g3)"/><rect x="99" y="69" width="98" height="198" rx="17" fill="#F3FAF9"/><rect x="128" y="75" width="40" height="8" rx="4" fill="#0D1B2A"/></g>
+<rect x="110" y="98" width="74" height="12" rx="6" fill="#0A6E6E" opacity=".9"/>
+<rect x="110" y="118" width="48" height="8" rx="4" fill="#9FB3C6"/>
+<g fill="none" stroke="#0A6E6E" stroke-width="5" stroke-linecap="round"><path d="M122 170a40 40 0 0 1 50 0"/><path d="M131 183a26 26 0 0 1 32 0"/></g>
+<circle cx="147" cy="197" r="5" fill="#D4A017"/>
+<rect x="110" y="224" width="74" height="30" rx="15" fill="url(#g1)"/><rect x="128" y="236" width="38" height="6" rx="3" fill="#fff"/>
+<!-- eSIM card -->
+<g transform="rotate(-9 208 236)" filter="url(#sh)">
+<path d="M150 200h96a12 12 0 0 1 12 12v58a12 12 0 0 1-12 12H150a12 12 0 0 1-12-12v-46l12-12z" fill="url(#g2)"/>
+<path d="M150 200h96a12 12 0 0 1 12 12v58a12 12 0 0 1-12 12H150a12 12 0 0 1-12-12v-46l12-12z" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2"/>
+<rect x="156" y="226" width="46" height="36" rx="7" fill="#fff" fill-opacity=".92"/>
+<path d="M156 238h46M156 250h46M174 226v36M186 226v36" stroke="#D4A017" stroke-width="2.4" opacity=".75"/>
+<rect x="166" y="234" width="26" height="20" rx="5" fill="#0A6E6E"/>
+<text x="214" y="250" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="17" font-weight="800" fill="#0D1B2A">eSIM</text>
+<rect x="214" y="258" width="28" height="5" rx="2.5" fill="#0D1B2A" opacity=".35"/>
+</g>
+<!-- badges -->
+<g filter="url(#sh)"><rect x="372" y="92" width="74" height="30" rx="15" fill="#fff"/></g>
+<circle cx="390" cy="107" r="8" fill="#13A39B"/><path d="M386 107l3 3 5-6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="404" y="112" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="13" font-weight="800" fill="#0D1B2A">190+</text>
+<g filter="url(#sh)"><rect x="222" y="40" width="58" height="28" rx="14" fill="#0D1B2A"/></g>
+<text x="251" y="59" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="13" font-weight="800" fill="#F2CB5C">5G</text>
+<g fill="#F2CB5C"><circle cx="64" cy="120" r="4"/><circle cx="440" cy="260" r="3.5"/><circle cx="52" cy="248" r="3"/></g><g fill="#4FD1C5"><circle cx="452" cy="150" r="4"/><circle cx="300" cy="30" r="3"/></g>
+</svg>

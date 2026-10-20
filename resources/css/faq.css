@@ -1,0 +1,406 @@
+/* ================================================
+   FAQ PAGE — dedicated /faq design (owner handoff, 2026-09-21)
+   Deep Teal + Warm Gold, scoped under .faq-page so nothing here
+   leaks onto any other page. Dark mode follows html.dark (site
+   convention) via the block at the bottom.
+   ================================================ */
+.faq-page {
+    --ef-dark: #0D1B2A;
+    --ef-deep: #085555;
+    --ef-forest: #0A6E6E;
+    --ef-mid: #0C8080;
+    --ef-fresh: #17A398;
+    --ef-lime: #2dd4bf;
+    --ef-yellow: #D4A017;
+    --ef-lemon: #E6B93A;
+
+    --ef-grad-full: linear-gradient(135deg, #0D1B2A 0%, #0A6E6E 35%, #2dd4bf 75%, #E6B93A 100%);
+    --ef-grad-text: linear-gradient(135deg, #0A6E6E 0%, #17A398 50%, #D4A017 100%);
+    --ef-grad-btn: linear-gradient(135deg, #0C8080 0%, #2dd4bf 100%);
+    --ef-grad-hero: linear-gradient(135deg, #0D1B2A 0%, #085555 55%, #0A6E6E 100%);
+    --ef-grad-accent: linear-gradient(90deg, #0A6E6E, #2dd4bf, #E6B93A);
+
+    --ef-green-5: rgba(10,110,110,0.05);
+    --ef-green-8: rgba(10,110,110,0.08);
+    --ef-green-12: rgba(10,110,110,0.12);
+    --ef-border: rgba(10,110,110,0.15);
+    --ef-border-2: rgba(10,110,110,0.08);
+
+    --ef-white: #ffffff;
+    --ef-off: #F5FAFA;
+    --ef-muted: #587072;
+    --ef-muted-2: #8AA0A2;
+    --ef-dark-text: #0D1B2A;
+    --ef-body-text: #1E3438;
+
+    --r-sm: 12px;
+    --r-md: 18px;
+    --r-lg: 26px;
+    --r-xl: 36px;
+
+    background: var(--ef-white);
+    color: var(--ef-body-text);
+    line-height: 1.65;
+}
+
+.faq-page .ef-grad-text {
+    background: var(--ef-grad-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ---- HERO ----
+   Height trimmed and content re-centred (owner follow-up, 2026-09-21) — the
+   old flex-end/88vh combo left a large dead gap above the badge on most
+   viewports, since the content block never came close to filling the box.
+   The overlay is also lighter now: the hero image is a real committed
+   asset (not a placeholder), so it should actually read as the backdrop
+   instead of being washed out behind it. */
+.faq-page .ef-hero {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6.5rem 1.5rem 4.5rem;
+    overflow: hidden;
+    text-align: center;
+    background: var(--ef-grad-hero);
+}
+.faq-page .ef-hero-bg { position: absolute; inset: 0; z-index: 0; }
+.faq-page .ef-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 28%; }
+/* See the blade comment: lifts this photo's large near-black shadow region
+   toward a soft off-white floor without touching pixels already brighter
+   than that floor (the arc/glow), so light mode reads as premium and airy
+   instead of a colour band floating over a black smudge. Dark mode uses
+   the separately re-graded dark image instead, so this layer is inert
+   there (its blend mode would otherwise fight that image's own tuning). */
+.faq-page .ef-hero-lightlift {
+    position: absolute; inset: 0;
+    /* Uniform, not shaped: any pixel darker than this off-white floor gets
+       lifted toward it everywhere (corners included), while pixels already
+       brighter than the floor (the arc, its glow) pass through with only a
+       faint pull, so the colour band stays visually distinct. */
+    background: rgba(238,247,247,0.92);
+    mix-blend-mode: lighten;
+}
+html.dark .faq-page .ef-hero-lightlift { display: none; }
+.faq-page .ef-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.14) 60%, #ffffff 100%);
+}
+html.dark .faq-page .ef-hero-overlay {
+    background: linear-gradient(180deg, rgba(13,27,42,0.12) 0%, rgba(13,27,42,0.45) 65%, #0D1B2A 100%);
+}
+/* Soft glass panel behind the title/description only (not the whole hero) —
+   keeps the image visible at full strength everywhere else while
+   guaranteeing text contrast regardless of what's behind it. Same
+   translucent-surface-plus-blur "Premium Glass" signature as the rest of
+   this page's dark-mode treatment, extended to light mode here too. */
+.faq-page .ef-hero-copy {
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    padding: 1.75rem 2rem; border-radius: 28px; max-width: 44rem;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(18px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 20px 50px -24px rgba(13,27,42,0.35);
+}
+html.dark .faq-page .ef-hero-copy {
+    background: rgba(13,27,42,0.38);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 20px 50px -24px rgba(0,0,0,0.6);
+}
+.faq-page .ef-hero-glow {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 80%; height: 50%;
+    background: radial-gradient(ellipse at center bottom, rgba(45,212,191,0.18), transparent 70%);
+    pointer-events: none;
+}
+/* Complementary gold bloom, top corner — the same teal+gold paired-glow
+   signature as the timed-tab-switcher's Premium Glass cards. */
+.faq-page .ef-hero-glow-gold {
+    position: absolute; top: -10%; right: -5%; width: 45%; height: 45%;
+    background: radial-gradient(ellipse, rgba(230,185,58,0.16), transparent 65%);
+    pointer-events: none;
+}
+.faq-page .ef-hero-content {
+    position: relative; z-index: 10; max-width: 54rem; width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+}
+.faq-page .ef-badge {
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    padding: 0.4rem 1.1rem; border-radius: 999px;
+    background: rgba(255,255,255,0.92); border: 1px solid var(--ef-border);
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ef-forest); box-shadow: 0 4px 16px rgba(10,110,110,0.12);
+}
+.faq-page .ef-badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--ef-fresh), var(--ef-lime));
+    box-shadow: 0 0 8px rgba(45,212,191,0.7);
+    animation: faqDotPulse 2.2s ease infinite;
+}
+@keyframes faqDotPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.75); } }
+.faq-page .ef-hero-title {
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+    font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.03em;
+    color: #fff;
+}
+html:not(.dark) .faq-page .ef-hero-title { color: var(--ef-dark-text); }
+.faq-page .ef-hero-title em { font-style: normal; }
+.faq-page .ef-hero-rule { width: 3rem; height: 2px; border: none; background: var(--ef-grad-accent); border-radius: 2px; }
+/* Fixed 2026-09-21: the hero desc was previously forced near-white in
+   light mode (`#eef7f7`) while the hero title correctly used the dark
+   text colour — since the description sits in the same glass panel as
+   the title, that made it nearly invisible against a light background.
+   Falls back to the shared `--ef-body-text` var (dark in light mode,
+   light in dark mode) like everything else on the page. */
+.faq-page .ef-hero-desc { font-size: 1rem; color: var(--ef-body-text); max-width: 36rem; line-height: 1.8; }
+/* Stats row gets its own scrim so it stays legible regardless of what part
+   of the hero image sits behind it — a light, frosted pill in light mode
+   (owner flagged the previous dark navy version as reading like a heavy
+   dark smudge on an otherwise light hero), a dark one in dark mode. */
+.faq-page .ef-hero-stats {
+    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
+    padding: 0.55rem 1.4rem; border-radius: 999px;
+    background: rgba(255,255,255,0.6); backdrop-filter: blur(10px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 8px 24px -14px rgba(13,27,42,0.3);
+}
+html.dark .faq-page .ef-hero-stats {
+    background: rgba(13,27,42,0.32); backdrop-filter: blur(8px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 24px -14px rgba(0,0,0,0.4);
+}
+.faq-page .ef-stat { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; font-weight: 500; color: var(--ef-dark-text); }
+html.dark .faq-page .ef-stat { color: #eef7f7; }
+.faq-page .ef-stat-icon {
+    width: 1.75rem; height: 1.75rem; border-radius: 50%;
+    background: rgba(10,110,110,0.1); border: 1px solid rgba(10,110,110,0.18);
+    display: flex; align-items: center; justify-content: center; color: var(--ef-forest);
+}
+html.dark .faq-page .ef-stat-icon { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); color: #fff; }
+.faq-page .ef-stat strong { color: var(--ef-mid); font-weight: 700; }
+html.dark .faq-page .ef-stat strong { color: var(--ef-lime); }
+.faq-page .ef-stat-divider { width: 1px; height: 1.75rem; background: rgba(10,110,110,0.15); }
+html.dark .faq-page .ef-stat-divider { background: rgba(255,255,255,0.2); }
+
+.faq-page .ef-search-wrap { width: 100%; max-width: 40rem; }
+.faq-page .ef-search-inner {
+    display: flex; align-items: center; background: var(--ef-white);
+    border: 1.5px solid var(--ef-border); border-radius: 999px;
+    padding: 0.4rem 0.4rem 0.4rem 1.25rem;
+    box-shadow: 0 8px 24px rgba(10,110,110,0.15);
+}
+.faq-page .ef-search-inner svg { width: 1rem; height: 1rem; color: var(--ef-muted-2); flex-shrink: 0; margin-right: 0.6rem; }
+.faq-page .ef-search-inner input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-size: 0.9rem; color: var(--ef-dark-text); padding: 0.6rem 0;
+}
+.faq-page .ef-search-inner input::placeholder { color: var(--ef-muted-2); }
+.faq-page .ef-search-btn {
+    flex-shrink: 0; padding: 0.6rem 1.3rem; background: var(--ef-grad-btn); color: #fff;
+    font-weight: 700; font-size: 0.8rem; border-radius: 999px;
+}
+
+/* ---- OVERLAP / LAYOUT ---- */
+.faq-page .ef-overlap {
+    position: relative; z-index: 20; margin-top: -3rem;
+    background: var(--ef-white);
+    border-top-left-radius: 30px; border-top-right-radius: 30px;
+    padding-top: 3rem;
+}
+.faq-page .ef-layout { display: flex; flex-direction: column; max-width: 84rem; margin: 0 auto; padding: 0 1.5rem; gap: 2rem; }
+@media (min-width: 1024px) {
+    .faq-page .ef-layout { flex-direction: row; gap: 3rem; align-items: flex-start; }
+    .faq-page .ef-sidebar { position: sticky; top: 132px; width: 260px; flex-shrink: 0; z-index: 10; }
+    .faq-page .ef-sidebar-nav { max-height: calc(100vh - 120px); overflow-y: auto; scrollbar-width: none; }
+    .faq-page .ef-sidebar-nav::-webkit-scrollbar { display: none; }
+    .faq-page .ef-main { flex-grow: 1; min-width: 0; }
+}
+@media (max-width: 1023px) { .faq-page .ef-sidebar { display: none; } .faq-page .ef-layout { padding-right: 4.2rem; } }
+
+.faq-page .ef-sidebar-nav {
+    position: relative; overflow: hidden;
+    background: var(--ef-off); border: 1px solid var(--ef-border-2); border-radius: var(--r-lg);
+    padding: 1.5rem 1.1rem; display: flex; flex-direction: column; gap: 0.3rem;
+}
+/* Same premium floating-glow signature, scaled down for a card this size. */
+.faq-page .ef-sidebar-nav::before {
+    content: ''; position: absolute; top: -60px; right: -60px; width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(45,212,191,0.16), transparent 70%);
+    filter: blur(20px); pointer-events: none;
+}
+.faq-page .ef-nav-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ef-fresh); padding: 0 0.7rem; margin-bottom: 0.75rem; }
+.faq-page .ef-sidebar-link {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.6rem 0.7rem; border-radius: var(--r-sm);
+    color: var(--ef-muted); font-size: 0.85rem; font-weight: 500; border: 1px solid transparent;
+}
+.faq-page .ef-sidebar-link:hover { color: var(--ef-forest); background: var(--ef-green-5); }
+.faq-page .ef-sidebar-link.active { color: var(--ef-dark-text); background: var(--ef-green-12); border-color: var(--ef-border); font-weight: 600; }
+.faq-page .ef-sidebar-link .chip { font-size: 0.66rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 999px; background: rgba(10,110,110,0.07); color: var(--ef-muted); }
+.faq-page .ef-sidebar-link.active .chip { background: var(--ef-grad-btn); color: #fff; }
+.faq-page .ef-sidebar-services { margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px solid var(--ef-border-2); }
+.faq-page .ef-sidebar-services p { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ef-muted-2); padding: 0 0.7rem; margin-bottom: 0.6rem; }
+.faq-page .ef-service-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.7rem; border-radius: var(--r-sm); color: var(--ef-muted); font-size: 0.8rem; font-weight: 500; }
+.faq-page .ef-service-link::before { content: '→'; font-size: 0.75rem; color: var(--ef-lime); }
+.faq-page .ef-service-link:hover { color: var(--ef-forest); background: var(--ef-green-5); }
+
+/* ---- MOBILE SCRUBBER ---- */
+.faq-page .ef-scrubber { display: none; }
+@media (max-width: 1023px) {
+    .faq-page .ef-scrubber {
+        display: flex; flex-direction: column; gap: 0.5rem;
+        position: fixed; right: 0; top: 50%; transform: translateY(-50%) translateX(110%);
+        opacity: 0; pointer-events: none; transition: transform 0.55s cubic-bezier(0.16,1,0.3,1), opacity 0.45s ease;
+        z-index: 45; background: var(--ef-white); border: 1px solid var(--ef-border); border-right: none;
+        border-radius: 22px 0 0 22px; padding: 0.8rem 0.4rem; max-height: 70vh; overflow-y: auto; scrollbar-width: none;
+        box-shadow: -6px 0 24px rgba(10,110,110,0.1);
+    }
+    .faq-page .ef-scrubber::-webkit-scrollbar { display: none; }
+    .faq-page .ef-scrubber.is-visible { transform: translateY(-50%) translateX(0); opacity: 1; pointer-events: auto; }
+    .faq-page .scrub-node {
+        width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--ef-off);
+        border: 1.5px solid var(--ef-border-2); display: flex; align-items: center; justify-content: center;
+        font-size: 0.58rem; font-weight: 700; color: var(--ef-muted); text-align: center; line-height: 1.1;
+    }
+    .faq-page .scrub-node.active { background: var(--ef-grad-btn); color: #fff; border-color: transparent; transform: scale(1.08); }
+}
+
+/* ---- CATEGORY SECTIONS ---- */
+.faq-page .ef-section { display: none; padding: 1.25rem 0 3.5rem; }
+.faq-page .ef-section.active-section { display: block; animation: faqSecIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes faqSecIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.faq-page .ef-cat-header { margin-bottom: 2rem; }
+.faq-page .ef-cat-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ef-fresh); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.faq-page .ef-cat-eyebrow::before { content: ''; display: inline-block; width: 1.5rem; height: 2px; background: var(--ef-grad-accent); border-radius: 2px; }
+.faq-page .ef-cat-header h2 { font-family: var(--font-display), var(--font-sans), system-ui, sans-serif; font-size: clamp(1.6rem, 3.5vw, 2.5rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.08; color: var(--ef-dark-text); margin-bottom: 0.7rem; }
+.faq-page .ef-cat-header p { font-size: 0.92rem; font-weight: 300; color: var(--ef-muted); max-width: 34rem; line-height: 1.7; }
+/* Real gradient buttons, not a translucent text pill (owner follow-up,
+   2026-09-21: the old tag's teal-on-tint text read as dark/low-contrast,
+   worse in dark mode) — filled with the same teal->lime gradient as the
+   CTA's main button, so it reads as a solid, tappable action in both
+   modes without needing a separate dark-mode override. */
+.faq-page .ef-service-tag {
+    display: inline-flex; align-items: center; gap: 0.45rem; margin-top: 1.1rem; padding: 0.7rem 1.4rem;
+    border-radius: 999px; background: var(--ef-grad-btn); border: none;
+    font-size: 0.78rem; font-weight: 700; color: #fff;
+    box-shadow: 0 10px 26px -10px rgba(12,128,128,0.55);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.faq-page .ef-service-tag:hover {
+    background: linear-gradient(135deg, var(--ef-fresh), var(--ef-lemon));
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px -10px rgba(12,128,128,0.6);
+}
+.faq-page .ef-service-tag svg { width: 0.8rem; height: 0.8rem; }
+
+/* ---- ACCORDION ---- */
+.faq-page .ef-accordion { display: flex; flex-direction: column; gap: 0.65rem; }
+.faq-page .ef-faq-item { position: relative; background: var(--ef-white); border-radius: var(--r-md); border: 1.5px solid var(--ef-border-2); overflow: hidden; }
+.faq-page .ef-faq-item:hover { border-color: var(--ef-border); }
+.faq-page .ef-faq-item[open] { background: linear-gradient(135deg, rgba(23,163,152,0.05), rgba(230,185,58,0.03)); border-color: rgba(12,128,128,0.3); }
+.faq-page .ef-faq-item[open]::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ef-grad-btn); }
+.faq-page .ef-faq-summary { padding: 1.2rem 1.4rem; display: flex; justify-content: space-between; align-items: center; gap: 1.1rem; cursor: pointer; list-style: none; }
+.faq-page .ef-faq-summary::-webkit-details-marker { display: none; }
+.faq-page .ef-faq-q { font-size: 0.94rem; font-weight: 600; color: var(--ef-dark-text); line-height: 1.4; }
+.faq-page .ef-faq-item[open] .ef-faq-q { color: var(--ef-deep); }
+.faq-page .ef-toggle { flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%; background: var(--ef-off); border: 1.5px solid var(--ef-border-2); display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.35s ease; }
+.faq-page .ef-toggle::before, .faq-page .ef-toggle::after { content: ''; position: absolute; background: var(--ef-muted); border-radius: 2px; }
+.faq-page .ef-toggle::before { width: 10px; height: 1.5px; }
+.faq-page .ef-toggle::after { width: 1.5px; height: 10px; }
+.faq-page .ef-faq-item[open] .ef-toggle { background: var(--ef-grad-btn); border-color: transparent; transform: rotate(45deg); }
+.faq-page .ef-faq-item[open] .ef-toggle::before, .faq-page .ef-faq-item[open] .ef-toggle::after { background: #fff; }
+.faq-page .ef-faq-answer { padding: 0 1.4rem 1.4rem; font-size: 0.89rem; font-weight: 300; color: var(--ef-muted); line-height: 1.78; }
+.faq-page .ef-faq-answer strong { color: var(--ef-forest); font-weight: 600; }
+.faq-page .ef-faq-answer a { color: var(--ef-forest); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+mark.ef-mark { background: rgba(230,185,58,0.35); color: var(--ef-forest); padding: 0 0.1rem; border-radius: 2px; }
+
+.faq-page .ef-empty { display: none; text-align: center; padding: 4rem 1.5rem; }
+.faq-page .ef-empty h3 { font-size: 1.4rem; font-weight: 700; color: var(--ef-dark-text); margin-bottom: 0.6rem; }
+.faq-page .ef-empty p { color: var(--ef-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+/* ---- CTA ---- */
+.faq-page .ef-cta-section {
+    background: linear-gradient(135deg, #0D1B2A 0%, #085555 40%, #0A6E6E 75%, #0C8080 100%);
+    border-radius: var(--r-xl); padding: 4rem 2rem; margin: 3rem 1.5rem 6rem; text-align: center; position: relative; overflow: hidden;
+}
+/* Premium glow blooms — same teal+gold floating-glow signature as the
+   timed-tab-switcher's "Premium Glass" cards, so the CTA doesn't read as a
+   flat solid block. */
+.faq-page .ef-cta-section::before {
+    content: ''; position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 60%; background: radial-gradient(ellipse, rgba(45,212,191,0.22), transparent 65%);
+    pointer-events: none;
+}
+.faq-page .ef-cta-section::after {
+    content: ''; position: absolute; bottom: -20%; right: -10%; width: 40%; height: 80%;
+    background: radial-gradient(ellipse, rgba(230,185,58,0.14), transparent 60%);
+    pointer-events: none;
+}
+.faq-page .ef-cta-content { position: relative; z-index: 1; max-width: 42rem; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1.2rem; }
+.faq-page .ef-cta-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ef-lime); }
+.faq-page .ef-cta-title { font-family: var(--font-display), var(--font-sans), system-ui, sans-serif; font-size: clamp(1.7rem, 4vw, 2.7rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.08; color: #fff; }
+.faq-page .ef-cta-desc { font-size: 0.92rem; font-weight: 300; color: rgba(255,255,255,0.68); max-width: 30rem; line-height: 1.7; }
+.faq-page .ef-cta-actions { display: flex; gap: 0.85rem; flex-wrap: wrap; justify-content: center; margin-top: 0.4rem; }
+.faq-page .ef-cta-btn-main { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; background: linear-gradient(135deg, var(--ef-lime), var(--ef-lemon)); color: var(--ef-dark); font-weight: 800; font-size: 0.88rem; border-radius: 999px; }
+.faq-page .ef-cta-btn-ghost { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.88rem 1.8rem; background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; font-size: 0.86rem; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 999px; }
+
+/* ---- BACK TO TOP ---- */
+.faq-page .ef-btt {
+    position: fixed; bottom: -70px; right: 1.5rem; z-index: 45;
+    width: 2.9rem; height: 2.9rem; border-radius: 50%; background: var(--ef-grad-btn); color: #fff;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 8px 20px rgba(12,128,128,0.3);
+}
+.faq-page .ef-btt.show { bottom: 1.5rem; opacity: 1; pointer-events: auto; }
+
+/* ---- DARK MODE (site convention: html.dark) ----
+   Glass, not solid: every surface below is a translucent tint over the page
+   background (never an opaque hex fill) with a soft inset top-highlight, the
+   same "Premium Glass" signature as the timed-tab-switcher's dark cards —
+   a flat solid panel here read as cheap next to that component. */
+html.dark .faq-page {
+    --ef-white: #0D1B2A; --ef-off: #0F2033; --ef-muted: #9FB6B9; --ef-muted-2: #7F969A;
+    --ef-dark-text: #EAF4F4; --ef-body-text: #C9DADC; --ef-border: rgba(45,212,191,.20); --ef-border-2: rgba(45,212,191,.10);
+    --ef-green-5: rgba(45,212,191,.06); --ef-green-8: rgba(45,212,191,.09); --ef-green-12: rgba(45,212,191,.14);
+}
+html.dark .faq-page .ef-faq-item,
+html.dark .faq-page .ef-sidebar-nav,
+html.dark .faq-page .ef-scrubber,
+html.dark .faq-page .ef-empty {
+    background: rgba(255,255,255,0.035);
+    border-color: rgba(45,212,191,0.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 40px -20px rgba(0,0,0,0.5);
+    backdrop-filter: blur(20px);
+}
+html.dark .faq-page .ef-faq-item:hover { border-color: rgba(45,212,191,0.32); }
+html.dark .faq-page .ef-faq-item[open] {
+    background: linear-gradient(135deg, rgba(23,163,152,0.09), rgba(230,185,58,0.05));
+    border-color: rgba(45,212,191,0.4);
+}
+html.dark .faq-page .ef-overlap { background: #0D1B2A; }
+html.dark .faq-page .scrub-node {
+    background: rgba(255,255,255,0.04); border-color: rgba(45,212,191,0.18);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+html.dark .faq-page .ef-toggle { background: rgba(255,255,255,0.06); border-color: rgba(45,212,191,0.16); }
+html.dark .faq-page .ef-sidebar-link:hover { color: #E6F2F0; background: rgba(45,212,191,0.08); }
+html.dark .faq-page .ef-sidebar-link.active {
+    color: #E6F2F0;
+    background: linear-gradient(135deg, rgba(23,163,152,0.16), rgba(230,185,58,0.08));
+    border-color: rgba(45,212,191,0.3);
+}
+html.dark .faq-page .ef-search-inner {
+    background: rgba(255,255,255,0.04); border-color: rgba(45,212,191,0.22);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 24px rgba(0,0,0,0.3);
+}
+html.dark .faq-page .ef-search-inner input { color: var(--ef-dark-text); }
+
+@media (max-width: 768px) {
+    .faq-page .ef-faq-summary { padding: 1.05rem 1.1rem; }
+    .faq-page .ef-faq-answer { padding: 0 1.1rem 1.2rem; }
+    .faq-page .ef-cta-section { padding: 3rem 1.25rem; margin: 2rem 1rem 4.5rem; }
+    .faq-page .ef-hero { min-height: 66vh; padding: 5.5rem 1.25rem 3.5rem; }
+    .faq-page .ef-hero-copy { padding: 1.35rem 1.5rem; }
+}

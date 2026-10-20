@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.application'
+}
+// Firebase config is a per-install secret-ish file you download from your own Firebase project; the build works without it (push just stays off).
+if (file('google-services.json').exists()) {
+    apply plugin: 'com.google.gms.google-services'
+}
+
+android {
+    namespace 'app.naara.softphone'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'app.naara.softphone'
+        minSdk 28
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+        def base = (project.findProperty('naaraBaseUrl') ?: 'https://example.invalid').toString().replaceAll('/+$', '')
+        buildConfigField 'String', 'NAARA_BASE_URL', "\"${base}\""
+    }
+    buildFeatures { buildConfig = true }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+    splits { abi { enable true; reset(); include 'armeabi-v7a', 'arm64-v8a', 'x86_64'; universalApk true } }
+}
+
+dependencies {
+    implementation 'com.twilio:voice-android:6.10.+'
+    implementation 'com.google.firebase:firebase-messaging:24.1.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20240303'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+    testImplementation 'androidx.test:core:1.6.1'
+    testImplementation 'androidx.test.ext:junit:1.2.1'
+}

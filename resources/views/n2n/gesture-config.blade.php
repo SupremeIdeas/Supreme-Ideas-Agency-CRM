@@ -1,0 +1,2 @@
+{{-- The member's merged, validated gesture preferences for the engine (MASTER-ONLY). One tiny JSON blob; gesture-config.js reads it fresh on every gesture. --}}
+<script type="application/json" id="ng-config">{!! json_encode(array_merge(\App\Services\N2N\Messaging\ChatGesturePrefs::forEngine(auth()->user()), ['stat_url' => route('n2n.api.gesture-stat')]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>

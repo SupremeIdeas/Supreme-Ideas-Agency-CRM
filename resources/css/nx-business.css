@@ -1,0 +1,315 @@
+/* ===== Business shell + omni-channel inbox (MASTER-ONLY). Built ON the Naara chat shell: it reuses .nn / .nc / .ncb, so every skin's chat signature and the generated
+   chat contrast file (nx-chat-contrast.css) apply here for free. Tokens only; logical properties (RTL-safe); no hex except the channel colours below, each
+   checked at >= 5.7:1 against white (the text/glyph colour used on them). ===== */
+
+/* ---- shell ---- */
+.nn__main:has([data-bz-chat]) { padding-bottom: 0; overflow: hidden; }
+.bz-root, .bz-root > .ns-msg-page { height: 100%; }
+.bz-root > .ns-msg-page { padding: 0; }
+@media (max-width: 1023px) {
+    body:has([data-bz-thread]) .nn__head, body:has([data-bz-thread]) .nn__bar { display: none; }
+    body:has([data-bz-thread]) .nn__main { padding-bottom: 0; }
+}
+.nb__mark { width: 48px; height: 48px; display: grid; place-items: center; border-radius: calc(var(--nx-r-card, 24px) * var(--nx-rs, 1)); font-size: 24px; color: #fff; background: var(--cs-acc, rgb(var(--nx-cta-b))); box-shadow: 0 8px 20px -10px rgb(var(--nx-cta-b) / .9); }
+.nb__head { gap: 10px; }
+.nb__ws { position: relative; min-width: 0; }
+.nb__wschip { display: inline-flex; align-items: center; gap: 8px; max-width: min(62vw, 22rem); padding: 4px 10px 4px 4px; border: 0; border-radius: 99px; cursor: pointer; font: inherit; font-weight: 700; font-size: 15px; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+.nb__wschip:hover { background: rgb(var(--nx-surface-2)); }
+.nb__wschip:focus-visible, .nb__wsitem:focus-visible { outline: 2px solid rgb(var(--nx-teal-ink)); outline-offset: 2px; }
+.nb__wsmark { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; font-size: 14px; font-weight: 800; color: #fff; background: var(--cs-acc, rgb(var(--nx-cta-b))); }
+.nb__wsname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb__wscaret { flex: none; font-size: 14px; color: rgb(var(--nx-text-2)); transform: rotate(90deg); }
+.nb__wsmenu { position: absolute; z-index: 40; inset-block-start: calc(100% + 6px); inset-inline-start: 0; min-width: 14rem; max-width: 80vw; padding: 6px; display: grid; gap: 2px; border-radius: 16px; background: rgb(var(--nx-surface)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)), var(--nx-e2); }
+.nb__wsmenu form { display: contents; }
+.nb__wsitem { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: 0; border-radius: 11px; cursor: pointer; font: inherit; font-size: 14px; text-align: start; color: rgb(var(--nx-text)); background: transparent; }
+.nb__wsitem:hover { background: rgb(var(--nx-surface-2)); }
+.nb__wsitem.is-on { background: rgb(var(--nx-teal) / .16); font-weight: 700; }
+.nb__wsitem span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nb__wscheck { color: rgb(var(--nx-teal-ink)); }
+
+/* ---- omni-channel inbox ---- */
+.bz-msg { --ch-whatsapp: rgb(14 116 78); --ch-telegram: rgb(25 105 160); --ch-instagram: rgb(172 36 110); --ch-sms: var(--cs-acc, color-mix(in srgb, rgb(var(--nx-cta-b)) 58%, #000));
+    display: grid; grid-template-columns: minmax(0, 1fr); height: 100%; min-height: 0; background: rgb(var(--nx-canvas)); color: rgb(var(--nx-text)); }
+.bz-msg--page { height: calc(100dvh - 190px); min-height: 460px; border-radius: calc(var(--nx-r-card, 24px) * var(--nx-rs, 1)); overflow: hidden; box-shadow: inset 0 0 0 1px rgb(var(--nx-line)), var(--nx-e1); }
+.bz-msg__panel { display: none; min-width: 0; min-height: 0; flex-direction: column; }
+/* Phones: the same stacked-screens model as Naara chat (nx-layout.css gives .nc__list / .nc__thread their absolute, sliding behaviour through .is-hidden):
+   the thread slides over the list and follows the finger on a swipe back; contact info is a panel that slides in from the edge. */
+@media (max-width: 1023px) {
+    .bz-msg { display: block; position: relative; overflow: hidden; }
+    .bz-msg > .bz-msg__list, .bz-msg > .bz-msg__thread { display: flex; }
+    .bz-msg > .bz-msg__info { position: absolute; inset-block: 0; inset-inline-end: 0; z-index: 5; width: min(100%, 26rem); display: flex; transform: translateX(104%); visibility: hidden; box-shadow: -16px 0 32px -14px rgb(0 0 0 / .4); transition: transform .32s cubic-bezier(.22, .9, .3, 1), visibility 0s .32s; }
+    [dir="rtl"] .bz-msg > .bz-msg__info { transform: translateX(-104%); }
+    .bz-msg--info > .bz-msg__info { transform: none; visibility: visible; transition-delay: 0s; }
+    .bz-msg.is-dragging .nc__thread { transition: none; }
+    .bz-msg .nc__msgs, .bz-msg .nc__thead { touch-action: pan-y; }
+}
+@media (prefers-reduced-motion: reduce) { .bz-msg > .bz-msg__info { transition: none; } }
+.bz-msg > .nc__list { width: auto; box-shadow: none; }
+.bz-msg__grip { display: none; }
+.bz-iconbtn.bz-listbtn { display: none; }
+@media (min-width: 1024px) {
+    .bz-msg--page { height: calc(100dvh - 150px); }
+    .bz-msg { grid-template-columns: var(--msg-l, 340px) 10px minmax(0, 1fr) 10px var(--msg-r, 300px); transition: grid-template-columns .28s cubic-bezier(.2, .8, .2, 1); }
+    .bz-msg--noinfo { grid-template-columns: var(--msg-l, 340px) 10px minmax(0, 1fr); }
+    .bz-msg__list { overflow: hidden; }
+    .bz-msg--nolist > .bz-msg__list > * { visibility: hidden; }
+    .bz-msg--nolist .bz-msg__grip { background: rgb(var(--nx-teal) / .25); }
+    body.ns-msg-dragging .bz-msg { transition: none; }
+    .bz-msg > .bz-msg__panel { display: flex; }
+    .bz-msg > .nc__list { box-shadow: inset -1px 0 0 rgb(var(--nx-line)); }
+    .bz-msg__grip { display: block; position: relative; cursor: col-resize; touch-action: none; background: rgb(var(--nx-surface)); }
+    .bz-msg__grip i { position: absolute; top: 0; bottom: 0; inset-inline-start: 50%; width: 3px; margin-inline-start: -1.5px; background: transparent; transition: background .15s ease; }
+    .bz-msg__grip:hover i, .bz-msg__grip:focus-visible i, body.ns-msg-dragging .bz-msg__grip i { background: rgb(var(--nx-teal) / .7); }
+    .bz-msg__grip:focus-visible { outline: none; }
+    .bz-iconbtn.bz-back { display: none; }
+    .bz-iconbtn.bz-listbtn { display: grid; }
+}
+@media (prefers-reduced-motion: reduce) { .bz-msg__grip i { transition: none; } }
+
+/* header of the list */
+.bz-head { flex: none; display: flex; align-items: center; gap: 10px; padding: 14px 14px 4px; }
+.bz-head > div { flex: 1; min-width: 0; }
+.bz-title { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.01em; color: rgb(var(--nx-text)); }
+.bz-sub { margin: 1px 0 0; font-size: 12.5px; color: rgb(var(--nx-text-2)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bz-iconbtn { width: 40px; height: 40px; flex: none; border: 0; border-radius: 50%; display: grid; place-items: center; font-size: 20px; cursor: pointer; text-decoration: none; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+.bz-iconbtn:hover, .bz-iconbtn.is-on { background: rgb(var(--nx-teal) / .2); }
+.bz-iconbtn:focus-visible, .bz-row:focus-visible, .bz-who:focus-visible, .bz-chan:focus-visible, .bz-replybar:focus-visible { outline: 2px solid rgb(var(--nx-teal-ink)); outline-offset: 2px; }
+.bz-iconbtn--cta { color: #fff; background: var(--cs-acc, rgb(var(--nx-cta-b))); box-shadow: none; }
+.bz-iconbtn--cta:hover { background: var(--cs-acc, rgb(var(--nx-cta-b))); filter: brightness(1.08); }
+
+/* channel strip: one card per channel, with the unread count */
+.bz-chans { flex: none; display: flex; gap: 8px; overflow-x: auto; padding: 8px 12px 4px; scrollbar-width: none; }
+.bz-chans::-webkit-scrollbar { display: none; }
+.bz-chan { flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border: 0; border-radius: 99px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+.bz-chan.is-on { color: #fff; background: var(--ch, var(--cs-acc, rgb(var(--nx-cta-b)))); box-shadow: none; }
+.bz-chan__dot { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; color: var(--ch, var(--cs-acc, rgb(var(--nx-cta-b)))); background: #fff; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .14); }
+.bz-chan__dot .bz-logo { width: 15px; height: 15px; }
+.bz-chan__n { min-width: 18px; padding: 0 5px; border-radius: 99px; font-size: 11px; line-height: 18px; text-align: center; color: rgb(var(--nx-surface)); background: rgb(var(--nx-text)); }
+.bz-chan.is-on .bz-chan__n { color: var(--ch, var(--cs-acc)); background: #fff; }
+[data-ch="sms"] { --ch: var(--ch-sms); } [data-ch="whatsapp"] { --ch: var(--ch-whatsapp); } [data-ch="telegram"] { --ch: var(--ch-telegram); } [data-ch="instagram"] { --ch: var(--ch-instagram); }
+
+/* conversation rows */
+.bz-row { width: 100%; display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 0; cursor: pointer; text-align: start; font: inherit; color: rgb(var(--nx-text)); background: transparent; box-shadow: inset 0 -1px 0 rgb(var(--nx-line) / .7); }
+.bz-row:hover { background: rgb(var(--nx-surface-2)); }
+.bz-row.is-on { background: rgb(var(--nx-teal) / .14); box-shadow: inset 3px 0 0 var(--ch, rgb(var(--nx-teal))), inset 0 -1px 0 rgb(var(--nx-line) / .7); }
+.bz-av { position: relative; flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; font-size: 17px; font-weight: 800; color: rgb(var(--nx-text)); background: rgb(var(--nx-teal) / .22); box-shadow: inset 0 0 0 1px rgb(var(--nx-teal) / .42); }
+.bz-av--xl { width: 84px; height: 84px; font-size: 32px; }
+.bz-av__ch { position: absolute; inset-block-end: -3px; inset-inline-end: -3px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-style: normal; color: var(--ch, var(--ch-sms)); background: #fff; box-shadow: 0 0 0 2px rgb(var(--nx-surface)), inset 0 0 0 1px rgb(0 0 0 / .14); }
+.bz-av__ch .bz-logo { width: 13px; height: 13px; }
+.bz-logo { display: block; flex: none; object-fit: contain; }
+.bz-logo--sms { color: inherit; }
+.bz-row__main { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.bz-row__top, .bz-row__bot { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+.bz-row__top b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; font-weight: 700; }
+.bz-row__top time { flex: none; font-size: 11.5px; color: rgb(var(--nx-text-2)); }
+.bz-row__prev { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; color: rgb(var(--nx-text-2)); }
+.bz-row__prev i { font-style: normal; font-weight: 700; color: rgb(var(--nx-text)); }
+.bz-row.is-unread .bz-row__prev { color: rgb(var(--nx-text)); font-weight: 600; }
+.bz-badge { flex: none; min-width: 20px; height: 20px; padding: 0 6px; display: grid; place-items: center; border-radius: 99px; font-size: 11.5px; font-weight: 800; color: #fff; background: var(--ch, var(--cs-acc, rgb(var(--nx-cta-b)))); }
+.bz-go { flex: none; font-size: 18px; color: rgb(var(--nx-text-2)); }
+
+/* thread */
+.bz-who { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0; border: 0; cursor: pointer; font: inherit; text-align: start; color: rgb(var(--nx-text)); background: transparent; }
+.bz-who b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 700; }
+.bz-who small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: rgb(var(--nx-text-2)); }
+.bz-chtag { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 3px 11px 3px 4px; border-radius: 99px; font-size: 12px; font-weight: 700; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+.bz-chtag .bz-logo { width: 20px; height: 20px; padding: 3px; border-radius: 50%; background: #fff; color: var(--ch, var(--ch-sms)); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .14); }
+.bz-msg .nc__msgs[data-ch="whatsapp"], .bz-msg .nc__msgs[data-ch="telegram"], .bz-msg .nc__msgs[data-ch="instagram"] { --nc-out-bg: var(--ch); --nc-out-fg: #fff; --nc-out-meta: rgb(255 255 255 / .9); }
+.bz-bubble { max-width: min(80%, 34rem); overflow-wrap: anywhere; padding: 8px 12px; font-size: 14.5px; line-height: 1.42; border-radius: 18px; }
+.bz-bubble.ncb--out { border-end-end-radius: 6px; }
+.bz-bubble.ncb--in { border-end-start-radius: 6px; }
+.bz-bubble p { margin: 0; white-space: pre-wrap; }
+.bz-bubble .ncb__meta { display: block; margin-top: 2px; font-size: 10.5px; text-align: end; }
+.bz-bubble img, .bz-bubble video { display: block; max-width: 100%; max-height: 240px; border-radius: 10px; margin-bottom: 4px; }
+.bz-bubble .bz-file { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; padding: 8px 10px; border-radius: 10px; color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; background: rgb(0 0 0 / .08); }
+.bz-bubble .bz-file svg { width: 18px; height: 18px; flex: none; }
+.bz-bubble .bz-file span { min-width: 0; overflow-wrap: anywhere; }
+.bz-bubble audio { width: 100%; max-width: 230px; margin-bottom: 4px; }
+.bz-brow { display: flex; }
+.bz-brow.is-out { justify-content: flex-end; }
+.bz-dock { padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); }
+.bz-replybar { width: 100%; min-height: 48px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 0; border-radius: 99px; cursor: pointer; font: inherit; font-size: 15px; text-align: start; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+.bz-replybar:hover { background: rgb(var(--nx-surface-2)); }
+.bz-replybar .ns-i { font-size: 20px; color: var(--cs-acc, rgb(var(--nx-teal-ink))); }
+.bz-err { margin: 6px 6px 0; font-size: 12.5px; color: rgb(var(--nx-bad)); }
+.bz-note { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 14px; font-size: 13px; color: rgb(var(--nx-text)); background: rgb(var(--nx-warn) / .18); }
+
+/* info panel */
+.bz-info { background: rgb(var(--nx-surface)); box-shadow: inset 1px 0 0 rgb(var(--nx-line)); }
+.bz-info__head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; box-shadow: inset 0 -1px 0 rgb(var(--nx-line)); }
+.bz-info__body { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 16px 18px; }
+.bz-hero { display: grid; justify-items: center; gap: 8px; padding: 18px 0 12px; text-align: center; }
+.bz-hero b { font-size: 19px; overflow-wrap: anywhere; }
+.bz-hero small { color: rgb(var(--nx-text-2)); }
+.bz-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bz-facts { margin: 16px 0 0; display: grid; }
+.bz-facts > div { display: flex; justify-content: space-between; gap: 12px; padding: 11px 2px; box-shadow: inset 0 -1px 0 rgb(var(--nx-line) / .7); }
+.bz-facts dt { color: rgb(var(--nx-text-2)); font-size: 13.5px; }
+.bz-facts dd { margin: 0; font-size: 14px; font-weight: 600; text-align: end; overflow-wrap: anywhere; }
+.bz-empty { margin: auto; padding: 24px; max-width: 22rem; display: grid; justify-items: center; gap: 8px; text-align: center; }
+.bz-empty__ic { width: 60px; height: 60px; display: grid; place-items: center; border-radius: 50%; font-size: 26px; color: rgb(var(--nx-teal-ink)); background: rgb(var(--nx-teal) / .16); }
+.bz-empty h2 { margin: 4px 0 0; font-size: 17px; font-weight: 700; color: rgb(var(--nx-text)); }
+.bz-empty p { margin: 0; font-size: 14px; line-height: 1.45; color: rgb(var(--nx-text-2)); }
+
+/* ---- Header chips on the light-mode teal band (the shell remaps the tokens inside .nn__head, so surface-3 turns mid-teal and white text on it only reaches ~4:1).
+   Chips here are SOLID deep teal with white text: >= 9:1 in every skin/accent. Dark mode keeps the plain tokens (scanned >= 7.8:1). ---- */
+html:not(.dark) .nn__head .nb__wschip, html:not(.dark) .nn__head .nx-lang-chip { color: #fff; background: color-mix(in srgb, rgb(var(--nx-cta-b)) 38%, #000); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .5); border-color: transparent; }
+html:not(.dark) .nn__head .nb__wschip:hover, html:not(.dark) .nn__head .nx-lang-chip:hover { background: color-mix(in srgb, rgb(var(--nx-cta-b)) 30%, #000); }
+html:not(.dark) .nn__head .nb__wscaret, html:not(.dark) .nn__head .nx-lang-chip svg { color: #fff; }
+
+/* ---- Overview: the workspace at a glance ---- */
+.bz-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 20px; }
+.bz-stat { position: relative; display: grid; gap: 2px; padding: 14px 14px 12px; border-radius: calc(var(--nx-r-card, 24px) * var(--nx-rs, 1)); text-decoration: none; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line)), var(--nx-e1); }
+.bz-stat b { font-size: 28px; line-height: 1.05; font-weight: 800; letter-spacing: -.02em; color: rgb(var(--nx-text)); }
+.bz-stat span { font-size: 12.5px; font-weight: 600; color: rgb(var(--nx-text-2)); }
+.bz-stat .ns-i { position: absolute; inset-block-start: 12px; inset-inline-end: 12px; font-size: 20px; color: rgb(var(--nx-teal-ink)); }
+.bz-stat--lead { color: #fff; background: var(--cs-acc, rgb(var(--nx-cta-b))); box-shadow: 0 10px 24px -14px rgb(var(--nx-cta-b) / .9); }
+.bz-stat--lead b, .bz-stat--lead span, .bz-stat--lead .ns-i { color: #fff; }
+a.bz-stat:focus-visible { outline: 2px solid rgb(var(--nx-teal-ink)); outline-offset: 2px; }
+
+/* ---- Slider (channel strip): arrows for a mouse, drag, swipe, edge fades that only show on the side that still has more ---- */
+.bz-slide { position: relative; flex: none; }
+.bz-slide .bz-chans { scroll-padding-inline: 12px; scroll-behavior: auto; cursor: grab; user-select: none; -webkit-user-select: none; scroll-snap-type: x proximity; }
+.bz-slide .bz-chans.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+.bz-slide .bz-chan { scroll-snap-align: start; }
+.bz-slide.has-l .bz-chans { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 34px); mask-image: linear-gradient(to right, transparent 0, #000 34px); }
+.bz-slide.has-r .bz-chans { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 34px); mask-image: linear-gradient(to left, transparent 0, #000 34px); }
+.bz-slide.has-l.has-r .bz-chans { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 34px, #000 calc(100% - 34px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 34px, #000 calc(100% - 34px), transparent 100%); }
+[dir="rtl"] .bz-slide.has-l .bz-chans { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 34px); mask-image: linear-gradient(to left, transparent 0, #000 34px); }
+.bz-slide__btn { position: absolute; z-index: 2; inset-block-start: 50%; width: 30px; height: 30px; margin-top: -11px; display: grid; place-items: center; border: 0; border-radius: 50%; cursor: pointer; font-size: 16px; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)), var(--nx-e1); }
+.bz-slide__btn:hover { background: rgb(var(--nx-surface-2)); }
+.bz-slide__btn:focus-visible { outline: 2px solid rgb(var(--nx-teal-ink)); outline-offset: 2px; }
+.bz-slide__btn--prev { inset-inline-start: 4px; } .bz-slide__btn--next { inset-inline-end: 4px; }
+[dir="rtl"] .bz-slide__btn .ns-i { transform: scaleX(-1); }
+@media (hover: none) { .bz-slide__btn { display: none !important; } }
+
+/* ---- The Naara composer inside the Business inbox: the same parts as Naara chat, mapped onto the skin's own tokens so every skin, accent and mode gets a matching, contrast-safe composer ---- */
+.bz-msg .cc {
+    --cc-accent: var(--cs-acc, color-mix(in srgb, rgb(var(--nx-cta-b)) 58%, #000)); --cc-accent-ink: #fff;
+    --cc-bg: rgb(var(--nx-surface)); --cc-panel: rgb(var(--nx-surface)); --cc-border: rgb(var(--nx-edge, var(--nx-line-strong)));
+    --cc-text: rgb(var(--nx-text)); --cc-muted: rgb(var(--nx-text-2)); --cc-hover: rgb(var(--nx-surface-3)); --cc-danger: rgb(var(--nx-bad));
+}
+.bz-msg .cc-box { border-radius: calc(var(--nx-r-card, 24px) * var(--nx-rs, 1) * .9); box-shadow: 0 8px 24px -16px rgb(0 0 0 / .45); }
+.bz-msg .cc-text::placeholder { color: rgb(var(--nx-text-2)); opacity: 1; }
+/* Send button: never a faded grey disc. Empty = an outlined, clearly visible arrow; with content = solid skin accent with a white arrow. */
+.bz-msg .cc-send { width: 40px; height: 40px; background: transparent; color: rgb(var(--nx-text-2)); box-shadow: inset 0 0 0 2px rgb(var(--nx-edge, var(--nx-line-strong))); opacity: 1; }
+.bz-msg .cc-send:disabled { opacity: 1; }
+.bz-msg .cc-send.cc-ready { background: var(--cc-accent); color: #fff; box-shadow: 0 6px 16px -8px rgb(var(--nx-cta-b) / .9); transform: scale(1.04); }
+.bz-msg .cc-send svg { width: 19px; height: 19px; }
+.bz-msg .cc-btn { color: rgb(var(--nx-text-2)); }
+.bz-msg .cc-btn:hover, .bz-msg .cc-btn.cc-active { color: rgb(var(--nx-text)); background: rgb(var(--nx-surface-3)); }
+.bz-msg .cc-hint, .bz-msg .cc-label, .bz-msg .cc-album { color: rgb(var(--nx-text-2)); }
+.bz-msg .cc-chip.cc-primary { background: var(--cc-accent); color: #fff; }
+.bz-msg .cc-link { color: rgb(var(--nx-teal-ink)); }
+
+/* Scheduled replies waiting above the composer */
+.bz-sched { display: grid; gap: 6px; margin: 0 0 6px; }
+.bz-sched__row { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; border-radius: 14px; color: rgb(var(--nx-text)); background: rgb(var(--nx-surface)); border: 1px solid rgb(var(--nx-line-strong) / .6); }
+.bz-sched__row > svg { width: 18px; height: 18px; flex: none; color: rgb(var(--nx-teal-ink)); }
+.bz-sched__txt { min-width: 0; flex: 1; display: grid; font-size: 13px; }
+.bz-sched__txt b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.bz-sched__txt small { font-size: 12px; color: rgb(var(--nx-text) / .86); }
+
+/* ── Channel aurora: the conversation header wears the channel's own brand colours (Telegram blue, WhatsApp green, Instagram sunset, Naara teal for SMS),
+   as a slow aurora of deep brand tones. The colours are fixed brand shades (not skin tokens) and every stop is kept dark enough that white text is >= 4.5:1
+   on any pixel of the header in every skin and mode (tests/visual/skins/aurora-contrast.cjs samples the rendered pixels). Only this header; the rest of the page keeps the skin. */
+.bz-msg .nc__thread[data-ch] { --au0: #06383a; --au1: #0a6468; --au2: #137a74; --au3: #6b5410; --au-ink: #0a4f50; }
+.bz-msg .nc__thread[data-ch="telegram"] { --au0: #0a3f66; --au1: #1a6fa6; --au2: #1f86bd; --au3: #3b4fb0; --au-ink: #0f5588; }
+.bz-msg .nc__thread[data-ch="whatsapp"] { --au0: #05403a; --au1: #0b6a58; --au2: #0f7f6d; --au3: #2f6b2a; --au-ink: #0a5b4c; }
+.bz-msg .nc__thread[data-ch="instagram"] { --au0: #3a1355; --au1: #8a2290; --au2: #bd1a5c; --au3: #b5470f; --au-ink: #8f1d63; }
+.bz-msg .nc__thread[data-ch] .nc__thead {
+    position: relative; isolation: isolate; overflow: hidden; color: #fff; border: 0; box-shadow: none;
+    background:
+        radial-gradient(130% 160% at 6% -30%, var(--au1) 0%, transparent 58%),
+        radial-gradient(90% 140% at 96% -10%, var(--au2) 0%, transparent 62%),
+        radial-gradient(70% 120% at 52% 140%, var(--au3) 0%, transparent 64%),
+        var(--au0);
+}
+/* the drifting layer: a soft blurred pair of glows that slowly swap places */
+.bz-msg .nc__thread[data-ch] .nc__thead::before {
+    content: ""; position: absolute; inset: -60% -20%; z-index: -1; pointer-events: none; opacity: .75; filter: blur(22px);
+    background:
+        radial-gradient(40% 55% at 22% 50%, var(--au2) 0%, transparent 70%),
+        radial-gradient(38% 50% at 78% 45%, var(--au3) 0%, transparent 70%);
+    animation: bz-aurora 16s ease-in-out infinite alternate;
+}
+.bz-msg .nc__thread[data-ch] .nc__thead::after {   /* a fine highlight along the bottom edge, for the premium finish */
+    content: ""; position: absolute; inset-inline: 0; inset-block-end: 0; height: 1px; z-index: -1; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .38), transparent);
+}
+@keyframes bz-aurora { from { transform: translate3d(-9%, 4%, 0) scale(1); } to { transform: translate3d(9%, -4%, 0) scale(1.12); } }
+@media (prefers-reduced-motion: reduce) { .bz-msg .nc__thread[data-ch] .nc__thead::before { animation: none; } }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-iconbtn { color: #fff; background: rgb(255 255 255 / .16); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .34); }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-iconbtn:hover { background: rgb(255 255 255 / .26); }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-iconbtn.is-on { color: var(--au-ink); background: #fff; }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-who, .bz-msg .nc__thread[data-ch] .nc__thead .bz-who b { color: #fff; }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-who small { color: rgb(255 255 255 / .94); }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-av { color: #fff; background: rgb(255 255 255 / .2); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .4); }
+.bz-msg .nc__thread[data-ch] .nc__thead .bz-chtag { color: #101b24; background: #fff; box-shadow: none; }
+.bz-msg .nc__thread[data-ch] .nc__thead a.bz-iconbtn, .bz-msg .nc__thread[data-ch] .nc__thead button { --focus: #fff; }
+.bz-msg .nc__thread[data-ch] .nc__thead :focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ===== Phone density: one compact, even spacing scale for every Business page (owner: spacing looked childish) =====
+   Utility spacing written for desktop (mb-6 = 24px, p-5/p-6 = 20-24px, 24px headings, tall stat tiles) is oversized on a 360px screen. On phones the
+   Business shell uses a tight 4px-step rhythm: 12px between blocks, 14px inside cards, 20px page titles, compact stat tiles. */
+@media (max-width: 640px) {
+  .nb__main .mb-6 { margin-bottom: 12px; }
+  .nb__main .mb-5, .nb__main .mb-4 { margin-bottom: 10px; }
+  .nb__main .mt-6 { margin-top: 12px; }
+  .nb__main .p-6, .nb__main .p-5 { padding: 14px; }
+  .nb__main .gap-6 { gap: 12px; }
+  .nb__main .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 12px; }
+  .nb__main h1.text-2xl { font-size: 20px; line-height: 1.2; }
+  .nb__main h1.text-2xl ~ p { font-size: 13px; line-height: 1.35; }
+  .nb__main .h-11.w-11 { width: 36px; height: 36px; border-radius: 12px; }
+  .bz-stats { gap: 8px; margin-bottom: 12px; }
+  .bz-stat { padding: 10px 12px; gap: 0; }
+  .bz-stat b { font-size: 22px; }
+  .bz-stat span { font-size: 12px; }
+  .bz-stat .ns-i { inset-block-start: 10px; inset-inline-end: 10px; font-size: 16px; opacity: .85; }
+}
+
+/* Workspace hero illustration: sits under the description and fades into the page at its foot so it never ends on a hard edge. */
+.bz-hero { margin: -2px -4px 0; line-height: 0; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); }
+.bz-hero img { display: block; width: 100%; height: auto; }
+
+/* Workspace title: the name stays put; a rotating "Your <thing>" line slides under it every couple of seconds (static under reduced motion). */
+.bz-title { display: grid; gap: 2px; }
+.bz-title__rot { display: flex; align-items: center; gap: 0; font-size: 1em; font-weight: 800; color: rgb(var(--nx-teal-ink)); line-height: 1.3; }
+.bz-title__win { position: relative; display: inline-block; height: 1.3em; min-width: 9ch; overflow: hidden; }
+.bz-title__your { line-height: 1.3em; white-space: pre; }
+.bz-title__word { position: absolute; inset-inline-start: 0; top: 0; white-space: nowrap; opacity: 0; transform: translateY(100%); transition: transform .5s cubic-bezier(.2, .8, .2, 1), opacity .4s; background: linear-gradient(90deg, rgb(var(--nx-teal-ink)), rgb(var(--nx-gold-ink, var(--nx-teal-ink)))); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.bz-title__word.is-on { opacity: 1; transform: none; }
+.bz-title__word.is-out { opacity: 0; transform: translateY(-100%); }
+@media (prefers-reduced-motion: reduce) { .bz-title__word { transition: none; } .bz-title__word:not(.is-on) { display: none; } }
+
+/* Stat tiles: figure + label stacked on the left, icon on the right, everything centred on one line, identical size and inset in all three tiles. */
+.bz-stat { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 60px; padding: 0 14px; }
+.bz-stat__t { display: grid; gap: 1px; justify-items: start; min-width: 0; }
+.bz-stat__t b { font-size: 22px; line-height: 1.05; }
+.bz-stat__t > span { font-size: 12px; line-height: 1.2; white-space: nowrap; }
+.bz-stat .ns-i { position: static; flex: none; font-size: 18px; opacity: .9; }
+.bz-stats { align-items: stretch; }
+
+/* Business canvas: calm and premium. The shared chat surface paints film grain plus four colour pools (teal, blue, gold), which reads as busy and playful in a work tool.
+   The Business pages get one quiet teal glow at the top over a clean surface instead, in light and dark, using skin tokens only. */
+.nn__main.nb__main:not(:has([data-n2n-chat])) {
+    background-color: rgb(var(--nx-surface));
+    background-image:
+        radial-gradient(120% 220px at 50% -40px, rgb(var(--nx-teal) / .16), transparent 70%),
+        linear-gradient(180deg, rgb(var(--nx-surface-2) / .55), rgb(var(--nx-surface)) 340px);
+    background-attachment: scroll; background-blend-mode: normal;
+}
+
+/* NaaraBrain strip above a business conversation: three quiet actions, the allowance left, and the latest suggestions. Skin tokens only. */
+.bz-brain { display: grid; gap: 8px; padding: 10px 12px; border-bottom: 1px solid rgb(var(--nx-line)); background: rgb(var(--nx-surface-2) / .6); }
+.bz-brain__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.bz-brain__t { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: rgb(var(--nx-teal-ink)); }
+.bz-brain__acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.bz-brain__n { margin-inline-start: auto; font-size: 11.5px; color: rgb(var(--nx-text-2)); }
+.bz-brain__warn { margin: 0; font-size: 12.5px; color: rgb(var(--nx-bad)); }
+.bz-brain__run { display: grid; gap: 4px; padding: 8px 10px; border-radius: 12px; background: rgb(var(--nx-surface)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line)); font-size: 13px; color: rgb(var(--nx-text)); }
+.bz-brain__run b { font-size: 12px; color: rgb(var(--nx-text-2)); }
+.bz-brain__out { margin: 0; white-space: pre-wrap; }
+.bz-brain__wait { margin: 0; color: rgb(var(--nx-text-2)); }
+.bz-brain__fine { font-size: 11px; color: rgb(var(--nx-text-2)); }

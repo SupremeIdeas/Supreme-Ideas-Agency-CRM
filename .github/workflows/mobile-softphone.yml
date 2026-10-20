@@ -1,0 +1,42 @@
+# Naara phone app (Prompt 19). MANUAL ONLY: the GitHub Actions budget rule in CLAUDE.md forbids push/PR/schedule triggers.
+name: Mobile softphone
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Your Naara site, no trailing slash (baked into the build)
+        required: false
+        default: https://example.invalid
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: mobile/business-suite-softphone/android } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: android-actions/setup-android@v3
+      - name: Unit tests (API client, pairing script, screen rendering)
+        run: ./gradlew testDebugUnitTest --no-daemon
+      - name: Debug APK
+        run: ./gradlew assembleDebug --no-daemon -PnaaraBaseUrl=${{ inputs.base_url }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: naara-phone-android
+          path: |
+            mobile/business-suite-softphone/android/app/build/outputs/apk/debug/*.apk
+            mobile/business-suite-softphone/android/app/build/outputs/screenshots/*.png
+
+  ios:
+    runs-on: macos-14
+    defaults: { run: { working-directory: mobile/business-suite-softphone/ios } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate the Xcode project
+        run: brew install xcodegen && xcodegen generate
+      - name: Build and test on the simulator
+        run: |
+          xcodebuild test -project NaaraPhone.xcodeproj -scheme NaaraPhone \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            NAARA_BASE_URL=${{ inputs.base_url }} CODE_SIGNING_ALLOWED=NO | tail -40

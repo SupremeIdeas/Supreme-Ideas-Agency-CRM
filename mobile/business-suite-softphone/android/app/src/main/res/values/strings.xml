@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Naara Phone</string>
+    <string name="channel_incoming">Incoming calls</string>
+    <string name="channel_active">Call in progress</string>
+    <string name="incoming_call">Incoming Naara call</string>
+    <string name="connecting">Connecting</string>
+    <string name="call_in_progress">Call in progress</string>
+    <string name="answer">Answer</string>
+    <string name="decline">Decline</string>
+    <string name="end">End</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+    <string name="speaker">Speaker</string>
+    <string name="speaker_on">Speaker on</string>
+    <string name="banner_ready">Calls are on. This phone rings for your business numbers, even when the app is closed.</string>
+    <string name="banner_registering">Setting up calls on this phone</string>
+    <string name="banner_unpaired">Sign in to turn on calls for this phone</string>
+    <string name="banner_no_push">Calls are not set up on the server yet, so this phone will not ring. Ask your admin to add the Android push credential.</string>
+    <string name="banner_no_firebase">This build has no Firebase file, so the phone cannot ring while closed.</string>
+    <string name="banner_pair_again">Sign out and back in to reconnect calls</string>
+    <string name="banner_module_off">Phone calling is switched off for this workspace</string>
+    <string name="banner_error">Could not set up calls. Check your connection and reopen the app.</string>
+</resources>

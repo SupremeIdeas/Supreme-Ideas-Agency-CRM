@@ -1,0 +1,314 @@
+{
+  "_readme": "Device mockup library. Source photos live in ./library (720px wide). Each entry says where the SCREEN is (quad = TL,TR,BR,BL in source pixels, measured with scripts/mockups/grid.py) so scripts/mockups/compose.py can warp a real dashboard screenshot into it. calibrated=false means catalogued but the screen has not been measured yet. See scripts/mockups/README.md.",
+  "mockups": [
+    {
+      "id": "04",
+      "file": "library/04-phone-hand-white.jpg",
+      "kind": "phone",
+      "tone": "light",
+      "calibrated": true,
+      "view": "front",
+      "note": "Phone held in one hand, white background, flat front-on screen. Cleanest phone in the set.",
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "screens": [
+        {
+          "quad": [
+            [
+              190,
+              63
+            ],
+            [
+              533,
+              63
+            ],
+            [
+              533,
+              803
+            ],
+            [
+              190,
+              803
+            ]
+          ],
+          "radius": 0.15,
+          "island": true,
+          "homebar": true
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "file": "library/13-phone-hand-treatment.jpg",
+      "kind": "phone",
+      "tone": "grey",
+      "calibrated": true,
+      "view": "tilted-left",
+      "note": "Phone tilted in a dark silhouette hand on grey. Left fingertips overlap the screen edge a few px.",
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "screens": [
+        {
+          "quad": [
+            [
+              198,
+              118
+            ],
+            [
+              472,
+              123
+            ],
+            [
+              554,
+              758
+            ],
+            [
+              264,
+              768
+            ]
+          ],
+          "radius": 0.15,
+          "island": true,
+          "homebar": true
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "file": "library/15-phone-hands-balance.jpg",
+      "kind": "phone",
+      "tone": "grey",
+      "calibrated": true,
+      "view": "front",
+      "note": "Phone held with both hands, front-on, light grey background, dark hands.",
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "screens": [
+        {
+          "quad": [
+            [
+              178,
+              57
+            ],
+            [
+              552,
+              60
+            ],
+            [
+              549,
+              868
+            ],
+            [
+              180,
+              870
+            ]
+          ],
+          "radius": 0.13,
+          "island": true,
+          "homebar": true
+        }
+      ],
+      "clean": [
+        {
+          "box": [
+            648,
+            52,
+            700,
+            92
+          ],
+          "note": "third-party watermark in the artist's shot"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "file": "library/12-phones-trio-notes.jpg",
+      "kind": "phone",
+      "tone": "light",
+      "calibrated": true,
+      "view": "front-trio",
+      "note": "Three overlapping flat phones on a white striped wall: needs three shots, left to right. Each phone is in front of the one before it.",
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "screens": [
+        {
+          "quad": [
+            [
+              47,
+              82
+            ],
+            [
+              286,
+              82
+            ],
+            [
+              286,
+              603
+            ],
+            [
+              47,
+              603
+            ]
+          ],
+          "radius": 0.142,
+          "island": true,
+          "homebar": true,
+          "occlude": [
+            {
+              "rrect": [
+                241,
+                215,
+                480,
+                718,
+                42
+              ]
+            }
+          ]
+        },
+        {
+          "quad": [
+            [
+              248,
+              221
+            ],
+            [
+              473,
+              221
+            ],
+            [
+              473,
+              711
+            ],
+            [
+              248,
+              711
+            ]
+          ],
+          "radius": 0.142,
+          "island": true,
+          "homebar": true,
+          "occlude": [
+            {
+              "rrect": [
+                439,
+                372,
+                675,
+                870,
+                42
+              ]
+            }
+          ]
+        },
+        {
+          "quad": [
+            [
+              446,
+              379
+            ],
+            [
+              668,
+              379
+            ],
+            [
+              668,
+              864
+            ],
+            [
+              446,
+              864
+            ]
+          ],
+          "radius": 0.142,
+          "island": true,
+          "homebar": true
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "file": "library/17-monitor-celoxis-menu.jpg",
+      "kind": "desktop",
+      "tone": "grey",
+      "calibrated": true,
+      "view": "front",
+      "note": "Flat desktop monitor, person's shoulder covers the bottom-left corner of the screen. Third-party watermark top right is healed.",
+      "viewport": {
+        "w": 1440,
+        "h": 829
+      },
+      "clean": [
+        {
+          "box": [
+            645,
+            12,
+            702,
+            44
+          ],
+          "note": "third-party watermark"
+        }
+      ],
+      "screens": [
+        {
+          "quad": [
+            [
+              40,
+              124
+            ],
+            [
+              688,
+              124
+            ],
+            [
+              688,
+              497
+            ],
+            [
+              40,
+              497
+            ]
+          ],
+          "radius": 0.004,
+          "occlude": [
+            {
+              "poly": [
+                [
+                  0,
+                  372
+                ],
+                [
+                  38,
+                  376
+                ],
+                [
+                  72,
+                  394
+                ],
+                [
+                  98,
+                  430
+                ],
+                [
+                  114,
+                  498
+                ],
+                [
+                  0,
+                  498
+                ]
+              ],
+              "feather": 0.8
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

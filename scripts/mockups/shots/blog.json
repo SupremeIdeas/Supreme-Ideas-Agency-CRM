@@ -1,0 +1,87 @@
+[
+ {
+  "id": "blog-install-qr",
+  "path": "/numbers/lines",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "button:has-text('Show setup')"
+  ],
+  "scrollTo": ".nx-card:has(img[alt='eSIM QR code'])",
+  "scrollOffset": 84,
+  "hide": [
+   "a[href$=\"/numbers/port-in\"]"
+  ]
+ },
+ {
+  "id": "blog-install-active",
+  "path": "/numbers/lines",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "scrollTo": ".nx-card",
+  "scrollOffset": 84,
+  "hide": [
+   "a[href$=\"/numbers/port-in\"]"
+  ]
+ },
+ {
+  "id": "blog-verify",
+  "path": "/numbers",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "text=Naara Verify >> nth=0"
+  ],
+  "wait": 1400
+ },
+ {
+  "id": "blog-rent",
+  "path": "/numbers",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "text=Naara Rent >> nth=0"
+  ],
+  "wait": 1400
+ },
+ {
+  "id": "blog-wallet",
+  "path": "/wallet",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "blog-rewards",
+  "path": "/rewards",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "blog-compat",
+  "path": "/catalogue?country=TR&plan=34",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "text=Is your device eSIM-ready?"
+  ],
+  "wait": 900
+ },
+ {
+  "id": "blog-shared",
+  "path": "/wallet",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "text=Shared >> nth=0"
+  ],
+  "scrollY": 430
+ }
+]

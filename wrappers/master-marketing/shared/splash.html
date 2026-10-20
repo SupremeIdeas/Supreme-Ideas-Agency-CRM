@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Naara</title>
+<!-- Naara first-launch splash: the same animated Naara preloader the website shows (public/images/brand/animations/naara-preloader.webp), on the same background colours,
+     with "from" and the Supreme Ideas logo underneath. Self-contained (no network). Usage: splash.html?next=<url>&min=2800 - then it replaces itself with <url>. -->
+<style>
+  :root { --bg:#ffffff; --ink2:#51657a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0a172c; --ink2:#9fb3c8; } }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { background: var(--bg); display: grid; place-items: center; overflow: hidden; }
+  .pl { width: min(72vw, 380px); height: auto; display: block; user-select: none; -webkit-user-drag: none; }
+  .from { position: fixed; left: 0; right: 0; bottom: max(36px, env(safe-area-inset-bottom)); display: grid; justify-items: center; gap: 8px; opacity: 0; animation: in .9s .5s ease forwards; }
+  .from span { font: italic 400 17px/1 "Times New Roman", Times, "Liberation Serif", "Tinos", serif; color: var(--ink2); letter-spacing: .02em; }
+  .from img { height: 24px; width: auto; }
+  .from .light { display: block; } .from .dark { display: none; }
+  @media (prefers-color-scheme: dark) { .from .light { display: none; } .from .dark { display: block; } }
+  @keyframes in { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .from { animation: none; opacity: 1; } }
+</style>
+</head>
+<body>
+<main role="status" aria-label="Opening Naara">
+  <img class="pl" src="assets/naara-preloader.webp" alt="Naara" width="422" height="396" decoding="async">
+</main>
+<div class="from"><span>from</span><img class="light" src="assets/supreme-ideas-light.webp" alt="Supreme Ideas"><img class="dark" src="assets/supreme-ideas-dark.webp" alt="Supreme Ideas"></div>
+<script>
+  // Hands over to ?next after the animation has played. Only https URLs on naara.app or a bundled page are followed.
+  (function () {
+    var q = new URLSearchParams(location.search), next = q.get('next'), min = Math.max(1200, Math.min(6000, +q.get('min') || 2800));
+    if (!next) return;
+    var ok = /^https:\/\/([a-z0-9-]+\.)*naara\.app(\/|$)/i.test(next) || /^[a-z0-9._-]+\.html(\?.*)?$/i.test(next);
+    if (!ok) return;
+    setTimeout(function () { location.replace(next); }, min);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<?php
+
+return [
+    // get-number.blade.php — active order card
+    'your_number' => 'رقمك',
+    'code' => 'الرمز',
+    'waiting_for_code' => 'بانتظار الرمز…',
+    'done' => 'تم',
+    'send_sms' => 'إرسال رسالة نصية',
+    'view_on_dashboard' => 'عرض في لوحة التحكم',
+
+    // numbers-modals.blade.php — shared modal chrome
+    'modal_title' => [
+        'verify' => \App\Support\BrandSettings::rebrand('Naara Verify'),
+        'rent' => \App\Support\BrandSettings::rebrand('Naara Rent'),
+        'line' => \App\Support\BrandSettings::rebrand('Naara Line'),
+        'default' => 'الأرقام',
+    ],
+    'back_to_numbers' => 'العودة إلى الأرقام',
+    'close' => 'إغلاق',
+    'your_naara' => \App\Support\BrandSettings::rebrand('Naara الخاص بك'),
+    'line_active' => 'نشط',
+    'manage' => 'إدارة',
+    'top_up' => 'اشحن',
+    'what_today' => 'ماذا تحتاج اليوم؟',
+    'what_today_sub' => 'اختر خدمة وابدأ في ثوانٍ.',
+
+    // shared across verify/rent step partials
+    'taxes_and_fees' => 'الضرائب والرسوم',
+    'you_pay' => 'أنت تدفع',
+    'priced_at_reservation' => 'السعر عند الحجز',
+    'use_naaracredits' => \App\Support\BrandSettings::rebrand('استخدام رصيد NaaraCredits الخاص بي'),
+    'credits_balance' => 'لديك :balance رصيد. طبّق :credits لتوفير :amount على هذا الطلب.',
+    'reserving' => 'جارٍ الحجز…',
+    'country_label' => 'الدولة',
+    'service_label' => 'الخدمة',
+
+    // verify.blade.php
+    'verify' => [
+        'banner_title' => \App\Support\BrandSettings::rebrand('Naara Verify'),
+        'banner_text' => 'أمّن شبكتك. وثّق هويتك.',
+        'reserved_title' => 'تم حجز الرقم',
+        'reserved_body' => 'رقم التحقق الخاص بك جاهز — نقوم الآن بجلب الرمز.',
+        'buy_another' => 'شراء رقم آخر',
+        'manual_buy' => 'شراء يدوي',
+        'smart_buy' => 'شراء ذكي',
+        'smart_buy_hint' => 'اختر خدمة — سنختار لك تلقائيًا أفضل دولة وشبكة من حيث السعر.',
+        'networks' => 'الشبكات',
+        'prices_tab' => 'الأسعار',
+        'stats_tab' => 'الإحصائيات',
+        'export_csv' => 'تصدير CSV',
+        'auto_best_network' => 'تلقائي — أفضل شبكة',
+        'recommended' => 'موصى به',
+        'best' => 'الأفضل',
+        'out_of_stock' => 'غير متوفر',
+        'available_short' => ':count متاح',
+        'get_my_code' => 'الحصول على الرمز',
+        'refund_guarantee' => 'لا يوجد رمز خلال :minutes دقيقة → استرداد تلقائي إلى محفظتك، دون الحاجة لفتح تذكرة.',
+    ],
+
+    // rent.blade.php
+    'rent' => [
+        'step_country' => '1. اختر الدولة',
+        'step_country_hint' => 'اختر دولة رقمك',
+        'step_service' => '2. اختر الخدمة',
+        'step_service_hint' => 'لماذا ستستخدم هذا الرقم؟',
+        'step_length_hint' => 'كم من الوقت تحتاج الرقم؟',
+        'why_title' => 'لماذا تستأجر رقمًا؟',
+        'why_text' => 'احتفظ برقمك الشخصي خاصًا، وفعّل الحسابات، وتواصل مع الخدمات العالمية.',
+        'reserved_title' => 'تم حجز الإيجار',
+        'reserved_body' => 'رقم الإيجار الخاص بك جاهز — يستقبل الرسائل النصية طوال فترة الإيجار.',
+        'rent_another' => 'استئجار رقم آخر',
+        'single_service' => 'خدمة واحدة',
+        'any_service' => 'أي خدمة',
+        'soon' => '(قريبًا)',
+        'any_service_note' => 'رقم واحد، :bold — يستقبل الرسائل النصية من جميع الخدمات طوال فترة الإيجار.',
+        'any_service_bold' => 'أي خدمة',
+        'rental_length' => 'مدة الإيجار',
+        'auto_renew' => 'تجديد تلقائي عند انتهاء الصلاحية',
+        'short_term_note' => 'إيجار قصير الأمد — يستقبل الرسائل النصية لفترة محددة. لإيجار أطول، اختر رقمًا أمريكيًا.',
+        'rent_this_number' => 'استئجار هذا الرقم',
+        'wallet_note' => 'يُخصم من محفظتك. استرداد تلقائي في حال عدم التوفر.',
+    ],
+
+    // line.blade.php
+    'line' => [
+        'mobile_numbers' => 'أرقام الجوال',
+        'toll_free' => 'رقم مجاني',
+        'coming_soon_title' => \App\Support\BrandSettings::rebrand('Naara Line قريبًا'),
+        'coming_soon_body' => 'رقم دولي دائم بخدمة الصوت والرسائل النصية — نحن ننهي آخر الفحوصات مع شركة الاتصالات لدينا.',
+        'intro' => 'رقم دولي دائم يخصك — :bold، تُفوتر شهريًا.',
+        'intro_bold' => 'مكالمات صوتية ورسائل نصية',
+        'vanity_label' => 'ابحث عن رقم مميز (اختياري)',
+        'vanity_placeholder' => 'مثال: 777 أو ينتهي بـ 0000',
+        'active_title' => \App\Support\BrandSettings::rebrand('Naara Line نشط'),
+        'active_hint' => 'قم بإعداد التحويل أو لوحة الاتصال من لوحة التحكم الخاصة بك.',
+        'active_hint_sms_only' => 'يدعم هذا الرقم الرسائل النصية فقط — المكالمات الصوتية وتحويل المكالمات غير متاحين عليه.',
+        'monthly_note' => \App\Support\BrandSettings::rebrand('Naara Line هو اشتراك شهري — يُفوتر الشهر الأول الآن، ثم يتجدد شهريًا. يشمل الصوت والرسائل النصية.'),
+        'mobile_fallback' => 'جوال',
+        'get_this_number' => 'الحصول على هذا الرقم',
+        'search_again' => 'بحث مجددًا',
+        'search_available' => 'البحث عن أرقام متاحة',
+        'searching' => 'جارٍ البحث…',
+    ],
+
+    // my-lines.blade.php — port-in premium card
+    'portin_card' => [
+        'kicker' => 'نقل الرقم · الولايات المتحدة وكندا',
+        'title' => 'انقل رقمك إلى نارا',
+        'text' => 'لديك رقم أمريكي أو كندي؟ احتفظ به. نحن ندير عملية النقل مع المشغّل.',
+        'cta' => 'ابدأ النقل',
+        'chip_keep' => 'احتفظ برقمك',
+        'chip_days' => 'من 5 إلى 15 يوم عمل',
+        'chip_voice' => 'صوت + رسائل',
+    ],
+];

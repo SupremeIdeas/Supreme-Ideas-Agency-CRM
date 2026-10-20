@@ -1,0 +1,682 @@
+/* =============================================================================
+   Section Builder — hero styling (Section Builder prompt §2).
+   One base + preset/scheme/mode modifiers cover all 5 presets × 3 background
+   modes. Everything follows the live --brand-* triples so the Branding page
+   recolours heroes for free. Motion is CSS-only and frozen under
+   prefers-reduced-motion (house rule).
+   ========================================================================== */
+
+.nx-sechero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.75rem;
+    min-height: clamp(340px, 52vh, 560px);
+    display: flex;
+    align-items: center;
+    padding: clamp(1.5rem, 5vw, 4.5rem);
+    isolation: isolate;
+}
+.nx-sechero.is-center { text-align: center; justify-content: center; }
+.nx-sechero.is-left   { text-align: left;   justify-content: flex-start; }
+
+.nx-sechero__inner {
+    position: relative;
+    z-index: 3;
+    max-width: 46rem;
+    width: 100%;
+}
+.nx-sechero.is-center .nx-sechero__inner { margin-inline: auto; }
+
+/* ---- Typography ---------------------------------------------------------- */
+.nx-sechero__eyebrow {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: rgb(var(--brand-primary) / 0.12);
+    color: rgb(var(--brand-primary-dark));
+}
+.nx-sechero__headline {
+    font-family: 'Supreme Display', system-ui, sans-serif;
+    font-weight: 800;
+    line-height: 1.05;
+    font-size: clamp(1.9rem, 5.2vw, 3.6rem);
+    letter-spacing: -0.02em;
+}
+.nx-sechero__sub {
+    margin-top: 1.1rem;
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    line-height: 1.6;
+    max-width: 40rem;
+    opacity: 0.92;
+}
+.nx-sechero.is-center .nx-sechero__sub { margin-inline: auto; }
+
+/* ---- CTAs ---------------------------------------------------------------- */
+.nx-sechero__ctas {
+    margin-top: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+.nx-sechero.is-center .nx-sechero__ctas { justify-content: center; }
+.nx-sechero__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.nx-sechero__cta.is-primary {
+    background: rgb(var(--brand-primary));
+    color: #fff;
+    box-shadow: 0 12px 30px -12px rgb(var(--brand-primary) / 0.6);
+}
+.nx-sechero__cta.is-primary:hover { background: rgb(var(--brand-primary-dark)); transform: translateY(-1px); }
+.nx-sechero__cta.is-ghost {
+    background: rgb(255 255 255 / 0.14);
+    color: currentColor;
+    border: 1px solid rgb(255 255 255 / 0.35);
+    backdrop-filter: blur(6px);
+}
+.nx-sechero__cta.is-ghost:hover { background: rgb(255 255 255 / 0.24); }
+@media (prefers-reduced-motion: reduce) {
+    .nx-sechero__cta { transition: none; }
+    .nx-sechero__cta.is-primary:hover { transform: none; }
+}
+
+/* ---- Colour schemes ------------------------------------------------------ */
+/* Light-mode aurora (BLUEPRINT-ambient-gradient §1): light mode used to be a flat
+   #F6F8FA with no gradient at all — the "flat/solid even in light mode" complaint.
+   Soft, low-opacity brand blobs on the near-white base (Apple/GitHub/n8n technique),
+   tuned FOR a bright background rather than a copy of the dark aurora's opacities. */
+.nx-sechero.is-light {
+    background:
+        radial-gradient(45% 45% at 15% 20%, rgb(var(--brand-primary) / 0.10), transparent 70%),
+        radial-gradient(50% 50% at 85% 25%, rgb(var(--brand-accent) / 0.08), transparent 72%),
+        radial-gradient(55% 55% at 50% 90%, rgb(var(--brand-primary) / 0.07), transparent 75%),
+        #F6F8FA;
+    color: rgb(15 23 42);
+}
+.nx-sechero.is-light .nx-sechero__cta.is-ghost { background: rgb(15 23 42 / 0.05); border-color: rgb(15 23 42 / 0.12); color: rgb(15 23 42); }
+.nx-sechero.is-dark  { background: rgb(var(--brand-navy)); color: #fff; }
+.nx-sechero.is-dark .nx-sechero__eyebrow { background: rgb(255 255 255 / 0.14); color: #fff; }
+.nx-sechero.is-brand {
+    background: linear-gradient(135deg, rgb(var(--brand-primary)) 0%, rgb(var(--brand-primary-dark)) 55%, rgb(var(--brand-navy)) 100%);
+    color: #fff;
+}
+.nx-sechero.is-brand .nx-sechero__eyebrow { background: rgb(255 255 255 / 0.16); color: #fff; }
+
+/* Copy overlaid on media always reads white on a scrim. */
+.nx-sechero.is-over-media { color: #fff; }
+.nx-sechero.is-over-media .nx-sechero__eyebrow { background: rgb(255 255 255 / 0.18); color: #fff; }
+
+/* ---- Background media (image / images modes) ----------------------------- */
+.nx-sechero.mode-image::before {
+    content: "";
+    position: absolute; inset: 0; z-index: 1;
+    background-image: var(--nx-hero-img);
+    background-size: cover; background-position: center;
+}
+.nx-sechero__media { position: absolute; inset: 0; z-index: 1; }
+.nx-sechero__slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 0.9s ease;
+}
+.nx-sechero__slide.is-active { opacity: 1; }
+/* Scrim so overlaid copy stays legible on any image. */
+.nx-sechero.is-over-media::after {
+    content: "";
+    position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.82), rgb(0 0 0 / 0.35) 45%, rgb(0 0 0 / 0.15));
+}
+.nx-sechero.is-over-media.is-center::after {
+    background: radial-gradient(circle at center, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.72));
+}
+
+/* Slideshow dots */
+.nx-sechero__dots { position: absolute; z-index: 4; bottom: 1.1rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.4rem; }
+.nx-sechero__dots button { width: 7px; height: 7px; border-radius: 999px; background: rgb(255 255 255 / 0.5); transition: width 0.25s ease, background 0.25s ease; }
+.nx-sechero__dots button.is-on { width: 18px; background: #fff; }
+
+/* ---- Animation mode: aurora drift (brand) / spotlight (dark) ------------- */
+.nx-sechero.mode-animation .nx-sechero__aurora { position: absolute; inset: -20%; z-index: 1; pointer-events: none; }
+
+/* Aurora — drifting brand blobs over the gradient base. */
+.nx-sechero.mode-animation.is-brand .nx-sechero__aurora {
+    background:
+        radial-gradient(40% 40% at 20% 25%, rgb(var(--brand-accent) / 0.55), transparent 70%),
+        radial-gradient(45% 45% at 80% 30%, rgb(var(--brand-action) / 0.35), transparent 72%),
+        radial-gradient(50% 50% at 60% 85%, rgb(var(--brand-primary) / 0.6), transparent 75%);
+    filter: blur(30px);
+    animation: nxAuroraDrift 18s ease-in-out infinite alternate;
+}
+/* Spotlight — a single radial glow behind bold text on navy. */
+.nx-sechero--spotlight.is-dark,
+.nx-sechero.mode-animation.is-dark {
+    background: radial-gradient(120% 90% at 50% 15%, rgb(var(--brand-primary) / 0.55), transparent 60%), rgb(var(--brand-navy));
+}
+.nx-sechero.mode-animation.is-dark .nx-sechero__aurora {
+    background: radial-gradient(35% 35% at 50% 30%, rgb(var(--brand-accent) / 0.28), transparent 70%);
+    filter: blur(24px);
+    animation: nxAuroraPulse 9s ease-in-out infinite alternate;
+}
+
+@keyframes nxAuroraDrift {
+    0%   { transform: translate3d(-4%, -2%, 0) scale(1); }
+    100% { transform: translate3d(4%, 3%, 0) scale(1.12); }
+}
+@keyframes nxAuroraPulse {
+    0%   { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1;   transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .nx-sechero__aurora { animation: none !important; }
+    .nx-sechero__slide { transition: none; }
+}
+
+/* ---- Preset accents ------------------------------------------------------ */
+/* Minimal: tighten and lighten, no card chrome. */
+.nx-sechero--minimal { border-radius: 1rem; min-height: clamp(280px, 42vh, 440px); }
+/* Split: keep media to one side visually even in image mode (image lives via
+   two-column-like treatment is out of scope for the hero; split uses image bg
+   with left copy + a soft one-sided scrim). */
+.nx-sechero--split.is-over-media::after {
+    background: linear-gradient(to right, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.35) 45%, transparent 75%);
+}
+
+/* ---- Admin preview device frames ----------------------------------------- */
+.nx-preview-frame {
+    margin-inline: auto;
+    transition: max-width 0.3s ease;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #fff;
+}
+.dark .nx-preview-frame { background: rgb(var(--brand-navy)); }
+.nx-preview-frame.is-mobile  { max-width: 390px; }
+.nx-preview-frame.is-tablet  { max-width: 768px; }
+.nx-preview-frame.is-desktop { max-width: 100%; }
+
+/* =============================================================================
+ * Storytelling Carousel (BLUEPRINT-batch1-sections §3). Image layer crossfades;
+ * the text block slides in the swipe direction on a gesture, gently fades on
+ * auto-advance. The section's bottom nav is sticky within the section (so it
+ * "disappears when you scroll past" for free — no fixed-position collision with
+ * the global nav). Brand-token colours throughout; reduced-motion safe.
+ * ========================================================================== */
+.nx-story { position: relative; }
+.nx-story__stage { position: relative; overflow: hidden; border-radius: 1.5rem; }
+.nx-story__images { position: relative; }
+.nx-story__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity .6s ease; }
+.nx-story__img.is-active { opacity: 1; }
+.nx-story__img--lead { position: relative; } /* first image sizes the stage */
+/* Portrait device panel (real dashboard screen in a phone). */
+.nx-story__stage--device { aspect-ratio: 3 / 4; width: 100%; max-width: 22rem; margin-inline: auto; border-radius: 2rem;
+  box-shadow: 0 24px 48px -24px rgb(15 23 42 / .35), 0 0 0 1px rgb(148 163 184 / .35); }
+.nx-story__stage--device .nx-story__images { position: absolute; inset: 0; height: 100%; }
+/* Branded tile for a product that is not live yet: same panel, an icon instead of a screen. */
+.nx-story__tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+  background: radial-gradient(120% 90% at 50% 0%, rgb(10 110 110 / .22), transparent 60%), linear-gradient(160deg, #0f2a3a, #0D1B2A); color: #fff; }
+.nx-story__tile-badge { display: flex; height: 5.5rem; width: 5.5rem; align-items: center; justify-content: center; border-radius: 9999px;
+  background: linear-gradient(135deg, #0A6E6E, #D4A017); box-shadow: 0 12px 30px -10px rgb(10 110 110 / .6); }
+.nx-story__tile-name { font-weight: 700; font-size: 1.25rem; letter-spacing: .01em; }
+
+/* Text-enter animations (JS adds one class per change; reflow re-fires them). */
+.nx-tin-fade  { animation: nx-tin-fade .5s ease both; }
+.nx-tin-right { animation: nx-tin-right .45s cubic-bezier(.2,.7,.2,1) both; }
+.nx-tin-left  { animation: nx-tin-left  .45s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes nx-tin-fade  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes nx-tin-right { from { opacity: 0; transform: translateX(26px) } to { opacity: 1; transform: translateX(0) } }
+@keyframes nx-tin-left  { from { opacity: 0; transform: translateX(-26px) } to { opacity: 1; transform: translateX(0) } }
+
+/* Bottom nav: sticky within the section, not fixed to the viewport. */
+.nx-story__nav { position: sticky; bottom: 1rem; z-index: 10; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-story__img { transition: none; }
+  .nx-tin-fade, .nx-tin-right, .nx-tin-left { animation: none; }
+}
+
+/* =============================================================================
+ * Reusable ambient glow (BLUEPRINT-ambient-gradient §1). The same aurora
+ * mechanism as the hero, extracted so ANY section can opt in via
+ * <x-ambient-glow> (product carousels, About, pricing, testimonials) without
+ * being a full hero. Soft brand blobs behind the content, tuned per theme,
+ * paused for reduced motion. Brand tokens only — re-tints with Branding colours.
+ * ========================================================================== */
+.nx-ambient { position: relative; isolation: isolate; overflow-x: clip; /* the blurred wash extends past the section; clip (not hidden) so sticky children keep working */ }
+.nx-ambient > * { position: relative; z-index: 1; }
+.nx-ambient::before {
+    /* No sideways overhang and a feathered left/right edge: a narrow (max-w) section used to show the wash as a hard-edged box. */
+    content: ""; position: absolute; inset: -10% 0; z-index: 0; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20%, #000 80%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 20%, #000 80%, transparent 100%);
+    background:
+        radial-gradient(45% 45% at 15% 20%, rgb(var(--brand-primary) / 0.10), transparent 70%),
+        radial-gradient(50% 50% at 85% 25%, rgb(var(--brand-accent) / 0.08), transparent 72%),
+        radial-gradient(55% 55% at 50% 90%, rgb(var(--brand-primary) / 0.07), transparent 75%);
+    filter: blur(50px);
+    animation: nxAuroraDrift 22s ease-in-out infinite alternate;
+}
+.dark .nx-ambient::before {
+    background:
+        radial-gradient(45% 45% at 15% 20%, rgb(var(--brand-primary) / 0.22), transparent 70%),
+        radial-gradient(50% 50% at 85% 25%, rgb(var(--brand-accent) / 0.16), transparent 72%),
+        radial-gradient(55% 55% at 50% 90%, rgb(var(--brand-primary) / 0.14), transparent 75%);
+}
+@media (prefers-reduced-motion: reduce) { .nx-ambient::before { animation: none; } }
+
+/* Richer aurora for sections that read as flat white (owner request 2026-10-05: "any boring place... add a slight nice aurora gradient").
+   Same mechanism as .nx-ambient, with a cooler cyan/violet third blob so the wash reads as an aurora rather than a tint. */
+.nx-ambient--rich::before {
+    background:
+        radial-gradient(42% 46% at 12% 18%, rgb(var(--brand-primary) / 0.16), transparent 70%),
+        radial-gradient(40% 42% at 88% 14%, rgb(var(--brand-accent) / 0.14), transparent 72%),
+        radial-gradient(46% 50% at 78% 88%, rgb(99 102 241 / 0.10), transparent 72%),
+        radial-gradient(44% 46% at 20% 92%, rgb(34 211 238 / 0.10), transparent 74%);
+    filter: blur(56px);
+}
+.dark .nx-ambient--rich::before {
+    background:
+        radial-gradient(42% 46% at 12% 18%, rgb(var(--brand-primary) / 0.30), transparent 70%),
+        radial-gradient(40% 42% at 88% 14%, rgb(var(--brand-accent) / 0.20), transparent 72%),
+        radial-gradient(46% 50% at 78% 88%, rgb(99 102 241 / 0.22), transparent 72%),
+        radial-gradient(44% 46% at 20% 92%, rgb(34 211 238 / 0.16), transparent 74%);
+}
+
+/* =============================================================================
+ * Reusable timed tab/slide switcher — auto time-based browse mechanic (owner
+ * request 2026-09-21: "reuse that our time based tabs switcher container").
+ * Originally built for "Who Naara Is For" from an owner-supplied reference
+ * agency site's "Interactive Ecosystem" component (see
+ * resources/js/timed-tab-switcher.js), now generalized so ANY section can
+ * reuse the same container (dark radial-gradient wrapper, floating glow
+ * blobs, gradient progress-fill, "Premium Glass" 30px image card) instead of
+ * a copy — see resources/views/components/timed-tab-switcher.blade.php.
+ * `.tt-dark` (the original look) and `.tt-light` (for a white/light-bg
+ * section, e.g. the How It Works page) share every rule below except colour.
+ * ========================================================================== */
+.tt-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 40px;
+    padding: 3rem 1.25rem;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+@media (min-width: 1024px) { .tt-wrapper { padding: 4.5rem 3.5rem; } }
+
+.tt-dark { background: radial-gradient(120% 120% at 50% 100%, #0D1B2A 0%, #060d16 100%); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45); color: #fff; }
+.tt-light { background: radial-gradient(120% 120% at 50% 100%, #F4FAFA 0%, #E8F2F2 100%); border-color: rgba(10, 110, 110, 0.1); color: #0D1B2A; }
+
+.tt-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.tt-glow { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.32; }
+.tt-light .tt-glow { opacity: 0.18; }
+.tt-glow-1 { width: 480px; height: 480px; background: #0A6E6E; top: -140px; right: -140px; animation: ttFloat 13s infinite alternate ease-in-out; }
+.tt-glow-2 { width: 380px; height: 380px; background: #D4A017; bottom: -110px; left: -110px; animation: ttFloat 16s infinite alternate-reverse ease-in-out; }
+@keyframes ttFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-24px, 40px) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .tt-glow-1, .tt-glow-2 { animation: none; } }
+
+.tt-head { position: relative; z-index: 1; max-width: 40rem; margin: 0 auto 2.5rem; text-align: center; }
+.tt-eyebrow { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: #D4A017; }
+.tt-light .tt-eyebrow { color: #94700F; }
+.tt-heading { margin-top: 0.75rem; font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 800; line-height: 1.15; }
+.tt-dark .tt-heading { color: #fff; }
+.tt-light .tt-heading { color: #0D1B2A; }
+.tt-subtext { margin-top: 0.75rem; font-size: 1rem; line-height: 1.6; }
+.tt-dark .tt-subtext { color: #cbd5e1; }
+.tt-light .tt-subtext { color: #475569; }
+
+.tt-container { position: relative; z-index: 1; display: flex; flex-direction: column; }
+
+.tt-tabs { display: flex; flex-direction: row; overflow-x: auto; gap: 0.75rem; padding-bottom: 0.75rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.tt-tabs::-webkit-scrollbar { display: none; }
+.tt-tab {
+    border: none; cursor: pointer;
+    padding: 0.6rem 1.15rem; border-radius: 99px; white-space: nowrap; font-size: 0.9rem; font-weight: 600;
+    text-align: left; flex-shrink: 0; scroll-snap-align: start; transition: all 0.25s ease;
+}
+.tt-dark .tt-tab { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
+.tt-dark .tt-tab.active { background: rgba(212, 160, 23, 0.16); color: #fff; }
+.tt-dark .tt-tab:hover:not(.active) { color: #e2e8f0; }
+.tt-light .tt-tab { background: rgba(10, 110, 110, 0.06); color: #587072; }
+.tt-light .tt-tab.active { background: rgba(212, 160, 23, 0.14); color: #0D1B2A; }
+.tt-light .tt-tab:hover:not(.active) { color: #0A6E6E; }
+
+/* Desktop: a genuine two-level layout switch — row container, a fixed-width
+   vertical sidebar of pill-free left-border tabs (not the mobile horizontal
+   pill-scroller). Declared AFTER the base/mobile rules above so the cascade
+   actually applies it at 1024px+ (an earlier-in-source media rule loses to a
+   later unconditional one at the same specificity, regardless of viewport). */
+@media (min-width: 1024px) {
+    .tt-container { flex-direction: row; gap: 3.5rem; align-items: flex-start; }
+    .tt-tabs { width: 280px; flex-shrink: 0; flex-direction: column; overflow-x: visible; }
+    .tt-tab { background: transparent !important; border-radius: 0; padding: 0.9rem 0 0.9rem 1.15rem; border-left: 2px solid rgba(148, 163, 184, 0.25); white-space: normal; font-size: 1rem; }
+    .tt-dark .tt-tab.active { border-left-color: #D4A017; color: #fff; }
+    .tt-light .tt-tab.active { border-left-color: #D4A017; color: #0D1B2A; }
+}
+
+.tt-content { flex-grow: 1; min-width: 0; }
+.tt-progress-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+.tt-progress { border-radius: 4px; overflow: hidden; position: relative; }
+.tt-dark .tt-progress { background: rgba(255, 255, 255, 0.08); }
+.tt-light .tt-progress { background: rgba(10, 110, 110, 0.1); }
+.tt-progress-h { flex-grow: 1; height: 4px; }
+.tt-progress-v { display: none; width: 4px; margin-left: 2rem; }
+@media (min-width: 1024px) { .tt-progress-v { display: block; } }
+.tt-progress-fill-h, .tt-progress-fill-v { background: linear-gradient(90deg, #0A6E6E, #D4A017); box-shadow: 0 0 10px rgba(212, 160, 23, 0.4); height: 100%; width: 0%; }
+.tt-progress-fill-v { width: 100%; height: 0%; background: linear-gradient(180deg, #0A6E6E, #D4A017); }
+.tt-timer { font-family: monospace; font-size: 0.85rem; font-weight: 700; color: #D4A017; letter-spacing: 0.05em; min-width: 80px; text-align: right; }
+.tt-light .tt-timer { color: #94700F; }
+
+.tt-body { display: flex; align-items: stretch; gap: 0; }
+@media (min-width: 1024px) { .tt-body { gap: 2rem; } }
+
+.tt-slide { display: none; flex-direction: column; gap: 1.25rem; opacity: 0; transform: translateY(14px); }
+.tt-slide.active { display: flex; animation: ttFadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes ttFadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .tt-slide.active { animation: none; opacity: 1; transform: none; } }
+
+.tt-slide-title { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 700; line-height: 1.2; }
+.tt-dark .tt-slide-title { color: #fff; }
+.tt-light .tt-slide-title { color: #0D1B2A; }
+.tt-slide-desc { font-size: 1rem; line-height: 1.65; }
+.tt-dark .tt-slide-desc { color: #a9b4c4; }
+.tt-light .tt-slide-desc { color: #475569; }
+
+/* "Premium Glass" 30px image card — the reference file's own named rule,
+   reskinned: same backdrop-blur + soft border + shadow technique. */
+.tt-slide-image {
+    position: relative; width: 100%; max-width: 560px;
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 38px; padding: 10px;
+}
+.tt-dark .tt-slide-image { background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(255, 255, 255, 0.14); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 0 20px rgba(255, 255, 255, 0.04); }
+.tt-light .tt-slide-image { background: rgba(255, 255, 255, 0.6); border: 2px solid rgba(10, 110, 110, 0.12); box-shadow: 0 30px 60px rgba(10, 110, 110, 0.12), inset 0 0 20px rgba(255, 255, 255, 0.5); }
+.tt-slide-image img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 30px; display: block; }
+/* Portrait device mockup (a real dashboard screen in a phone): a taller card so the screen stays readable. */
+.tt-slide-image--device { max-width: 340px; margin-inline: auto; }
+.tt-slide-image--device img { aspect-ratio: 3 / 4; }
+
+/* Icon variant (a step/topic without dedicated photography) — same glass
+   card, a centred icon badge instead of a photo. */
+.tt-slide-icon { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 560px; aspect-ratio: 16 / 9; border-radius: 38px; }
+.tt-dark .tt-slide-icon { background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(255, 255, 255, 0.14); }
+.tt-light .tt-slide-icon { background: rgba(255, 255, 255, 0.6); border: 2px solid rgba(10, 110, 110, 0.12); }
+.tt-slide-icon-badge { display: flex; height: 5rem; width: 5rem; align-items: center; justify-content: center; border-radius: 9999px; background: linear-gradient(135deg, #0A6E6E, #D4A017); color: #fff; }
+
+/* Naara's own layout choice (not the reference's centred-stack reorder
+   trick): text and image sit side by side on desktop, stacked on mobile —
+   the same left-text/right-visual composition the rest of the homepage
+   already uses, so this slide deck feels native to the site. Declared AFTER
+   the base rules above so the cascade actually applies at 1024px+. */
+@media (min-width: 1024px) {
+    .tt-slide.active { flex-direction: row; align-items: center; gap: 2.5rem; }
+    .tt-slide-info { flex: 1; }
+    .tt-slide-image, .tt-slide-icon { flex: 1; max-width: 480px; }
+    /* The content column beside the step rail is too narrow for text AND a phone side by side: stack them. */
+    .tt-slide.active:has(.tt-slide-image--device) { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    .tt-slide-image--device { flex: none; max-width: 300px; margin-inline: auto; }
+}
+
+/* =============================================================================
+ * "Diagnosis / Architecture / Promise" — homepage bento-grid block (owner
+ * request, 2026-09-21), ported from an owner-supplied reference file that
+ * was already fully Naara-branded (real copy, real Naara-mechanic SVG
+ * illustrations, no foreign content to adapt). Sits between the hero's
+ * story band and the "how it works" sticky-stack section (see the include
+ * order in home.blade.php) — a glassmorphic light-bg system, deliberately
+ * NOT dark-mode-aware: it keeps its own light glass/white surface look in
+ * both site themes for the "premium feel" the owner asked for. Simplified
+ * from the reference: the mouse-tracking border glow and scroll-reveal are
+ * kept; the reference's separate expand-to-modal system was dropped since
+ * each card's own inline title+description already carries the content —
+ * a modal would only duplicate it.
+ * ========================================================================== */
+/* The three bento sections stack inside one wrapper. Their 30px top corners used to reveal the page background (dark specks at the
+   top left / top right of every seam, owner screenshot 2026-10-05). The wrapper now carries the same pale surface, and only the FIRST
+   section keeps a curve (the outer sheet), so a seam between two bento sections is flush and clean. */
+[data-bento-diagnosis] { background: #F4FAFA; }
+[data-bento-diagnosis] > .nx-bento-wrap:not(:first-child) { border-top-left-radius: 0; border-top-right-radius: 0; }
+.nx-bento-wrap {
+    --nx-bento-ink: #0D1B2A;
+    --nx-bento-muted: #5b6b7d;
+    --nx-bento-glass-bg: rgba(255, 255, 255, 0.55);
+    --nx-bento-glass-border: rgba(255, 255, 255, 0.7);
+    --nx-bento-glass-shadow: 0 20px 40px -12px rgba(13, 27, 42, 0.08), 0 0 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+    /* These 3 sections sit inside a wrapper <div> (not a direct <main>
+       child), so the site-wide `main > section` 30px-curve rule doesn't
+       reach them automatically — set it explicitly here instead. */
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    background: #F4FAFA;
+    color: var(--nx-bento-ink);
+    padding: 5rem 1.5rem;
+}
+@media (min-width: 768px) { .nx-bento-wrap { padding: 7rem 1.5rem; } }
+.nx-bento-wrap::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(10, 110, 110, 0.05), transparent 70%),
+                radial-gradient(circle at 100% 50%, rgba(45, 212, 191, 0.04), transparent 50%);
+}
+.nx-bento-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+.nx-bento-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: #947010; margin-bottom: 1.1rem; display: block; }
+.nx-bento-headline { font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: clamp(2rem, 4.5vw, 3.5rem); line-height: 1.08; letter-spacing: -.02em; color: var(--nx-bento-ink); margin-bottom: 1.75rem; }
+.nx-bento-headline .grad { background: linear-gradient(100deg, #0A6E6E 0%, #2dd4bf 42%, #D4A017 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.nx-bento-intro { max-width: 42rem; font-size: 1.05rem; line-height: 1.8; color: #334155; }
+.js-enabled .nx-bento-intro { opacity: 0; transform: translateY(16px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.js-enabled .nx-bento-intro.visible { opacity: 1; transform: translateY(0); }
+.nx-bento-intro p + p { margin-top: .9rem; }
+.nx-bento-grid { display: grid; gap: 1.1rem; margin-top: 3rem; }
+@media (min-width: 768px) { .nx-bento-grid { grid-template-columns: repeat(2, 1fr); gap: 1.4rem; } }
+@media (min-width: 1024px) { .nx-bento-grid { grid-template-columns: repeat(12, 1fr); gap: 1.75rem; } }
+
+.nx-bento-cell {
+    position: relative; border-radius: 26px; background: var(--nx-bento-glass-bg);
+    backdrop-filter: blur(32px) saturate(150%); -webkit-backdrop-filter: blur(32px) saturate(150%);
+    padding: 1.75rem; min-height: 320px; display: flex; flex-direction: column;
+    border: 1px solid var(--nx-bento-glass-border); box-shadow: var(--nx-bento-glass-shadow);
+    isolation: isolate; overflow: hidden;
+}
+.js-enabled .nx-bento-cell { opacity: 0; transform: translateY(32px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+@media (min-width: 768px) { .nx-bento-cell { padding: 2.4rem; border-radius: 28px; min-height: 380px; } }
+.js-enabled .nx-bento-cell.visible { opacity: 1; transform: translateY(0); }
+.nx-bento-cell::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 1;
+    background: radial-gradient(500px circle at var(--mx, -999px) var(--my, -999px), rgba(255,255,255,.45), transparent 50%);
+    opacity: 0; transition: opacity .4s ease; mix-blend-mode: overlay;
+}
+@media (hover: hover) { .nx-bento-cell:hover::before { opacity: 1; } }
+.nx-bento-cell-content { position: relative; z-index: 2; }
+.nx-bento-eyebrow-sm { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #0A6E6E; margin-bottom: .6rem; display: block; }
+.nx-bento-cell-title { font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: clamp(1.35rem, 2.2vw, 1.7rem); line-height: 1.15; margin-bottom: .7rem; color: var(--nx-bento-ink); }
+.nx-bento-cell-text { font-size: .95rem; line-height: 1.65; color: #334155; }
+.nx-bento-art { margin: auto -0.5rem 0; padding-top: 1.5rem; pointer-events: none; }
+.nx-bento-art svg { display: block; width: 100%; max-width: 320px; height: auto; margin: 0 auto; }
+@media (min-width: 1024px) {
+    .nx-bento-cell.is-span-4 { grid-column: span 4; }
+    .nx-bento-cell.is-span-5 { grid-column: span 5; }
+    .nx-bento-cell.is-span-6 { grid-column: span 6; }
+    .nx-bento-cell.is-span-7 { grid-column: span 7; }
+    .nx-bento-cell.is-span-8 { grid-column: span 8; }
+}
+
+/* Naara-mechanic SVG illustration tokens (light, fixed) */
+:is(.nx-bento-wrap, .nx-bento-modal) .ill text { font-family: var(--font-sans, 'Didact Gothic'), sans-serif; fill: #0D1B2A; font-size: 12.5px; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .m { fill: #5b6b7d; font-size: 10.5px; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .b { font-weight: 700; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .w { fill: #ffffff; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .tt { fill: #0A6E6E; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .ct { fill: #E8412A; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .sf { fill: #ffffff; stroke: rgba(13,27,42,.16); stroke-width: 1.2; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .sf2 { fill: #EEF6F5; stroke: rgba(13,27,42,.16); stroke-width: 1; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .ln { fill: none; stroke: rgba(13,27,42,.16); stroke-width: 1.2; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .dash { stroke-dasharray: 4 4; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fT { fill: #0A6E6E; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fTs { fill: rgba(10,110,110,.10); }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fG { fill: #D4A017; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fC { fill: #E8412A; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fCs { fill: rgba(232,65,42,.10); }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fN { fill: #0D1B2A; opacity: .45; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .sT { stroke: #0A6E6E; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .sC { stroke: #E8412A; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .sW { stroke: #ffffff; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fS { fill: #ffffff; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .fQ { fill: #0D1B2A; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .h { font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: 14px; }
+:is(.nx-bento-wrap, .nx-bento-modal) .ill .ico { stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.nx-bento-formula { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.75rem; }
+.nx-bento-formula-line { font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.08; letter-spacing: -.02em; color: var(--nx-bento-ink); }
+.js-enabled .nx-bento-formula-line { opacity: 0; transform: translateY(20px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.js-enabled .nx-bento-formula-line.visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+    .js-enabled .nx-bento-intro, .js-enabled .nx-bento-cell, .js-enabled .nx-bento-formula-line { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* =============================================================================
+ * Homepage manifesto — scroll word-reveal (owner request, 2026-09-21,
+ * explicitly re-requested: "that reveal text on scroll... show case in hero
+ * after the flags carousel"). Fixed light surface regardless of site theme
+ * (the "premium feel" ask), same as the bento block above.
+ * ========================================================================== */
+.nx-manifesto { position: relative; overflow: hidden; background: #fff; padding: 4rem 1.5rem; }
+@media (min-width: 768px) { .nx-manifesto { padding: 6rem 1.5rem; } }
+.nx-manifesto::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0A6E6E, #E8412A, #D4A017); }
+.nx-manifesto-inner { max-width: 1100px; margin: 0 auto; display: grid; gap: 2.5rem; }
+@media (min-width: 900px) { .nx-manifesto-inner { grid-template-columns: 280px 1fr; gap: 4rem; align-items: start; } }
+.nx-manifesto-side { position: sticky; top: 6rem; }
+@media (max-width: 899px) { .nx-manifesto-side { position: static; } }
+.nx-manifesto-tag { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #64748b; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+.nx-manifesto-tag::before { content: ''; width: 20px; height: 1.5px; background: rgba(15,23,42,.25); }
+.nx-manifesto-title { font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: clamp(1.8rem, 3.2vw, 2.6rem); color: #0f172a; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 1.1rem; }
+.nx-manifesto-title em { font-style: italic; background: linear-gradient(135deg, #2dd4bf 0%, #E8412A 50%, #D4A017 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.nx-manifesto-line { width: 48px; height: 3px; background: linear-gradient(to right, #0A6E6E, #D4A017); }
+.nx-manifesto-text { font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: clamp(1.5rem, 2.8vw, 2.6rem); line-height: 1.4; letter-spacing: -.01em; color: #0f172a; }
+.nx-manifesto-word { display: inline; color: #0f172a; }
+.js-enabled .nx-manifesto-word { color: rgba(15, 23, 42, 0.12); transition: color 0.1s ease; }
+.js-enabled .nx-manifesto-word.is-lit { color: #0f172a; }
+@media (prefers-reduced-motion: reduce) { .js-enabled .nx-manifesto-word { color: #0f172a; } }
+
+/* About "Naara Promise" physics pills (Matter.js): once the playground starts,
+   the flex-wrap layout is swapped for a fixed-height arena the pills fall into. */
+.nx-pills { position: relative; }
+.nx-pills.is-physics { display: block; height: 22rem; overflow: hidden; border-radius: 1.5rem;
+    background: rgb(255 255 255 / .03); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .08); user-select: none; }
+.nx-pills.is-physics [data-pill] { white-space: nowrap; will-change: transform; }
+
+
+/* ---- Bento detail modal ("The Diagnosis" / "The Naara Promise" cells) --------
+   Ported from the owner's naara_growth_overview reference: glass overlay + panel,
+   art beside the copy, light/dark switch (follows the site theme on open, with its
+   own toggle). Cells are the triggers; the art is cloned from the clicked cell. */
+.nx-bento-cell[data-cell] { cursor: pointer; }
+.nx-bento-cell[data-cell]:focus-visible { outline: 2px solid #0A6E6E; outline-offset: 3px; }
+.nx-bento-modal { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center;
+    background: rgba(13,27,42,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    opacity: 0; pointer-events: none; transition: opacity .4s cubic-bezier(.16,1,.3,1); }
+.nx-bento-modal.is-open { opacity: 1; pointer-events: all; }
+.nx-bento-modal__panel { position: relative; display: flex; flex-direction: column; width: 92%; max-width: 640px; max-height: 90vh;
+    overflow: hidden; border-radius: 24px; background: rgba(255,255,255,.96); color: #0D1B2A;
+    border: 1px solid rgba(255,255,255,.6); box-shadow: 0 40px 80px rgba(0,0,0,.25);
+    transform: translateY(40px) scale(.98); opacity: 0; transition: transform .5s cubic-bezier(.16,1,.3,1), opacity .5s cubic-bezier(.16,1,.3,1), background-color .3s; }
+.nx-bento-modal.is-open .nx-bento-modal__panel { transform: none; opacity: 1; }
+.nx-bento-modal__actions { position: absolute; top: 14px; right: 14px; z-index: 5; display: flex; gap: 10px; }
+.nx-bento-modal__btn { display: inline-flex; height: 40px; width: 40px; align-items: center; justify-content: center; border-radius: 9999px;
+    border: 1px solid rgba(13,27,42,.14); background: rgba(255,255,255,.9); color: #0D1B2A; cursor: pointer; transition: background .2s; }
+.nx-bento-modal__btn:hover { background: #fff; }
+.nx-bento-modal__interior { display: flex; flex-direction: column; overflow-y: auto; }
+.nx-bento-modal__copy { padding: 3.25rem 1.5rem 1.75rem; }
+.nx-bento-modal__art { display: flex; align-items: center; justify-content: center; padding: 1.5rem; background: linear-gradient(135deg,#EEF6F5,#F8FBFB); }
+.nx-bento-modal__art svg { display: block; width: 100%; max-width: 480px; height: auto; }
+.nx-bento-modal__eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #947010; }
+.nx-bento-modal__headline { margin: .6rem 0 1rem; font-family: var(--font-display, 'Supreme Display'), sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.15; }
+.nx-bento-modal__body p { margin: 0 0 .9rem; line-height: 1.7; color: #334155; }
+.nx-bento-modal__quote { margin: 1.1rem 0; padding-left: 1rem; border-left: 3px solid #D4A017; font-style: italic; font-weight: 600; }
+.nx-bento-modal__bullets { margin: 0; padding: 0; list-style: none; }
+.nx-bento-modal__bullets li { position: relative; margin-bottom: .8rem; padding-left: 1.6rem; line-height: 1.6; color: #334155; }
+.nx-bento-modal__bullets li::before { content: '\2192'; position: absolute; left: 0; color: #0A6E6E; font-weight: 700; }
+@media (min-width: 1024px) {
+    .nx-bento-modal__panel { flex-direction: row; width: min(1120px, calc(100vw - 80px)); max-width: none; max-height: 88vh; border-radius: 30px; }
+    .nx-bento-modal__interior { flex-direction: row; overflow: hidden; width: 100%; }
+    .nx-bento-modal__copy { flex: 1 1 52%; overflow-y: auto; padding: 3.5rem 2.5rem 2.5rem 3rem; }
+    .nx-bento-modal__art { flex: 1 1 48%; padding: 2.5rem; }
+}
+.nx-bento-modal.is-dark .nx-bento-modal__panel { background: rgba(13,27,42,.97); color: #E6F2F0; border-color: rgba(255,255,255,.1); }
+.nx-bento-modal.is-dark .nx-bento-modal__btn { background: rgba(26,40,64,.9); border-color: rgba(255,255,255,.16); color: #E6F2F0; }
+.nx-bento-modal.is-dark .nx-bento-modal__btn:hover { background: #1B2A44; }
+.nx-bento-modal.is-dark .nx-bento-modal__art { background: linear-gradient(135deg,#152238,#0D1B2A); }
+.nx-bento-modal.is-dark .nx-bento-modal__eyebrow { color: #D4A017; }
+.nx-bento-modal.is-dark .nx-bento-modal__body p, .nx-bento-modal.is-dark .nx-bento-modal__bullets li { color: #cbd5e1; }
+.nx-bento-modal.is-dark .nx-bento-modal__bullets li::before { color: #2dd4bf; }
+.nx-bento-modal.is-dark .ill text { fill: #E6F2F0; }
+.nx-bento-modal.is-dark .ill .m { fill: #9fb2c2; }
+.nx-bento-modal.is-dark .ill .w { fill: #fff; }
+.nx-bento-modal.is-dark .ill .sf { fill: #1A2840; stroke: rgba(255,255,255,.18); }
+.nx-bento-modal.is-dark .ill .sf2 { fill: #152238; stroke: rgba(255,255,255,.18); }
+.nx-bento-modal.is-dark .ill .ln { stroke: rgba(255,255,255,.18); }
+.nx-bento-modal.is-dark .ill .fQ { fill: #E6F2F0; }
+.nx-bento-modal.is-dark .ill .fN { fill: #2D4060; opacity: 1; }
+.nx-bento-modal.is-dark .ill .tt { fill: #2dd4bf; }
+.nx-bento-modal.is-dark .ill .sT { stroke: #2dd4bf; }
+@media (prefers-reduced-motion: reduce) { .nx-bento-modal, .nx-bento-modal__panel { transition: none; } }
+
+/* White Label hero: a wall of real dashboard screens drifting in three columns (MASTER-ONLY marketing). The middle column runs the other way; the wall
+   dissolves into the page at the top and bottom, and stops moving for people who ask for reduced motion. */
+.mm-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; overflow: hidden; transform: rotate(-4deg) scale(1.04);
+    padding: 0 18px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%), linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%), linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-composite: intersect; }
+.mm-wall__col { min-width: 0; overflow: hidden; }
+.mm-wall__track { display: flex; flex-direction: column; gap: 14px; animation: mm-wall-up 46s linear infinite; will-change: transform; }
+.mm-wall__col--down .mm-wall__track { animation-name: mm-wall-down; animation-duration: 52s; }
+.mm-wall:hover .mm-wall__track { animation-play-state: paused; }
+.mm-wall__cell { flex: none; }
+@keyframes mm-wall-up { to { transform: translateY(calc(-50% - 7px)); } }
+@keyframes mm-wall-down { from { transform: translateY(calc(-50% - 7px)); } to { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .mm-wall__track { animation: none; } }
+@media (max-width: 639px) { .mm-wall { gap: 8px; } .mm-wall__track { gap: 8px; } }
+.mm-rail { scrollbar-width: thin; }
+
+/* Naara Gift brand wall: rows of real gift cards drifting sideways, edges feathered, still for reduced motion (MASTER-ONLY marketing). */
+.mm-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%); }
+.mm-marquee__track { display: flex; width: max-content; gap: 20px; padding-left: 20px; animation: mm-marquee 60s linear infinite; }
+.mm-marquee--rev .mm-marquee__track { animation-direction: reverse; animation-duration: 70s; }
+.mm-marquee:hover .mm-marquee__track { animation-play-state: paused; }
+@keyframes mm-marquee { to { transform: translateX(calc(-50% - 10px)); } }
+@media (prefers-reduced-motion: reduce) { .mm-marquee__track { animation: none; } .mm-card { animation: none !important; } }
+.mm-card { animation: mm-card-float 7s ease-in-out infinite; animation-delay: calc(var(--i, 0) * -2.3s); }
+@keyframes mm-card-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+
+/* White Label video player (MASTER-ONLY marketing): the brand colour comes from --mm-accent, set per page by the admin. Full screen fills the display
+   (and goes landscape on phones from player.js); controls hide when idle; the seek bar shows played and buffered time. */
+.mm-player:fullscreen, .mm-player:-webkit-full-screen { width: 100vw; height: 100vh; max-width: none; aspect-ratio: auto; border-radius: 0; background: #000; }
+.mm-player.is-idle { cursor: none; }
+.mm-player.is-idle .mm-controls { opacity: 0; pointer-events: none; }
+.mm-controls { transition: opacity .25s ease; }
+.mm-play { background: var(--mm-accent); box-shadow: 0 18px 50px -10px color-mix(in srgb, var(--mm-accent) 70%, #000); }
+.mm-play::before { content: ""; position: absolute; inset: -10px; border-radius: 9999px; border: 2px solid var(--mm-accent); opacity: .55; animation: mm-ping 2.4s ease-out infinite; }
+@keyframes mm-ping { 0% { transform: scale(.9); opacity: .6; } 100% { transform: scale(1.35); opacity: 0; } }
+.mm-ctl { display: inline-flex; height: 2.5rem; width: 2.5rem; align-items: center; justify-content: center; border-radius: 9999px; color: #fff; transition: background .15s ease; }
+.mm-ctl:hover, .mm-ctl:focus-visible { background: rgb(255 255 255 / .18); outline: none; }
+.mm-ctl--float { background: rgb(0 0 0 / .45); backdrop-filter: blur(6px); }
+.mm-range { -webkit-appearance: none; appearance: none; height: 1.25rem; background: transparent; cursor: pointer; }
+.mm-range::-webkit-slider-runnable-track { height: 5px; border-radius: 9999px; background: linear-gradient(to right, var(--mm-accent) 0 var(--p), rgb(255 255 255 / .5) var(--p) var(--b), rgb(255 255 255 / .22) var(--b) 100%); }
+.mm-range::-moz-range-track { height: 5px; border-radius: 9999px; background: rgb(255 255 255 / .22); }
+.mm-range::-moz-range-progress { height: 5px; border-radius: 9999px; background: var(--mm-accent); }
+.mm-range::-webkit-slider-thumb { -webkit-appearance: none; margin-top: -4px; height: 13px; width: 13px; border-radius: 9999px; background: #fff; box-shadow: 0 0 0 3px var(--mm-accent); }
+.mm-range::-moz-range-thumb { height: 13px; width: 13px; border: 0; border-radius: 9999px; background: #fff; box-shadow: 0 0 0 3px var(--mm-accent); }
+.mm-range:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .mm-play::before { animation: none; } }

@@ -1,0 +1,8 @@
+// dbg.cjs: SKIN= MODE= URL= TEXT= -> computed colour/opacity/background chain of the first element whose own text matches
+let chromium;try{({chromium}=require('playwright'))}catch(e){({chromium}=require(process.env.PW_MODULE||'/opt/node22/lib/node_modules/playwright'))}
+const CHROME=process.env.CHROME||'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',BASE=process.env.BASE||'http://127.0.0.1:8099';
+(async()=>{const b=await chromium.launch({executablePath:CHROME});const p=await (await b.newContext({viewport:{width:430,height:932}})).newPage();
+await p.goto(BASE+'/login');await p.fill('input[name="email"]','nx-diff@naara.test');await p.fill('input[name="password"]','password');await Promise.all([p.waitForNavigation().catch(()=>{}),p.click('button[type="submit"]')]);
+await p.goto(BASE+process.env.URL,{waitUntil:'networkidle'});
+await p.evaluate(([s,m])=>{const d=document.documentElement;d.dataset.nxSkin=s;d.dataset.nxMode=m;d.dataset.nxAccent='teal';d.classList.toggle('dark',m==='dark')},[process.env.SKIN,process.env.MODE||'light']);await p.waitForTimeout(1500);
+console.log(JSON.stringify(await p.evaluate((t)=>{const w=document.createTreeWalker(document.querySelector('.ns-app')||document.body,NodeFilter.SHOW_TEXT);while(w.nextNode()){const n=w.currentNode;if(n.textContent.trim().startsWith(t)){let e=n.parentElement;const out=[];while(e&&e!==document.documentElement){const c=getComputedStyle(e);out.push({t:e.tagName+'.'+String(e.className).slice(0,40),color:c.color,op:c.opacity,bg:c.backgroundColor,bi:c.backgroundImage.slice(0,60)});e=e.parentElement;if(out.length>6)break}return out}}return 'nf'},process.env.TEXT),null,1));await b.close()})();

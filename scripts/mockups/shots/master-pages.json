@@ -1,0 +1,80 @@
+[
+ {
+  "id": "m-rewards",
+  "path": "/rewards",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "m-hunt",
+  "path": "/rewards/hunt",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "m-brand",
+  "path": "/rewards/hunt/1",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "m-thread",
+  "path": "/n2n/chat",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "text=Sophie Turner"
+  ],
+  "wait": 1500
+ },
+ {
+  "id": "m-calls",
+  "path": "/n2n/calls",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "m-planner",
+  "path": "/n2n/planner",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "m-chatlist",
+  "path": "/n2n/chat",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "d-dashboard",
+  "path": "/dashboard",
+  "w": 1440,
+  "h": 829,
+  "dpr": 1.5
+ },
+ {
+  "id": "d-merchant",
+  "path": "/merchant",
+  "w": 1440,
+  "h": 829,
+  "dpr": 1.5
+ },
+ {
+  "id": "d-chat",
+  "path": "/n2n/chat",
+  "w": 1440,
+  "h": 829,
+  "dpr": 1.5,
+  "click": [
+   "text=Sophie Turner"
+  ],
+  "wait": 1500
+ }
+]

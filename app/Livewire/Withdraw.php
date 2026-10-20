@@ -1,0 +1,342 @@
+<?php
+
+namespace App\Livewire;
+
+use App\Models\PayoutAccount;
+use App\Services\Credits\CreditService;
+use App\Services\Payouts\AccountResolutionException;
+use App\Services\Payouts\PayoutAccountService;
+use App\Services\Payouts\PayoutException;
+use App\Services\Payouts\PayoutService;
+use App\Services\Payouts\PayoutThreshold;
+use App\Services\Payouts\StripeConnectService;
+use App\Services\Payouts\WithdrawalService;
+use App\Support\CreditSettings;
+use App\Support\PayoutSettings;
+use App\Support\ProviderStatus;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+
+/**
+ * Customer cash-out (ROADMAP §Layer 1). Manage bank/payout accounts (name
+ * resolved before saving) and withdraw withdrawable NaaraCredits to one.
+ * Browsing and payout-account setup are free (NAARA-BUILD-22 §3) — KYC-L2 is
+ * only required once the unified free-payout threshold is spent, exactly like
+ * every other earner type's payout flow.
+ */
+#[Layout('components.layouts.customer')]
+class Withdraw extends Component
+{
+    // Add-account form.
+    public string $accountType = 'bank';
+
+    public string $country = 'NG';
+
+    public string $bankCode = '';
+
+    public string $accountNumber = '';
+
+    /** @var list<array{code: string, name: string}> */
+    public array $banks = [];
+
+    public ?string $accountError = null;
+
+    // PayPal add-account form — double-entry re-confirmation (no PSP resolve
+    // API exists for a payout email, so this re-typed match is the guard
+    // against a mistyped destination).
+    public string $paypalEmail = '';
+
+    public string $paypalEmailConfirm = '';
+
+    // Crypto wallet add-account form (master only; hidden when the NOWPayments rail isn't installed).
+    public string $cryptoNetwork = 'usdttrc20';
+
+    public string $cryptoAddress = '';
+
+    public string $cryptoAddressConfirm = '';
+
+    // International (Grey) account form. Fields are whatever Grey says the corridor needs (master only).
+    public string $greyCountry = '';
+
+    /** @var array<string, string> */
+    public array $greyInput = [];
+
+    // Withdraw form.
+    public ?int $accountId = null;
+
+    public $amountUsd = '';
+
+    public ?string $withdrawError = null;
+
+    /** Rendered inside another skin page (the Wallet's Payout tab): no page canvas of its own. */
+    public bool $embedded = false;
+
+    public function mount(StripeConnectService $connect, bool $embedded = false): void
+    {
+        $this->embedded = $embedded;
+        $this->loadBanks();
+        $this->accountId = PayoutAccount::where('user_id', Auth::id())->where('is_default', true)->value('id');
+
+        // Landed back from Stripe's hosted onboarding: force-refresh status now
+        // rather than waiting on the account.updated webhook, so the page
+        // reflects reality immediately instead of looking stuck.
+        $pending = PayoutAccount::where('user_id', Auth::id())->where('type', 'stripe')
+            ->where('payouts_enabled', false)->first();
+        if ($pending !== null && $connect->available()) {
+            try {
+                $connect->refreshStatus($pending);
+            } catch (\Throwable) {
+                // Best-effort — the webhook is still the source of truth.
+            }
+        }
+    }
+
+    /** The guide (step 1) picked a rail: open the matching existing setup form. */
+    #[\Livewire\Attributes\On('payout-rail-chosen')]
+    public function railChosen(string $rail, string $country): void
+    {
+        $this->country = strtoupper($country);
+        $this->accountType = match ($rail) {
+            'stripe_connect' => 'stripe',
+            'paypal' => 'paypal',
+            default => 'bank',
+        };
+        $this->bankCode = '';
+        $this->loadBanks();
+    }
+
+    public function updatedCountry(): void
+    {
+        $this->bankCode = '';
+        $this->loadBanks();
+    }
+
+    private function loadBanks(): void
+    {
+        $this->banks = app(PayoutAccountService::class)->banksFor(strtoupper($this->country))['banks'];
+    }
+
+    public function addAccount(PayoutAccountService $accounts): void
+    {
+        $this->accountError = null;
+        $this->validate([
+            'country' => 'required|string|size:2',
+            'bankCode' => 'required|string',
+            'accountNumber' => 'required|string|max:32',
+        ]);
+
+        try {
+            $account = $accounts->addAccount(Auth::user(), [
+                'country' => $this->country,
+                'currency' => $this->currencyFor($this->country),
+                'bank_code' => $this->bankCode,
+                'bank_name' => collect($this->banks)->firstWhere('code', $this->bankCode)['name'] ?? null,
+                'account_number' => $this->accountNumber,
+            ]);
+        } catch (AccountResolutionException|PayoutException $e) {
+            $this->accountError = $e->getMessage();
+
+            return;
+        }
+
+        $this->reset('accountNumber');
+        $this->accountId = $account->id;
+        $this->dispatch('nx-toast', type: 'success', message: 'Account verified as '.$account->account_name.'.');
+    }
+
+    public function addPaypalAccount(PayoutAccountService $accounts): void
+    {
+        $this->accountError = null;
+        $this->validate([
+            'paypalEmail' => 'required|email|max:190',
+            'paypalEmailConfirm' => 'required|email|max:190',
+        ]);
+
+        if (strtolower($this->paypalEmail) !== strtolower($this->paypalEmailConfirm)) {
+            $this->accountError = 'Those two PayPal emails don\'t match. Please retype them.';
+
+            return;
+        }
+
+        try {
+            $account = $accounts->addPaypalAccount(Auth::user(), $this->paypalEmail);
+        } catch (PayoutException $e) {
+            $this->accountError = $e->getMessage();
+
+            return;
+        }
+
+        $this->reset('paypalEmail', 'paypalEmailConfirm');
+        $this->accountId = $account->id;
+        $this->dispatch('nx-toast', type: 'success', message: 'PayPal account added: '.$account->account_name);
+    }
+
+    public function addCryptoAccount(): void
+    {
+        $this->accountError = null;
+        if (! $this->cryptoAvailable()) {
+            return;
+        }
+        $this->validate([
+            'cryptoNetwork' => 'required|string|max:20',
+            'cryptoAddress' => 'required|string|max:120',
+            'cryptoAddressConfirm' => 'required|string|max:120',
+        ]);
+
+        try {
+            $account = app(\App\Services\Payouts\Crypto\CryptoAccountService::class)
+                ->add(Auth::user(), $this->cryptoNetwork, $this->cryptoAddress, $this->cryptoAddressConfirm);
+        } catch (AccountResolutionException|PayoutException $e) {
+            $this->accountError = $e->getMessage();
+
+            return;
+        }
+
+        $this->reset('cryptoAddress', 'cryptoAddressConfirm');
+        $this->accountId = $account->id;
+        $this->dispatch('nx-toast', type: 'success', message: 'Wallet saved. It will be activated for payouts shortly.');
+    }
+
+    public function addGreyAccount(): void
+    {
+        $this->accountError = null;
+        if (! $this->greyAvailable()) {
+            return;
+        }
+        $this->validate(['greyCountry' => 'required|string|size:2', 'greyInput' => 'array']);
+
+        try {
+            $account = app(\App\PayoutRails\Grey\GreyAccountService::class)->add(Auth::user(), $this->greyCountry, $this->greyInput);
+        } catch (AccountResolutionException|PayoutException $e) {
+            $this->accountError = $e->getMessage();
+
+            return;
+        }
+
+        $this->reset('greyInput');
+        $this->accountId = $account->id;
+        $this->dispatch('nx-toast', type: 'success', message: 'Account saved. Payouts to it are reviewed by our team.');
+    }
+
+    private function greyAvailable(): bool
+    {
+        return class_exists(\App\PayoutRails\Grey\GreyAccountService::class)
+            && app(\App\Services\Payouts\PayoutService::class)
+            && app()->bound('payout.grey')
+            && app('payout.grey')->available();
+    }
+
+    /** The crypto rail exists on this install (master) AND is configured. */
+    private function cryptoAvailable(): bool
+    {
+        return class_exists(\App\Services\Payouts\Crypto\CryptoAccountService::class)
+            && app(\App\Services\Payouts\PayoutService::class) // extension gateways register with the engine
+            && app()->bound('payout.nowpayments')
+            && app('payout.nowpayments')->available()
+            && app(\App\Services\Payouts\Crypto\CryptoAccountService::class)->offeredTo(Auth::user());
+    }
+
+    /** Start (or resume) Stripe's hosted onboarding for a Connect account. */
+    public function connectStripe(StripeConnectService $connect)
+    {
+        try {
+            $account = $connect->accountFor(Auth::user());
+        } catch (PayoutException $e) {
+            $this->accountError = $e->getMessage();
+
+            return null;
+        }
+
+        $url = $connect->onboardingUrl(
+            $account,
+            refreshUrl: route('rewards.withdraw'),
+            returnUrl: route('rewards.withdraw'),
+        );
+
+        return redirect()->away($url);
+    }
+
+    public function setDefault(int $id, PayoutAccountService $accounts): void
+    {
+        $accounts->setDefault(Auth::user(), PayoutAccount::findOrFail($id));
+        $this->accountId = $id;
+    }
+
+    public function removeAccount(int $id, PayoutAccountService $accounts): void
+    {
+        try {
+            $accounts->remove(Auth::user(), PayoutAccount::findOrFail($id));
+        } catch (PayoutException $e) {
+            $this->accountError = $e->getMessage();
+
+            return;
+        }
+        if ($this->accountId === $id) {
+            $this->accountId = null;
+        }
+    }
+
+    public function withdraw(WithdrawalService $withdrawals): void
+    {
+        $this->withdrawError = null;
+        $this->validate([
+            'accountId' => 'required|integer',
+            'amountUsd' => 'required|numeric|min:0.01',
+        ]);
+
+        $account = PayoutAccount::where('user_id', Auth::id())->find($this->accountId);
+        if ($account === null) {
+            $this->withdrawError = 'Choose a payout account.';
+
+            return;
+        }
+
+        try {
+            $credits = CreditSettings::usdToCredits((float) $this->amountUsd);
+            $withdrawals->request(Auth::user(), $credits, $account);
+        } catch (PayoutException $e) {
+            $this->withdrawError = $e->getMessage();
+
+            return;
+        }
+
+        $this->reset('amountUsd');
+        $this->dispatch('nx-toast', type: 'success', message: 'Withdrawal requested — we’ll process it shortly.');
+    }
+
+    private function currencyFor(string $country): string
+    {
+        return ['NG' => 'NGN', 'GH' => 'GHS', 'KE' => 'KES', 'ZA' => 'ZAR'][strtoupper($country)] ?? 'USD';
+    }
+
+    public function render(WithdrawalService $withdrawals, CreditService $credits, PayoutService $payouts, PayoutThreshold $threshold)
+    {
+        $user = Auth::user();
+        $greyCountries = $this->greyAvailable() ? app(\App\PayoutRails\Grey\GreyAccountService::class)->countries() : [];
+
+        return view('livewire.withdraw', [
+            'accounts' => PayoutAccount::where('user_id', $user->id)->latest()->get(),
+            'availableUsd' => $withdrawals->availableUsd($user),
+            'withdrawableCredits' => $credits->withdrawableBalance($user),
+            'minWithdrawal' => PayoutSettings::minWithdrawal(),
+            'enabled' => PayoutSettings::enabled(),
+            // §8: the volume-recommended payout rail (or null). Other rails still show.
+            'recommendedGateway' => $payouts->recommendedGateway(),
+            'paypalAvailable' => ProviderStatus::isActive('paypal'),
+            'stripeAvailable' => ProviderStatus::isActive('stripe'),
+            'cryptoAvailable' => $this->cryptoAvailable(),
+            'greyAvailable' => $greyCountries !== [],
+            'greyCountries' => $greyCountries,
+            'greyForm' => $this->greyAvailable() && $this->greyCountry !== '' ? app(\App\PayoutRails\Grey\GreyAccountService::class)->formFor($this->greyCountry) : null,
+            'cryptoNetworks' => $this->cryptoAvailable() ? \App\Support\CryptoPayoutNetworks::all() : [],
+            'stripeAccount' => PayoutAccount::where('user_id', $user->id)->where('type', 'stripe')->first(),
+            // Free-payout / KYC threshold state (§3) — same positive framing as
+            // the shared PayoutDashboard for partner/merchant/referral earners.
+            'remainingFree' => $threshold->remainingFree($user),
+            'requiresKyc' => $threshold->requiresKyc($user),
+            'canWithdraw' => $threshold->canWithdraw($user),
+            'freeCount' => PayoutSettings::freePayoutCount(),
+        ]);
+    }
+}

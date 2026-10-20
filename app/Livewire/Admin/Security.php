@@ -1,0 +1,339 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use App\Models\Setting;
+use App\Models\User;
+use App\Notifications\AdminPathChangedNotification;
+use App\Support\Auditor;
+use App\Support\AdminPath;
+use App\Support\Mailer;
+use App\Support\MediaStorage;
+use App\Support\SecuritySettings;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Laravel\Fortify\Actions\ConfirmTwoFactorAuthentication;
+use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
+use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
+use Laravel\Fortify\Actions\GenerateNewRecoveryCodes;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+
+/**
+ * Admin → Security (blueprint Section 25). TOTP two-factor enrolment for the
+ * admin panel: an admin without a confirmed secret is routed here and cannot
+ * reach any other admin page until 2FA is confirmed. Uses Fortify's action
+ * classes directly (the admin is already authenticated + role-checked).
+ */
+#[Layout('components.layouts.admin')]
+class Security extends Component
+{
+    use WithFileUploads;
+
+    /** Show the QR/secret + confirm step after enabling. */
+    public bool $showingSetup = false;
+
+    /** TOTP code the admin reads from their authenticator app. */
+    public string $code = '';
+
+    /** Admin-toggleable site protection (super-admin only). */
+    public bool $csp_enabled = true;
+
+    public bool $hsts_enabled = true;
+
+    /** Require TOTP 2FA to use the admin panel (opt-in extra layer). */
+    public bool $admin_2fa_required = false;
+
+    /** Cloudflare Turnstile bot challenge on login/register (opt-in). */
+    public bool $turnstile_enabled = false;
+
+    /**
+     * Content/billing/hot-menu blueprint Phase D — the one consistent brand/
+     * security visual shown on every "new sign-in" alert email (owner
+     * decision: a single fixed image, never per-send custom media, since a
+     * varied visual in a security alert makes a phishing lookalike easier to
+     * pass off, not harder).
+     */
+    public $login_alert_image = null;
+
+    public ?string $login_alert_image_url = null;
+
+    /** Panel-managed admin access control (owner request). */
+    public bool $ip_allowlist_enabled = false;
+
+    public string $ip_allowlist = '';
+
+    public bool $country_allowlist_enabled = false;
+
+    /** Comma/space-separated ISO-3166 alpha-2 codes, e.g. "NG, GB, US". */
+    public string $allowed_countries = '';
+
+    /** Explicit acknowledgement when the new rules would exclude the current request. */
+    public bool $lockout_ack = false;
+
+    public ?string $siteSaved = null;
+
+    public ?string $accessSaved = null;
+
+    public ?string $saved = null;
+
+    /** NAARA-PROMPT-22 §3 — the admin panel's URL path (super_admin only). */
+    public string $admin_path = '';
+
+    public string $admin_path_confirmation = '';
+
+    public string $admin_path_current_password = '';
+
+    public ?string $adminPathSaved = null;
+
+    public function mount(): void
+    {
+        $s = SecuritySettings::current();
+        $this->csp_enabled = $s['csp_enabled'];
+        $this->hsts_enabled = $s['hsts_enabled'];
+        $this->admin_2fa_required = $s['admin_2fa_required'];
+        $this->turnstile_enabled = $s['turnstile_enabled'] ?? false;
+        $this->ip_allowlist_enabled = $s['admin_ip_allowlist_enabled'] ?? false;
+        $this->ip_allowlist = implode("\n", $s['admin_ip_allowlist'] ?? []);
+        $this->country_allowlist_enabled = $s['admin_country_allowlist_enabled'] ?? false;
+        $this->allowed_countries = implode(', ', $s['admin_allowed_countries'] ?? []);
+        $this->admin_path = AdminPath::current();
+        $this->login_alert_image_url = $s['login_alert_image_url'] ?? null;
+    }
+
+    /** Upload (or replace) the one login-alert visual. Super-admin only. */
+    public function saveLoginAlertImage(): void
+    {
+        abort_unless(Auth::user()->hasRole('super_admin'), 403);
+
+        $this->validate(['login_alert_image' => MediaStorage::uploadRules()], [], [
+            'login_alert_image' => 'image',
+        ]);
+
+        if (! $this->login_alert_image) {
+            return;
+        }
+
+        $url = MediaStorage::storePublic($this->login_alert_image, 'security');
+        Setting::setValue('security.login_alert_image_url', $url, 'security');
+        SecuritySettings::flush();
+
+        $this->login_alert_image = null;
+        $this->login_alert_image_url = $url;
+
+        Auditor::log('security.login_alert_image_updated');
+        $this->siteSaved = 'Login alert image saved — it now shows on every "new sign-in" email.';
+        $this->dispatch('nx-toast', type: 'success', message: 'Login alert image saved.');
+    }
+
+    /** Remove the login-alert visual — the email reverts to text-only. Super-admin only. */
+    public function removeLoginAlertImage(): void
+    {
+        abort_unless(Auth::user()->hasRole('super_admin'), 403);
+
+        Setting::where('key', 'security.login_alert_image_url')->get()->each->delete();
+        SecuritySettings::flush();
+
+        $this->login_alert_image_url = null;
+
+        Auditor::log('security.login_alert_image_removed');
+        $this->siteSaved = 'Login alert image removed.';
+        $this->dispatch('nx-toast', type: 'success', message: 'Login alert image removed.');
+    }
+
+    /**
+     * NAARA-PROMPT-22 §3 — change the admin panel's URL path. Gated tighter
+     * than the rest of this screen (super_admin only, not admin): getting
+     * this wrong can lock every admin out of the panel. Requires the current
+     * password re-entered in the same request (a hijacked-but-unattended
+     * session shouldn't be able to take this action silently) and the new
+     * value typed twice (a typo here with no confirmation is a self-inflicted
+     * lockout). Every super_admin is emailed the new path immediately, and
+     * the acting admin's own session is untouched — Laravel's cookie-based
+     * auth isn't tied to the URL path, confirmed by test, not assumed.
+     */
+    public function saveAdminPath(): void
+    {
+        abort_unless(Auth::user()->hasRole('super_admin'), 403);
+
+        $this->validate([
+            'admin_path_current_password' => ['required', 'current_password:web'],
+            'admin_path' => ['required', 'string', 'regex:/^'.AdminPath::PATTERN.'$/', 'same:admin_path_confirmation'],
+        ], [
+            'admin_path_current_password.current_password' => 'That password is incorrect.',
+            'admin_path.regex' => 'Use 3-64 letters, numbers, hyphens or underscores only.',
+            'admin_path.same' => 'The two entries do not match — type the new path identically in both fields.',
+        ]);
+
+        if (AdminPath::collidesWithReserved($this->admin_path)) {
+            $this->addError('admin_path', 'That path is already used elsewhere in the app — choose another.');
+
+            return;
+        }
+
+        $old = AdminPath::current();
+        $new = $this->admin_path;
+
+        Setting::setValue(AdminPath::SETTING_KEY, $new, 'security');
+
+        $this->reset('admin_path_current_password', 'admin_path_confirmation');
+
+        Auditor::log('admin.path_changed', null, null, ['from' => $old, 'to' => $new]);
+
+        foreach (User::role('super_admin')->get() as $superAdmin) {
+            Mailer::notify($superAdmin, new AdminPathChangedNotification($new));
+        }
+
+        $this->adminPathSaved = "Admin path changed to /{$new} — every super_admin has been emailed the new path. Update your bookmarks now.";
+        $this->dispatch('nx-toast', type: 'success', message: 'Admin path updated.');
+    }
+
+    /**
+     * Save the panel-managed IP + country allow-lists (super-admin only). Guards
+     * against a blind self-lockout: if the new rules would exclude THIS request,
+     * an explicit acknowledgement is required before saving.
+     */
+    public function saveAccessControl(): void
+    {
+        abort_unless(Auth::user()->hasRole('super_admin'), 403);
+
+        $ips = collect(preg_split('/[\s,]+/', $this->ip_allowlist))
+            ->map(fn ($v) => trim($v))->filter()->unique()->values()->all();
+
+        $countries = collect(preg_split('/[\s,]+/', strtoupper($this->allowed_countries)))
+            ->map(fn ($v) => trim($v))->filter(fn ($v) => preg_match('/^[A-Z]{2}$/', $v))
+            ->unique()->values()->all();
+
+        // Self-lockout guard: would these rules block the request making the change?
+        $request = request();
+        $wouldBlockIp = $this->ip_allowlist_enabled && ! empty($ips) && ! in_array($request->ip(), $ips, true);
+        $currentCountry = \App\Support\AdminAccess::currentCountry($request);
+        $wouldBlockCountry = $this->country_allowlist_enabled && ! empty($countries)
+            && $currentCountry !== null && ! in_array($currentCountry, $countries, true);
+
+        if (($wouldBlockIp || $wouldBlockCountry) && ! $this->lockout_ack) {
+            $this->addError('lockout_ack', 'These rules would block your current '
+                .($wouldBlockIp ? 'IP' : 'country').'. Tick the box to confirm you have another way in.');
+
+            return;
+        }
+
+        Setting::setValue('security.admin_ip_allowlist_enabled', $this->ip_allowlist_enabled, 'security');
+        Setting::setValue('security.admin_ip_allowlist', $ips, 'security');
+        Setting::setValue('security.admin_country_allowlist_enabled', $this->country_allowlist_enabled, 'security');
+        Setting::setValue('security.admin_allowed_countries', $countries, 'security');
+        SecuritySettings::flush();
+
+        $this->allowed_countries = implode(', ', $countries);
+        $this->ip_allowlist = implode("\n", $ips);
+        $this->lockout_ack = false;
+
+        Auditor::log('security.access_control_updated', null, null, [
+            'ip_enabled' => $this->ip_allowlist_enabled, 'ip_count' => count($ips),
+            'country_enabled' => $this->country_allowlist_enabled, 'countries' => $countries,
+        ]);
+
+        $this->accessSaved = 'Admin access rules saved.';
+        $this->dispatch('nx-toast', type: 'success', message: 'Admin access rules saved.');
+    }
+
+    /**
+     * Save the site-protection toggles. Super-admin only; takes effect
+     * immediately (no redeploy) and is audited.
+     */
+    public function saveSiteProtection(): void
+    {
+        abort_unless(Auth::user()->hasRole('super_admin'), 403);
+
+        Setting::setValue('security.csp_enabled', $this->csp_enabled, 'security');
+        Setting::setValue('security.hsts_enabled', $this->hsts_enabled, 'security');
+        Setting::setValue('security.admin_2fa_required', $this->admin_2fa_required, 'security');
+        Setting::setValue('security.turnstile_enabled', $this->turnstile_enabled, 'security');
+        SecuritySettings::flush();
+
+        Auditor::log('security.settings_updated', null, null, [
+            'csp' => $this->csp_enabled,
+            'hsts' => $this->hsts_enabled,
+            'admin_2fa_required' => $this->admin_2fa_required,
+            'turnstile_enabled' => $this->turnstile_enabled,
+        ]);
+
+        $this->siteSaved = 'Site protection saved — it applies immediately.';
+        $this->dispatch('nx-toast', type: 'success', message: 'Site protection saved.');
+    }
+
+    public function enable(EnableTwoFactorAuthentication $enable): void
+    {
+        $enable(Auth::user());
+        $this->showingSetup = true;
+        $this->saved = null;
+    }
+
+    public function confirm(ConfirmTwoFactorAuthentication $confirm): void
+    {
+        $this->validate(['code' => 'required|string']);
+
+        try {
+            $confirm(Auth::user(), $this->code);
+        } catch (ValidationException $e) {
+            $this->addError('code', 'That code is invalid or has expired — try the current one.');
+
+            return;
+        }
+
+        $this->showingSetup = false;
+        $this->code = '';
+        $this->saved = 'Two-factor authentication is on. Your admin account is now protected.';
+        Auditor::log('admin.2fa_confirmed');
+    }
+
+    public function regenerateRecoveryCodes(GenerateNewRecoveryCodes $generate): void
+    {
+        $generate(Auth::user());
+        $this->saved = 'New recovery codes generated — save them somewhere safe.';
+    }
+
+    /**
+     * Only a super_admin may switch 2FA back off (self-protection against an
+     * admin locking the org out of the enforcement).
+     */
+    public function disable(DisableTwoFactorAuthentication $disable): void
+    {
+        abort_unless(Auth::user()->hasRole('super_admin'), 403);
+
+        $disable(Auth::user());
+        $this->showingSetup = false;
+        $this->saved = 'Two-factor authentication disabled.';
+        Auditor::log('admin.2fa_disabled');
+    }
+
+    public function render()
+    {
+        $user = Auth::user()->fresh();
+
+        $enabled = ! is_null($user->two_factor_secret);
+        $confirmed = $enabled && ! is_null($user->two_factor_confirmed_at);
+
+        $qr = $secret = null;
+        $recoveryCodes = [];
+        if ($enabled) {
+            $qr = $user->twoFactorQrCodeSvg();
+            $secret = decrypt($user->two_factor_secret);
+            $recoveryCodes = json_decode(decrypt($user->two_factor_recovery_codes), true) ?? [];
+        }
+
+        return view('livewire.admin.security', [
+            'enabled' => $enabled,
+            'confirmed' => $confirmed,
+            'qr' => $qr,
+            'secret' => $secret,
+            'recoveryCodes' => $recoveryCodes,
+            'canDisable' => $user->hasRole('super_admin'),
+            'canManageSite' => $user->hasRole('super_admin'),
+            'turnstileConfigured' => \App\Support\Turnstile::configured(),
+            'currentCountry' => \App\Support\AdminAccess::currentCountry(request()),
+            'currentIp' => request()->ip(),
+        ]);
+    }
+}

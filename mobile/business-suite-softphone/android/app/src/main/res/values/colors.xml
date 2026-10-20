@@ -1,0 +1,11 @@
+<resources>
+    <color name="teal">#0A6E6E</color>
+    <color name="gold">#D4A017</color>
+    <color name="navy">#0D1B2A</color>
+    <color name="white">#FFFFFF</color>
+    <color name="banner_ok">#0A6E6E</color>
+    <color name="banner_warn">#8A6A0B</color>
+    <color name="decline">#C0392B</color>
+    <color name="answer">#1E9E5A</color>
+    <color name="muted">#9FB3C8</color>
+</resources>

@@ -1,0 +1,39 @@
+<x-layouts.auth title="Sign in — NaaraSim" :footer-art="true" heading="Welcome back" subheading="Sign in to manage your eSIMs, numbers and wallet.">
+    @php($art = \App\Support\SiteChrome::art())
+    @php($glass = $art['glass'] !== 'off')
+    <form method="POST" action="/login"
+          class="space-y-4 rounded-2xl border p-6 {{ $glass ? 'auth-glass' : 'border-slate-200 bg-white shadow-sm dark:border-[#2D4060] dark:bg-[#1A2840]' }}"
+          @if ($glass) data-art-glass="{{ $art['glass'] }}" data-art-overlap="{{ $art['overlap'] }}" @endif>
+        @csrf
+        @if ($errors->any())
+            <div class="flex items-start gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                <x-icon name="x" class="mt-0.5 h-4 w-4 shrink-0" /> <span>{{ $errors->first() }}</span>
+            </div>
+        @endif
+        <x-auth.social-buttons />
+        <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Email</label>
+            <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                   class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-[#2D4060] dark:bg-[#243352] dark:text-slate-100">
+        </div>
+        <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Password</label>
+            <x-ui.password name="password" required
+                   class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-[#2D4060] dark:bg-[#243352] dark:text-slate-100" />
+        </div>
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                <input type="checkbox" name="remember" class="rounded text-primary"> Remember me
+            </label>
+            <a href="/forgot-password" class="text-sm font-medium text-primary hover:underline">Forgot password?</a>
+        </div>
+        <x-turnstile />
+        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 font-semibold text-white hover:bg-primary-dark">
+            <x-icon name="shield-check" class="h-5 w-5" /> Sign in
+        </button>
+        <p class="text-center text-sm text-slate-500 dark:text-slate-400">
+            New here? <a href="/register" class="font-semibold text-primary hover:underline">Create an account</a>
+        </p>
+    </form>
+    <x-trust.reviews placement="auth.badge" class="mt-4 text-center" />
+</x-layouts.auth>

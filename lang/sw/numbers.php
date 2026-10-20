@@ -1,0 +1,116 @@
+<?php
+
+return [
+    // get-number.blade.php — active order card
+    'your_number' => 'Nambari yako',
+    'code' => 'Msimbo',
+    'waiting_for_code' => 'Inasubiri msimbo…',
+    'done' => 'Imekamilika',
+    'send_sms' => 'Tuma SMS',
+    'view_on_dashboard' => 'Angalia kwenye dashibodi',
+
+    // numbers-modals.blade.php — shared modal chrome
+    'modal_title' => [
+        'verify' => \App\Support\BrandSettings::rebrand('Naara Verify'),
+        'rent' => \App\Support\BrandSettings::rebrand('Naara Rent'),
+        'line' => \App\Support\BrandSettings::rebrand('Naara Line'),
+        'default' => 'Nambari',
+    ],
+    'back_to_numbers' => 'Rudi kwenye Nambari',
+    'close' => 'Funga',
+    'your_naara' => \App\Support\BrandSettings::rebrand('Naara yako'),
+    'line_active' => 'Inatumika',
+    'manage' => 'Simamia',
+    'top_up' => 'Weka pesa',
+    'what_today' => 'Unahitaji nini leo?',
+    'what_today_sub' => 'Chagua huduma na uanze kwa sekunde chache.',
+
+    // shared across verify/rent step partials
+    'taxes_and_fees' => 'Kodi na ada',
+    'you_pay' => 'Unalipa',
+    'priced_at_reservation' => 'Bei imewekwa wakati wa kuhifadhi',
+    'use_naaracredits' => \App\Support\BrandSettings::rebrand('Tumia NaaraCredits zangu'),
+    'credits_balance' => 'Una mikopo :balance. Tumia :credits kuokoa :amount kwenye oda hii.',
+    'reserving' => 'Inahifadhi…',
+    'country_label' => 'Nchi',
+    'service_label' => 'Huduma',
+
+    // verify.blade.php
+    'verify' => [
+        'banner_title' => \App\Support\BrandSettings::rebrand('Naara Verify'),
+        'banner_text' => 'Linda mtandao wako. Thibitisha utambulisho wako.',
+        'reserved_title' => 'Nambari imehifadhiwa',
+        'reserved_body' => 'Nambari yako ya uthibitisho iko tayari — tunapata msimbo sasa.',
+        'buy_another' => 'Nunua nyingine',
+        'manual_buy' => 'Nunua kwa Mkono',
+        'smart_buy' => 'Nunua kwa Akili',
+        'smart_buy_hint' => 'Chagua huduma — tutakuchagulia nchi na mtandao wenye bei nzuri zaidi kiotomatiki.',
+        'networks' => 'Mitandao',
+        'prices_tab' => 'Bei',
+        'stats_tab' => 'Takwimu',
+        'export_csv' => 'Hamisha CSV',
+        'auto_best_network' => 'Kiotomatiki — mtandao bora',
+        'recommended' => 'Inapendekezwa',
+        'best' => 'Bora zaidi',
+        'out_of_stock' => 'Haipo stoki',
+        'available_short' => ':count zinapatikana',
+        'get_my_code' => 'Pata msimbo wangu',
+        'refund_guarantee' => 'Msimbo usipopatikana ndani ya dakika :minutes → urejeshaji wa moja kwa moja kwenye mkoba wako, bila tikiti kuhitajika.',
+    ],
+
+    // rent.blade.php
+    'rent' => [
+        'step_country' => '1. Chagua nchi',
+        'step_country_hint' => 'Chagua nchi ya namba yako',
+        'step_service' => '2. Chagua huduma',
+        'step_service_hint' => 'Utatumia namba hii kwa nini?',
+        'step_length_hint' => 'Unahitaji namba kwa muda gani?',
+        'why_title' => 'Kwa nini kukodisha namba?',
+        'why_text' => 'Weka namba yako binafsi siri, thibitisha akaunti na fikia huduma za dunia nzima.',
+        'reserved_title' => 'Ukodishaji umehifadhiwa',
+        'reserved_body' => 'Nambari yako ya kukodisha iko tayari — inapokea SMS kwa kipindi chake cha ukodishaji.',
+        'rent_another' => 'Kodisha nyingine',
+        'single_service' => 'Huduma moja',
+        'any_service' => 'Huduma yoyote',
+        'soon' => '(hivi karibuni)',
+        'any_service_note' => 'Nambari moja, :bold — inapokea SMS kutoka kwa huduma zote kwa kipindi cha ukodishaji.',
+        'any_service_bold' => 'huduma yoyote',
+        'rental_length' => 'Muda wa ukodishaji',
+        'auto_renew' => 'Sasisha kiotomatiki inapoisha',
+        'short_term_note' => 'Ukodishaji wa muda mfupi — inapokea SMS kwa kipindi maalum. Kwa ukodishaji mrefu zaidi, chagua nambari ya Marekani.',
+        'rent_this_number' => 'Kodisha nambari hii',
+        'wallet_note' => 'Inatozwa kutoka mkobani. Urejeshaji wa moja kwa moja isipopatikana.',
+    ],
+
+    // line.blade.php
+    'line' => [
+        'mobile_numbers' => 'Nambari za simu',
+        'toll_free' => 'Bila malipo',
+        'coming_soon_title' => \App\Support\BrandSettings::rebrand('Naara Line inakuja hivi karibuni'),
+        'coming_soon_body' => 'Nambari ya kimataifa ya kudumu yenye sauti na SMS — tunamalizia ukaguzi wa mwisho na mtoa huduma wetu.',
+        'intro' => 'Nambari ya kimataifa ya kudumu ambayo ni yako — :bold, inatozwa kila mwezi.',
+        'intro_bold' => 'simu za sauti na SMS',
+        'vanity_label' => 'Tafuta nambari inayokumbukika (si lazima)',
+        'vanity_placeholder' => 'mfano, 777 au inayoishia 0000',
+        'active_title' => \App\Support\BrandSettings::rebrand('Naara Line inatumika'),
+        'active_hint' => 'Sanidi uelekezaji au kipiga simu kutoka dashibodi yako.',
+        'active_hint_sms_only' => 'Nambari hii inaunga mkono SMS pekee — simu za sauti na uelekezaji wa simu hazipatikani.',
+        'monthly_note' => \App\Support\BrandSettings::rebrand('Naara Line ni usajili wa kila mwezi — mwezi wa kwanza unatozwa sasa, kisha unasasishwa kila mwezi. Inajumuisha sauti na SMS.'),
+        'mobile_fallback' => 'Simu ya Mkono',
+        'get_this_number' => 'Pata nambari hii',
+        'search_again' => 'Tafuta tena',
+        'search_available' => 'Tafuta nambari zinazopatikana',
+        'searching' => 'Inatafuta…',
+    ],
+
+    // my-lines.blade.php — port-in premium card
+    'portin_card' => [
+        'kicker' => 'Kuhamisha namba · Marekani na Kanada',
+        'title' => 'Lete namba yako Naara',
+        'text' => 'Tayari una namba ya Marekani au Kanada? Iweke. Tunashughulikia uhamisho na mtoa huduma.',
+        'cta' => 'Anza uhamisho',
+        'chip_keep' => 'Weka namba yako',
+        'chip_days' => 'Siku 5–15 za kazi',
+        'chip_voice' => 'Sauti + SMS',
+    ],
+];

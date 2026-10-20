@@ -1,0 +1,6 @@
+[
+ {"id":"onb-1-destination","path":"/catalogue","w":390,"h":844,"dpr":3,"hide":["[x-data^=\"esimHero\"]"]},
+ {"id":"onb-2-plan","path":"/catalogue?country=FR","w":390,"h":844,"dpr":3},
+ {"id":"onb-3-activate","path":"/numbers/lines","w":390,"h":844,"dpr":3,"click":["button:has-text('Show setup')"],"scrollTo":".nx-card:has(img[alt='eSIM QR code'])","scrollOffset":84},
+ {"id":"onb-4-numbers","path":"/numbers","w":390,"h":844,"dpr":3}
+]

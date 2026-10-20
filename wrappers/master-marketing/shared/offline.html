@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Naara - offline</title>
+<!-- Shown by every Naara app wrapper when the app cannot reach the service. Self-contained. It keeps trying in the background and goes back by itself.
+     Usage: offline.html?retry=<https url on naara.app> -->
+<style>
+  :root { --bg1:#f4fbfb; --bg2:#e3f4f3; --ink:#0D1B2A; --ink2:#35566a; --teal:#0A6E6E; --gold:#D4A017; --ring:rgba(10,110,110,.28); --card:#ffffff; --line:rgba(13,27,42,.10); }
+  @media (prefers-color-scheme: dark) { :root { --bg1:#0b1722; --bg2:#0D1B2A; --ink:#f3f8fb; --ink2:#9fb8c8; --ring:rgba(120,220,215,.30); --card:#12273a; --line:rgba(255,255,255,.10); } }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { display: grid; place-items: center; color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: radial-gradient(120% 90% at 50% 30%, var(--bg2) 0%, var(--bg1) 72%); padding: 24px; }
+  main { width: min(100%, 460px); text-align: center; display: grid; gap: 14px; justify-items: center; }
+  svg { width: min(70vw, 260px); height: auto; overflow: visible; }
+  h1 { font-size: clamp(22px, 5vw, 28px); letter-spacing: -.01em; }
+  p { color: var(--ink2); max-width: 36ch; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 999px; padding: 12px 26px; cursor: pointer; color: #fff; background: var(--teal); min-height: 44px; }
+  button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  button[disabled] { opacity: .7; cursor: progress; }
+  .status { font-size: 13px; min-height: 1.4em; }
+  .tips { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; font-size: 14px; color: var(--ink2); margin-top: 6px; }
+  .tips li { margin: 4px 0 4px 18px; }
+  .wave { fill: none; stroke: var(--ring); stroke-width: 6; stroke-linecap: round; }
+  .wave.on { stroke: var(--gold); animation: blink 2.4s ease-in-out infinite; }
+  .wave.on:nth-of-type(2) { animation-delay: .3s; } .wave.on:nth-of-type(3) { animation-delay: .6s; }
+  .cloud { fill: var(--card); stroke: var(--ring); stroke-width: 2; }
+  .slash { stroke: #f0561d; stroke-width: 7; stroke-linecap: round; stroke-dasharray: 150; stroke-dashoffset: 150; animation: draw .8s .2s ease forwards; }
+  .plug { transform-origin: 130px 190px; animation: sway 3.2s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .25; } } @keyframes draw { to { stroke-dashoffset: 0; } } @keyframes sway { 50% { transform: rotate(4deg); } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .slash { stroke-dashoffset: 0; } }
+</style>
+</head>
+<body>
+<main role="alert" aria-live="polite">
+  <svg viewBox="0 0 260 220" aria-hidden="true">
+    <path class="wave" d="M70 64a80 80 0 0 1 120 0"/><path class="wave on" d="M92 86a50 50 0 0 1 76 0"/><path class="wave on" d="M114 108a20 20 0 0 1 32 0"/>
+    <path class="cloud" d="M78 176c-22 0-34-14-34-28 0-16 14-28 32-26 4-20 20-32 40-32 22 0 38 14 42 34 20-2 36 10 36 26 0 16-14 26-30 26z"/>
+    <g class="plug"><rect x="118" y="150" width="24" height="26" rx="5" fill="#0A6E6E"/><rect x="122" y="138" width="4" height="14" fill="#D4A017"/><rect x="134" y="138" width="4" height="14" fill="#D4A017"/></g>
+    <path class="slash" d="M62 40L198 196"/>
+  </svg>
+  <h1>You are offline</h1>
+  <p>Naara needs a connection to load your eSIMs, numbers and wallet. Your account is safe. We will reconnect the moment you are back online.</p>
+  <div class="row"><button id="retry" type="button">Try again</button></div>
+  <p class="status" id="status" aria-live="polite"></p>
+  <ul class="tips"><li>Check Wi-Fi or mobile data.</li><li>Turn off airplane mode.</li><li>If you use a VPN or proxy, try pausing it.</li></ul>
+</main>
+<script>
+  (function () {
+    var q = new URLSearchParams(location.search), target = q.get('retry') || 'https://www.naara.app/get-started';
+    if (!/^https:\/\/([a-z0-9-]+\.)*naara\.app(\/|$)/i.test(target)) target = 'https://www.naara.app/get-started';
+    var btn = document.getElementById('retry'), st = document.getElementById('status'), busy = false;
+    function check(manual) {
+      if (busy) return; busy = true; btn.disabled = true; st.textContent = manual ? 'Checking...' : '';
+      var c = new AbortController(), t = setTimeout(function () { c.abort(); }, 8000);
+      fetch(target, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: c.signal }).then(function () { clearTimeout(t); location.replace(target); })
+        .catch(function () { clearTimeout(t); busy = false; btn.disabled = false; if (manual) st.textContent = 'Still no connection. We will keep trying.'; });
+    }
+    btn.addEventListener('click', function () { check(true); });
+    window.addEventListener('online', function () { check(false); });
+    setInterval(function () { if (navigator.onLine !== false) check(false); }, 7000);
+  })();
+</script>
+</body>
+</html>

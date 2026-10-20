@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 240" role="img" aria-label="Paths from you to eSIM data, numbers, gift cards and your brand">
+<defs>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#13A39B"/><stop offset="1" stop-color="#0A6E6E"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2CB5C"/><stop offset="1" stop-color="#D4A017"/></linearGradient>
+<linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B3A52"/><stop offset="1" stop-color="#0D1B2A"/></linearGradient>
+<radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#4FD1C5" stop-opacity=".4"/><stop offset="1" stop-color="#4FD1C5" stop-opacity="0"/></radialGradient>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#0D1B2A" flood-opacity=".28"/></filter>
+</defs>
+<circle cx="240" cy="120" r="120" fill="url(#glow)"/>
+<!-- spokes -->
+<g fill="none" stroke="#13A39B" stroke-opacity=".5" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round">
+<path d="M240 120L96 62"/><path d="M240 120L96 178"/><path d="M240 120L384 62"/><path d="M240 120L384 178"/>
+</g>
+<circle cx="240" cy="120" r="64" fill="none" stroke="#D4A017" stroke-opacity=".3" stroke-width="2" stroke-dasharray="3 10" stroke-linecap="round"/>
+<!-- centre: you -->
+<g filter="url(#sh)"><circle cx="240" cy="120" r="44" fill="url(#g1)"/></g>
+<circle cx="240" cy="120" r="44" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>
+<circle cx="240" cy="108" r="12" fill="#fff"/><path d="M216 146c2-14 12-22 24-22s22 8 24 22z" fill="#fff"/>
+<path d="M254 92l2.4 5 5 2.4-5 2.4-2.4 5-2.4-5-5-2.4 5-2.4z" fill="#F2CB5C"/>
+<!-- eSIM -->
+<g filter="url(#sh)"><rect x="56" y="30" width="80" height="64" rx="18" fill="#fff"/></g>
+<g transform="translate(96 62)"><rect x="-18" y="-16" width="36" height="32" rx="8" fill="url(#g2)"/><rect x="-9" y="-6" width="18" height="14" rx="3" fill="#fff"/><path d="M-9 1h18M0 -6v14" stroke="#D4A017" stroke-width="1.6"/></g>
+<!-- number -->
+<g filter="url(#sh)"><rect x="56" y="146" width="80" height="64" rx="18" fill="#fff"/></g>
+<g transform="translate(96 178)"><rect x="-12" y="-19" width="24" height="38" rx="6" fill="url(#g3)"/><rect x="-9" y="-15" width="18" height="26" rx="3" fill="#F3FAF9"/><g fill="#0A6E6E"><rect x="-6" y="-11" width="12" height="4" rx="2"/></g><g fill="#13A39B"><circle cx="-4" cy="-1" r="2"/><circle cx="4" cy="-1" r="2"/><circle cx="-4" cy="6" r="2"/><circle cx="4" cy="6" r="2"/></g></g>
+<!-- gift -->
+<g filter="url(#sh)"><rect x="344" y="30" width="80" height="64" rx="18" fill="#fff"/></g>
+<g transform="translate(384 64)"><rect x="-18" y="-4" width="36" height="22" rx="4" fill="url(#g2)"/><rect x="-21" y="-12" width="42" height="11" rx="4" fill="#F2CB5C"/><rect x="-4" y="-12" width="8" height="30" fill="#0A6E6E"/><path d="M0 -12c-4-12-18-12-16-4 1 5 10 4 16 4zM0 -12c4-12 18-12 16-4-1 5-10 4-16 4z" fill="#13A39B"/></g>
+<!-- brand -->
+<g filter="url(#sh)"><rect x="344" y="146" width="80" height="64" rx="18" fill="#fff"/></g>
+<g transform="translate(384 178)"><path d="M-20 -6l4-14h32l4 14z" fill="url(#g1)"/><path d="M-20 -6c0 6 6 8 8 4 2 4 8 4 10 0 2 4 8 4 10 0 2 4 8 2 8-4z" fill="#0A6E6E"/><rect x="-17" y="-2" width="34" height="20" rx="2" fill="#E2EEF0"/><rect x="-6" y="5" width="12" height="13" rx="2" fill="#D4A017"/></g>
+<g fill="#F2CB5C"><circle cx="30" cy="120" r="4"/><circle cx="452" cy="120" r="4"/><circle cx="170" cy="22" r="3"/></g><g fill="#4FD1C5"><circle cx="310" cy="218" r="3.5"/><circle cx="170" cy="222" r="3"/></g>
+</svg>

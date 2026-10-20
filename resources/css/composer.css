@@ -1,0 +1,327 @@
+/* Chat Composer Pro (<naara-composer>). Light-DOM custom element: everything is namespaced `.cc-*`, brand-token driven, light + dark.
+   One stylesheet for every composer surface (NaaraCare chat, Naara Line message, the future Naara-to-Naara inbox). */
+naara-composer { display: block; min-width: 0; }
+
+.cc {
+    --cc-accent: rgb(var(--brand-primary, 10 110 110));
+    --cc-accent-ink: #fff;
+    --cc-bg: #fff; --cc-panel: #fff; --cc-border: #e2e8f0; --cc-text: #0f172a; --cc-muted: #64748b; --cc-hover: #f1f5f9; --cc-danger: #dc2626;
+    position: relative; color: var(--cc-text); font-size: 15px; line-height: 1.5; text-align: start;
+}
+.dark .cc { --cc-bg: #243352; --cc-panel: #1b2a44; --cc-border: rgb(255 255 255 / .1); --cc-text: #f1f5f9; --cc-muted: #94a3b8; --cc-hover: rgb(255 255 255 / .07); }
+.cc *, .cc *::before, .cc *::after { box-sizing: border-box; }
+.cc [hidden] { display: none !important; }
+.cc :where(button) { font: inherit; color: inherit; }   /* :where keeps this at zero specificity so every button class (.cc-gi, .cc-chip, .cc-gs-play ...) can set its own colour */
+.cc svg { width: 20px; height: 20px; display: block; }
+
+.cc-box { background: var(--cc-bg); border: 1px solid var(--cc-border); border-radius: 22px; transition: border-color .15s, box-shadow .15s; }
+.cc-box:focus-within { border-color: color-mix(in srgb, var(--cc-accent) 55%, var(--cc-border)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cc-accent) 14%, transparent); }
+.cc.cc-disabled { opacity: .6; pointer-events: none; }
+
+/* status line */
+.cc-status { display: flex; align-items: center; gap: 10px; justify-content: space-between; margin-bottom: 8px; padding: 8px 12px; border: 1px solid var(--cc-border); border-radius: 12px; background: var(--cc-panel); font-size: 12.5px; }
+.cc-chip { border: 0; border-radius: 9px; padding: 6px 12px; font-size: 12.5px; cursor: pointer; background: var(--cc-hover); color: var(--cc-text); }
+.cc-chip:hover { filter: brightness(.96); }
+.cc-chip:disabled { opacity: .6; cursor: default; }
+.cc-chip.cc-primary { background: var(--cc-accent); color: var(--cc-accent-ink); }
+
+/* attachments */
+.cc-atts { display: flex; gap: 8px; overflow-x: auto; padding: 12px 12px 0; }
+.cc-att { position: relative; flex: 0 0 auto; width: 64px; height: 64px; border-radius: 12px; border: 1px solid var(--cc-border); overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--cc-hover); color: var(--cc-muted); }
+.cc-att img, .cc-att video { width: 100%; height: 100%; object-fit: cover; }
+.cc-att-ic svg { width: 22px; height: 22px; }
+.cc-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 3px; background: rgb(0 0 0 / .55); color: #fff; font-size: 8px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-rm { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border: 0; border-radius: 50%; background: rgb(0 0 0 / .62); color: #fff; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.cc-rm svg { width: 10px; height: 10px; }
+.cc-badge { position: absolute; left: 0; right: 0; top: 0; border: 0; background: rgb(0 0 0 / .68); color: #fff; font-size: 8px; padding: 2px; cursor: pointer; }
+.cc-album { flex: 0 0 auto; align-self: center; font-size: 11px; color: var(--cc-muted); white-space: nowrap; }
+
+/* text */
+.cc-text { display: block; width: 100%; resize: none; border: 0; background: transparent; padding: 12px 16px; font: inherit; font-size: 15px; line-height: 24px; color: var(--cc-text); max-height: none; outline: none; box-shadow: none; appearance: none; -webkit-appearance: none; overflow-y: hidden; }
+.cc-text:focus { outline: none; box-shadow: none; }
+.cc-text::placeholder { color: var(--cc-muted); }
+.cc-hint { display: flex; align-items: center; gap: 8px; margin: 0 16px 6px; font-size: 12px; color: var(--cc-muted); }
+.cc-warn { display: inline-flex; align-items: center; gap: 6px; }
+.cc-warn svg { width: 14px; height: 14px; color: #d97706; }
+
+/* panels */
+.cc-panel { margin: 0 12px 8px; border: 1px solid var(--cc-border); border-radius: 14px; padding: 10px; background: var(--cc-panel); }
+.cc-search { display: flex; align-items: center; gap: 6px; border: 1px solid var(--cc-border); border-radius: 10px; padding: 6px 9px; margin-bottom: 8px; color: var(--cc-muted); }
+.cc-search svg { width: 14px; height: 14px; flex: none; }
+.cc-search input { border: 0; background: transparent; outline: 0; font-size: 13px; color: var(--cc-text); width: 100%; box-shadow: none; padding: 0; }
+.cc-etabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--cc-border); padding-bottom: 6px; margin-bottom: 6px; }
+.cc-etab { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 9px; border: 0; background: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--cc-muted); }
+.cc-etab svg { width: 16px; height: 16px; }
+.cc-etab:hover, .cc-etab.cc-active { background: var(--cc-hover); color: var(--cc-text); }
+.cc-egrid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; max-height: 200px; overflow-y: auto; }
+.cc-egrid button { background: none; border: 0; font-size: 20px; height: 34px; border-radius: 8px; cursor: pointer; padding: 0; }
+.cc-egrid button:hover { background: var(--cc-hover); }
+.cc-empty { grid-column: 1 / -1; text-align: center; color: var(--cc-muted); font-size: 12px; padding: 14px 0; }
+.cc-label { font-size: 11px; color: var(--cc-muted); margin: 0 0 8px 2px; display: flex; justify-content: space-between; align-items: center; }
+.cc-link { border: 0; background: none; color: var(--cc-accent); font-size: 11px; cursor: pointer; padding: 0 2px; }
+.cc-rbrowse { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: 1px dashed var(--cc-border); color: var(--cc-muted); font-size: 10px; }
+.cc-rbrowse span { font-size: 10px; }
+.cc-rbrowse svg { width: 20px; height: 20px; }
+.cc-rempty { align-self: center; font-size: 12px; color: var(--cc-muted); padding: 0 6px; white-space: nowrap; }
+
+/* attach sheet */
+.cc-recent { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--cc-border); }
+.cc-rthumb { position: relative; flex: 0 0 auto; width: 58px; height: 58px; border-radius: 10px; border: 0; cursor: pointer; overflow: hidden; background-size: cover; background-position: center; background-color: var(--cc-hover); padding: 0; }
+.cc-rthumb.cc-sel::after { content: ''; position: absolute; inset: 0; background: color-mix(in srgb, var(--cc-accent) 55%, transparent); }
+.cc-rthumb.cc-hit { outline: 2px solid var(--cc-accent); outline-offset: -2px; }
+.cc-sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.cc-sheet-item { display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: 0; cursor: pointer; padding: 6px 2px; border-radius: 10px; }
+.cc-sheet-item:hover { background: var(--cc-hover); }
+.cc-sheet-ic { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
+.cc-sheet-item > span:last-child { font-size: 11px; color: var(--cc-muted); text-align: center; }
+.cc-k-media { background: #7c3aed; } .cc-k-camera { background: #ec4899; } .cc-k-video { background: #f97316; } .cc-k-document { background: #0ea5e9; }
+.cc-k-audio { background: #f59e0b; } .cc-k-location { background: #16a34a; } .cc-k-contact { background: #0891b2; } .cc-k-poll { background: #6366f1; }
+
+/* mini forms / dialog / primer */
+.cc-form { display: flex; flex-direction: column; gap: 8px; }
+.cc-form select { color-scheme: light; }
+.dark .cc-form select { color-scheme: dark; }
+.cc-form input, .cc-dinput, .cc-form select { border: 1px solid var(--cc-border); border-radius: 9px; padding: 7px 10px; font-size: 13px; background: transparent; color: var(--cc-text); width: 100%; }
+.cc-form input:focus, .cc-dinput:focus { outline: 0; border-color: var(--cc-accent); box-shadow: none; }
+.cc-poll-opts { display: flex; flex-direction: column; gap: 6px; }
+.cc-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.cc-dtitle { font-weight: 600; font-size: 13px; margin-bottom: 8px; }
+.cc-dinput { margin-bottom: 4px; }
+.cc-primer { display: flex; gap: 12px; align-items: flex-start; }
+.cc-primer-ic { flex: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--cc-accent) 15%, transparent); color: var(--cc-accent); }
+.cc-primer-ic svg { width: 16px; height: 16px; }
+.cc-primer-txt { display: flex; flex-direction: column; gap: 2px; font-size: 13px; min-width: 0; }
+.cc-primer-txt span { color: var(--cc-muted); font-size: 12px; }
+
+/* GIFs */
+.cc-gtools { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.cc-ggrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: min(260px, 36dvh); overflow-y: auto; overscroll-behavior: contain; }
+.cc-shelves { display: flex; gap: 6px; margin-bottom: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.cc-shelves::-webkit-scrollbar { display: none; }
+.cc-shelf { flex: none; border: 0; border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; color: var(--cc-text); background: var(--cc-hover); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-shelf.is-on { color: var(--cc-accent-ink); background: var(--cc-accent); box-shadow: none; }
+.cc-shelf:focus-visible { outline: 2px solid var(--cc-accent); outline-offset: 2px; }
+.cc-gcell { position: relative; aspect-ratio: 1; border-radius: 9px; overflow: hidden; cursor: pointer; background: var(--cc-hover); }
+.cc-gcell img { width: 100%; height: 100%; object-fit: cover; }
+.cc-gcell b { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 5px 3px; font-size: 10px; font-weight: 600; color: #fff; background: linear-gradient(transparent, rgb(0 0 0 / .72)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-gi { position: absolute; top: 3px; width: 22px; height: 22px; border: 0; border-radius: 50%; background: rgb(0 0 0 / .6); color: #fff; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
+.cc-gi svg { width: 11px; height: 11px; } .cc-gl { left: 3px; } .cc-gr { right: 3px; }
+.cc-gthumbs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 8px; }
+.cc-gthumbs img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; flex: none; }
+.cc-grow { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--cc-muted); margin: 6px 0; }
+.cc-grow input[type=range] { flex: 1; }
+.cc-gvideo { width: 100%; max-height: 170px; border-radius: 8px; background: #000; }
+
+/* controls */
+.cc-controls { display: flex; align-items: center; gap: 2px; padding: 4px 8px 8px; }
+.cc-btn { width: 38px; height: 38px; border-radius: 50%; border: 0; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--cc-muted); flex: 0 0 auto; }
+.cc-btn:hover, .cc-btn.cc-active { background: var(--cc-hover); color: var(--cc-text); }
+.cc-btn:focus-visible, .cc-send:focus-visible, .cc-gifbtn:focus-visible, .cc-chip:focus-visible, .cc-pill:focus-visible { outline: 2px solid var(--cc-accent); outline-offset: 2px; }
+.cc-gifbtn { height: 36px; padding: 0 10px; border-radius: 18px; border: 0; background: none; cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: .02em; color: var(--cc-muted); }
+.cc-gifbtn:hover, .cc-gifbtn.cc-active { background: var(--cc-hover); color: var(--cc-text); }
+.cc-spacer { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+.cc-spacer .cc-btn[data-r="micBtn"] { animation: cc-breathe 2.4s ease-in-out infinite; }
+.cc-spacer .cc-btn[data-r="micBtn"]:hover { animation: none; }
+@keyframes cc-breathe { 50% { opacity: .55; } }
+.cc-send { position: relative; width: 38px; height: 38px; border-radius: 50%; border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgb(var(--nx-surface-3, 226 232 240)); color: rgb(var(--nx-text, 15 23 42)); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-edge, var(--nx-line-strong, 100 116 139))); transition: background .15s, color .15s, box-shadow .15s, transform .15s; flex: 0 0 auto; padding: 0; }   /* idle: a clearly visible ring button (icon >= 4.5:1, ring >= 3:1) in every skin and mode, never a faint grey disc */
+.cc-send svg { width: 17px; height: 17px; }
+.cc-send.cc-ready { background: color-mix(in srgb, var(--cc-accent) 76%, #000); color: #fff; box-shadow: 0 6px 16px -8px var(--cc-accent); transform: scale(1.04); }   /* ready: the accent pulled toward black so the white arrow holds 4.5:1 on any skin accent */
+.cc-send:disabled { cursor: default; }
+/* Idle (nothing typed) send button: it used to be a grey disc with a grey arrow (about 1.6:1), which read as broken. It now has an accent-tinted disc, an accent ring and a
+   full-strength icon, so it stays clearly visible in light and dark while still reading as "not ready yet" next to the solid accent .cc-ready state. */
+.cc-send:not(.cc-ready) { background: color-mix(in srgb, var(--cc-accent) 20%, transparent); color: var(--cc-text); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cc-accent) 80%, transparent); }
+.cc-send:not(.cc-ready) svg { stroke-width: 2.4; }
+.cc-send .cc-ring { position: absolute; inset: 0; width: 38px; height: 38px; transform: rotate(-90deg); }
+.cc-ring circle { fill: none; stroke: #fff; stroke-width: 2.5; stroke-dasharray: 100.5; animation: cc-count var(--cc-undo, 3s) linear forwards; }
+@keyframes cc-count { to { stroke-dashoffset: 100.5; } }
+.cc-undo-x { position: relative; display: flex; }
+.cc-undo-x svg { width: 13px; height: 13px; }
+@media (prefers-reduced-motion: reduce) { .cc-spacer .cc-btn[data-r="micBtn"] { animation: none; } }
+
+/* voice: a stage for the waveform. Live scrolling bars while recording, the whole note + scrub playhead while paused, dancing bars while it plays. */
+.cc-voice { display: flex; flex-direction: column; padding: 10px 14px 12px; gap: 6px; }
+.cc-vtop { display: flex; align-items: center; gap: 8px; }
+.cc-vdot { width: 10px; height: 10px; border-radius: 50%; background: var(--cc-danger); box-shadow: 0 0 0 0 color-mix(in srgb, var(--cc-danger) 55%, transparent); animation: cc-rec 1.4s ease-out infinite; flex: none; }
+.cc-paused .cc-vdot { animation: none; background: var(--cc-muted); box-shadow: none; }
+@keyframes cc-rec { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cc-danger) 55%, transparent); } 70%, 100% { box-shadow: 0 0 0 9px transparent; } }
+.cc-vtimer { font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 700; letter-spacing: .01em; color: var(--cc-text); min-width: 52px; }
+.cc-vtimer.cc-warn { color: #b45309; }
+.dark .cc-vtimer.cc-warn { color: #fbbf24; }
+.cc-vstate { font-size: 12.5px; font-weight: 600; color: var(--cc-muted); margin-inline-end: auto; }
+.cc-vstagebox { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 18px; background: color-mix(in srgb, var(--cc-accent) 9%, var(--cc-hover)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cc-accent) 22%, transparent); }
+.cc .cc-vplay { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; background: var(--cc-accent); color: #fff; padding: 0; box-shadow: 0 2px 8px color-mix(in srgb, var(--cc-accent) 45%, transparent); }
+.cc-vplay svg { width: 16px; height: 16px; }
+.cc-vwave { position: relative; flex: 1; min-width: 0; height: 56px; }
+.cc-vcanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: default; }
+.cc-paused .cc-vcanvas { cursor: pointer; }
+.cc-vrow { display: flex; align-items: center; gap: 9px; }
+.cc-vrow2 { gap: 10px; margin: 2px 0 0; }
+.cc-speed { flex: 0 0 auto; min-width: 38px; height: 28px; border-radius: 14px; border: 1px solid var(--cc-border); background: var(--cc-hover); font-size: 11.5px; font-weight: 700; color: var(--cc-text); cursor: pointer; padding: 0 8px; }
+.cc-vcap { min-height: 18px; margin: 0; font-size: 12.5px; color: var(--cc-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-vtrash { width: 42px; height: 42px; border-radius: 50%; background: color-mix(in srgb, var(--cc-danger) 14%, transparent); }
+.cc-vsend { width: 46px; height: 46px; }
+.cc-vsend svg { width: 20px; height: 20px; }
+@media (prefers-reduced-motion: reduce) { .cc-vdot { animation: none; } }
+.cc-pill { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 23px; border: 0; background: var(--cc-hover); color: var(--cc-text); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s, color .15s; }
+.cc-pill.cc-resume { background: var(--cc-accent); color: #fff; }
+.cc-pill svg { width: 16px; height: 16px; }
+.cc-danger { color: var(--cc-danger); }
+
+/* field mode: a plain bordered text area (the host owns the Send button) */
+.cc[data-mode="field"] .cc-box { border-radius: 14px; }
+.cc[data-mode="field"] .cc-controls { padding-top: 0; }
+
+/* bare: a host that already draws its own frame/focus treatment (e.g. the NaaraCare glow) */
+.cc-bare .cc-box, .cc-bare .cc-box:focus-within { border-color: transparent; box-shadow: none; }
+
+/* Under a skin the composer wears the skin: surfaces, hairlines, ink, action colour, corner radius and elevation all come from the
+   --nx-* tokens, so every skin restyles it (and a theme/skin change needs no composer code). Loaded after the base rules above. */
+html[data-nx-skin] .cc {
+    --cc-accent: rgb(var(--nx-cta-b)); --cc-accent-ink: #fff;
+    --cc-bg: rgb(var(--nx-surface-2)); --cc-panel: rgb(var(--nx-surface)); --cc-border: rgb(var(--nx-line-strong) / .5);
+    --cc-text: rgb(var(--nx-text)); --cc-muted: rgb(var(--nx-text-2)); --cc-hover: rgb(var(--nx-surface-3)); --cc-danger: rgb(var(--nx-bad));
+}
+html[data-nx-skin] .cc-box { border-radius: max(14px, calc(var(--nx-r-card) * var(--nx-rs) * 1.4)); box-shadow: inset 0 1px 0 rgb(var(--nx-hi) / .08), var(--nx-e1); }
+html[data-nx-skin] .cc-box:focus-within { border-color: rgb(var(--nx-teal)); box-shadow: 0 0 0 3px rgb(var(--nx-teal) / .22), var(--nx-e1); }
+html[data-nx-skin] .cc-panel { border-radius: max(10px, calc(var(--nx-r-row) * var(--nx-rs))); }
+
+/* ---- Text styles panel (opt-in `format` feature): toolbar, "turn into" tiles, banner swatches. Tokens come from the --cc-* mapping above. ---- */
+.cc-fmt { display: grid; gap: 8px; max-height: 45dvh; overflow-y: auto; overscroll-behavior: contain; }
+.cc-fmt-row { display: flex; gap: 6px; }
+.cc-fmt-b { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 12px; cursor: pointer; background: var(--cc-hover); color: var(--cc-text); }
+.cc-fmt-b:hover, .cc-fmt-tile:hover .cc-fmt-ic { filter: brightness(.94); }
+.cc-fmt-g { font-weight: 800; font-size: 15px; line-height: 1; }
+.cc-fmt-b.cc-i .cc-fmt-g { font-style: italic; font-family: Georgia, serif; }
+.cc-fmt-b.cc-s .cc-fmt-g { text-decoration: line-through; }
+.cc-fmt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cc-fmt-tile { display: grid; justify-items: center; gap: 4px; padding: 0; border: 0; background: none; cursor: pointer; }
+.cc-fmt-ic { width: 100%; height: 46px; display: grid; place-items: center; border-radius: 12px; background: var(--cc-hover); color: var(--cc-text); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-fmt-ic svg { width: 22px; height: 22px; }
+.cc-fmt-l { font-size: 11px; color: var(--cc-muted); }
+.cc-fmt-banners { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cc-fmt-banner { position: relative; display: grid; gap: 3px; justify-items: stretch; padding: 8px 8px 6px; border: 0; border-radius: 12px; cursor: pointer; text-align: start; background: var(--cc-hover); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-fmt-banner i { display: block; height: 5px; border-radius: 3px; background: var(--cc-border); }
+.cc-fmt-banner i:first-child { height: 9px; background: var(--bn, #888); }
+.cc-fmt-banner span { margin-top: 3px; font-size: 11px; color: var(--cc-muted); }
+.cc-bn-red { --bn: #e5484d; } .cc-bn-orange { --bn: #f76b15; } .cc-bn-yellow { --bn: #f5c518; } .cc-bn-blue { --bn: #1f8bff; }
+.cc-bn-purple { --bn: #7c5cf0; } .cc-bn-pink { --bn: #e93d82; } .cc-bn-green { --bn: #2fa66a; } .cc-bn-grey { --bn: #8b8d98; }
+.cc-fmt-hint { font-size: 11.5px; color: var(--cc-muted); }
+/* Phones: a compact style bar, so the sheet stays under ~45% of the screen and the editor remains visible above the keyboard. */
+@media (max-width: 640px) {
+  .cc-fmt { gap: 6px; padding: 8px; margin-bottom: 4px; border-radius: 18px 18px 14px 14px; }
+  .cc-fmt-row { overflow-x: auto; scrollbar-width: none; }
+  .cc-fmt-b { width: 36px; height: 36px; flex: none; }
+  .cc-fmt-grid, .cc-fmt-banners { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
+  .cc-fmt-ic { height: 36px; }
+  .cc-fmt-ic svg { width: 18px; height: 18px; }
+  .cc-fmt-banner { padding: 6px; }
+  .cc-fmt-hint { display: none; }
+}
+
+/* Plan-locked controls: visible, never hidden, with a small padlock. */
+.cc-locked { position: relative; }
+.cc-lockic { position: absolute; top: -3px; inset-inline-end: -3px; width: 15px; height: 15px; display: grid; place-items: center; border-radius: 50%; background: var(--cc-panel); color: var(--cc-muted); box-shadow: 0 0 0 1px var(--cc-border); }
+.cc-lockic svg { width: 9px; height: 9px; }
+.cc-sheet-ic { position: relative; }
+.cc-sheet-item.cc-locked .cc-sheet-ic { opacity: .72; }
+.cc-sheet-item.cc-locked .cc-lockic { top: -2px; inset-inline-end: -2px; width: 18px; height: 18px; }
+.cc-sheet-item.cc-locked .cc-lockic svg { width: 11px; height: 11px; }
+.cc-poll-multi { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--cc-text); margin: 2px 0 4px; }
+
+/* ===== GIF Studio (video -> GIF): filmstrip timeline, live framed view, frame stepping, real-time range loop ===== */
+.cc-gs { display: grid; gap: 10px; }
+.cc-gs-msg { padding: 8px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.4; color: var(--cc-text); background: color-mix(in srgb, var(--cc-danger) 14%, var(--cc-panel)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cc-danger) 45%, transparent); }
+.cc-gs-stage { position: relative; display: grid; place-items: center; min-height: 120px; max-height: 300px; border-radius: 14px; overflow: hidden; background: #000; outline: none; }
+.cc-gs-stage:focus-visible { box-shadow: 0 0 0 2px var(--cc-accent); }
+.cc-gs-view { display: block; max-width: 100%; max-height: 300px; width: auto; height: auto; }
+.cc-gs-tag { position: absolute; inset-inline-start: 8px; inset-block-end: 8px; padding: 2px 8px; border-radius: 99px; font: 600 11.5px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #fff; background: rgb(0 0 0 / .7); }
+.cc-gs-ctl { display: flex; align-items: center; gap: 8px; }
+.cc-gs-sp { flex: 1; }
+.cc-gs-ib { width: 40px; height: 40px; flex: none; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: var(--cc-text); background: var(--cc-hover); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-gs-ib svg { width: 18px; height: 18px; }
+.cc-gs-ib:hover { filter: brightness(.96); }
+.cc-gs-play { background: var(--cc-accent); color: var(--cc-accent-ink); box-shadow: none; }
+/* The play / pause icon must always read against the accent disc, whatever skin rule colours buttons or svgs around it (checked in every skin by tests/visual/skins/gs-play-contrast.cjs). */
+.cc .cc-gs-ib.cc-gs-play, .cc .cc-gs-ib.cc-gs-play svg, .cc .cc-gs-ib.cc-gs-play svg * { color: var(--cc-accent-ink, #fff); stroke: var(--cc-accent-ink, #fff); }
+.cc .cc-gs-ib.cc-gs-play svg path[fill="currentColor"] { fill: var(--cc-accent-ink, #fff); }
+.cc-gs-change { display: inline-flex; align-items: center; gap: 6px; }
+.cc-gs-change svg { width: 15px; height: 15px; }
+.cc-gs button:focus-visible, .cc-gs .cc-gs-h:focus-visible { outline: 2px solid var(--cc-accent); outline-offset: 2px; }
+/* timeline */
+.cc-gs-strip { position: relative; height: 54px; border-radius: 10px; background: #111; touch-action: none; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.cc-gs-thumbs { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 10px; }
+.cc-gs-shade { position: absolute; top: 0; bottom: 0; background: rgb(0 0 0 / .62); pointer-events: none; }
+.cc-gs-range { position: absolute; top: 0; bottom: 0; border-block: 3px solid var(--cc-accent); pointer-events: none; box-sizing: border-box; }
+.cc-gs-head { position: absolute; top: -3px; bottom: -3px; width: 3px; margin-inline-start: -1.5px; border-radius: 2px; background: #fff; box-shadow: 0 0 0 1px rgb(0 0 0 / .55); pointer-events: none; }
+.cc-gs-h { position: absolute; top: -3px; bottom: -3px; width: 18px; display: grid; place-items: center; cursor: ew-resize; background: var(--cc-accent); color: var(--cc-accent-ink); touch-action: none; }
+.cc-gs-h0 { margin-inline-start: -18px; border-radius: 9px 0 0 9px; } .cc-gs-h1 { border-radius: 0 9px 9px 0; }
+.cc-gs-h b { display: block; width: 3px; height: 18px; border-radius: 2px; background: currentColor; }
+.cc-gs-read { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.cc-gs-read div { display: grid; gap: 1px; padding: 6px 8px; border-radius: 10px; background: var(--cc-hover); }
+.cc-gs-read span { font-size: 11px; color: var(--cc-muted); }
+.cc-gs-read b { font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--cc-text); overflow-wrap: anywhere; }
+.cc-gs-now { display: flex; gap: 8px; flex-wrap: wrap; }
+.cc-gs-opts { display: grid; gap: 8px; }
+.cc-gs-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cc-gs-lab { flex: none; min-width: 5.5rem; font-size: 12px; font-weight: 600; color: var(--cc-muted); }
+.cc-gs-seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 3px; border-radius: 12px; background: var(--cc-hover); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-gs-seg button, .cc-gs-tg { border: 0; border-radius: 9px; padding: 6px 11px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--cc-text); background: transparent; }
+.cc-gs-seg button.is-on, .cc-gs-tg.is-on { color: var(--cc-accent-ink); background: var(--cc-accent); }
+.cc-gs-tg { background: var(--cc-hover); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-gs-tgs { gap: 8px; }
+.cc-gs-est { font-size: 12px; color: var(--cc-muted); }
+.cc-gs-bar { height: 8px; border-radius: 99px; overflow: hidden; background: var(--cc-hover); box-shadow: inset 0 0 0 1px var(--cc-border); }
+.cc-gs-bar i { display: block; height: 100%; width: 0; background: var(--cc-accent); transition: width .12s linear; }
+.cc-gs-out { display: grid; justify-items: center; gap: 6px; padding: 10px; border-radius: 14px; background: var(--cc-hover); }
+.cc-gs-out img { display: block; max-width: 100%; max-height: 260px; border-radius: 10px; }
+.cc-gs-outcap { font-size: 12.5px; font-weight: 600; color: var(--cc-text); }
+.cc-gs-ib:disabled, .cc-gs .cc-chip:disabled { opacity: .6; cursor: default; }
+@media (max-width: 520px) { .cc-gs-read { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cc-gs-lab { min-width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .cc-gs-bar i { transition: none; } }
+.cc-gmaker { max-height: min(74dvh, 700px); overflow-y: auto; overscroll-behavior: contain; }
+.cc-gs-foot { position: sticky; bottom: 0; z-index: 2; display: grid; gap: 8px; margin-inline: -2px; padding: 10px 2px 2px; background: var(--cc-panel); box-shadow: 0 -10px 12px -8px color-mix(in srgb, var(--cc-text) 14%, transparent); }
+.cc-gs-foot .cc-form, .cc-gs-foot .cc-actions { margin: 0; }
+@media (max-height: 760px), (max-width: 520px) { .cc-gs-stage { max-height: min(190px, 24dvh); min-height: 96px; } .cc-gs-view { max-height: min(190px, 24dvh); } .cc-gmaker { max-height: min(78dvh, 700px); } .cc-gs-read div { padding: 4px 8px; } }
+
+/* The standalone GIF maker (admin GIF library): the empty state before a video is chosen. */
+.cc-gmk-start { display: grid; justify-items: start; gap: 10px; }
+.cc-gmk-note { margin: 0; color: var(--cc-muted); font-size: 13px; }
+
+/* Composer extras (Gestures G4): send menu, slash and emoji suggestions, full-screen compose, shortcut sheet, hold-to-record hint. */
+.cc-sendmenu { position: absolute; inset-inline-end: 8px; bottom: calc(100% + 6px); z-index: 30; min-width: 14rem; padding: 6px; background: var(--cc-panel); border: 1px solid var(--cc-border); border-radius: 16px; box-shadow: 0 14px 34px rgb(0 0 0 / .22); display: grid; gap: 2px; }
+.cc-sendmenu[hidden] { display: none; }
+.cc-smi { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--cc-text); font-size: 14px; text-align: start; cursor: pointer; }
+.cc-smi svg { width: 18px; height: 18px; flex: none; color: var(--cc-muted); }
+.cc-smi:hover:not(:disabled), .cc-smi:focus-visible, .cc-smc:hover:not(:disabled), .cc-smc:focus-visible { background: var(--cc-hover); outline: none; }
+.cc-sendmenu button:disabled { opacity: .45; cursor: default; }
+.cc-smg { padding: 4px 4px 6px; }
+.cc-smt { display: flex; align-items: center; gap: 10px; padding: 6px 8px; font-size: 12.5px; color: var(--cc-muted); }
+.cc-smt svg { width: 16px; height: 16px; }
+.cc-smr { display: flex; gap: 6px; padding: 0 6px; }
+.cc-smc { flex: 1; padding: 8px 6px; border: 1px solid var(--cc-border); border-radius: 10px; background: transparent; color: var(--cc-text); font-size: 13px; cursor: pointer; }
+.cc-suggest { margin-bottom: 6px; max-height: 15rem; overflow: auto; background: var(--cc-panel); border: 1px solid var(--cc-border); border-radius: 14px; box-shadow: 0 10px 28px rgb(0 0 0 / .16); padding: 4px; }
+.cc-suggest[hidden] { display: none; }
+.cc-sgi { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-size: 14px; }
+.cc-sgi.is-on, .cc-sgi:hover { background: var(--cc-hover); }
+.cc-sgk { font-weight: 700; color: var(--cc-accent); min-width: 5.2rem; }
+.cc-sgl { color: var(--cc-muted); }
+.cc-sge { font-size: 20px; line-height: 1; width: 1.6rem; text-align: center; }
+.cc-handle { display: flex; justify-content: center; padding: 6px 0 0; touch-action: none; cursor: ns-resize; }
+.cc-handle i { width: 34px; height: 4px; border-radius: 4px; background: var(--cc-border); }
+.cc-expand { position: absolute; inset-inline-end: 10px; top: 6px; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--cc-muted); cursor: pointer; }
+.cc-expand:hover, .cc-expand:focus-visible { background: var(--cc-hover); outline: none; }
+.cc.cc-expanded { position: fixed; inset: 0; z-index: 70; padding: 12px; display: flex; flex-direction: column; background: var(--cc-bg); }
+.cc.cc-expanded .cc-box { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.cc.cc-expanded .cc-text { flex: 1; min-height: 40vh; max-height: none; height: auto !important; resize: none; }
+body:has(.cc.cc-expanded) .nn__head, body:has(.cc.cc-expanded) .nn__bar { visibility: hidden; }   /* full-screen compose owns the whole screen; the shell header must not sit over its collapse button */
+.cc-noscroll { overflow: hidden; }
+.cc-holdhint { display: flex; justify-content: space-between; gap: 12px; padding: 8px 14px; margin-top: 6px; border-radius: 12px; background: var(--cc-hover); color: var(--cc-muted); font-size: 12.5px; transition: background .15s, color .15s; }
+.cc-holdhint.is-cancel { background: color-mix(in srgb, var(--cc-danger) 16%, transparent); color: var(--cc-danger); }
+.cc-keys { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: rgb(0 0 0 / .45); padding: 16px; }
+.cc-keys-in { width: min(26rem, 100%); background: var(--cc-panel, #fff); color: var(--cc-text, #0f172a); border-radius: 18px; padding: 18px; box-shadow: 0 24px 60px rgb(0 0 0 / .35); }
+.cc-keys-in b { display: block; margin-bottom: 10px; font-size: 16px; }
+.cc-keys-in dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 14px; margin: 0 0 14px; font-size: 14px; }
+.cc-keys-in dd { margin: 0; color: var(--cc-muted, #64748b); }
+.cc-keys-in kbd { font: inherit; font-size: 12px; padding: 2px 8px; border-radius: 7px; border: 1px solid var(--cc-border, #e2e8f0); background: var(--cc-hover, #f1f5f9); }
+.dark .cc-keys-in { --cc-panel: #1b2a44; --cc-text: #f1f5f9; --cc-muted: #94a3b8; --cc-border: rgb(255 255 255 / .1); --cc-hover: rgb(255 255 255 / .07); }
+@media (prefers-reduced-motion: reduce) { .cc-holdhint { transition: none; } }

@@ -1,0 +1,65 @@
+/* NaaraCare "Nia" brand glow (BUILD-3 §5) — a rotating conic-gradient halo used
+   ONLY on the Nia chat input and Nia's AI/typing bubbles. Not on search, login,
+   signup, forms, filters, admin inputs, or the Wizard.
+
+   The three colours are pulled from the main Naara brand gradient:
+     --nia-glow-1  Deep Teal   #0A6E6E  (brand primary)
+     --nia-glow-2  Warm Gold   #D4A017  (brand accent)
+     --nia-glow-3  Bright Teal #2dd4bf  (gradient highlight) */
+:root {
+    --nia-glow-1: #0A6E6E;
+    --nia-glow-2: #D4A017;
+    --nia-glow-3: #2dd4bf;
+}
+
+/* Animate the gradient ANGLE, not the element: rotating a wide, short pseudo-
+   element (the chat bar) swept its corners far outside the bar as a big slab. */
+@property --nia-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.nia-glow {
+    position: relative;
+    isolation: isolate;
+}
+
+/* The halo sits just behind the element, inheriting its rounded corners. It is
+   invisible until `.nia-glow--on` is added (focus / input / Nia typing), then
+   fades in over 300ms. The angle animation stays inside the element's own
+   bounds. */
+.nia-glow::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: inherit;
+    background: conic-gradient(from var(--nia-angle),
+        var(--nia-glow-1), var(--nia-glow-2), var(--nia-glow-3), var(--nia-glow-1));
+    filter: blur(8px);
+    opacity: 0;
+    transition: opacity 300ms ease;
+    animation: nia-glow-spin 4s linear infinite;
+    animation-play-state: paused; /* resumed only while visible + on-screen */
+    pointer-events: none;
+}
+
+.nia-glow.nia-glow--on::before {
+    opacity: 0.75;
+    animation-play-state: running;
+}
+
+/* Paused when scrolled off-screen (toggled by x-intersect) even if "on". */
+.nia-glow.nia-glow--offscreen::before {
+    animation-play-state: paused;
+}
+
+@keyframes nia-glow-spin {
+    to { --nia-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nia-glow::before { animation: none; }
+    .nia-glow.nia-glow--on::before { opacity: 0.6; }
+}

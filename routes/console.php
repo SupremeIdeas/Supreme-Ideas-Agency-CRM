@@ -1,0 +1,224 @@
+<?php
+
+use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+
+Artisan::command('inspire', function () {
+    $this->comment(Inspiring::quote());
+})->purpose('Display an inspiring quote');
+
+/*
+ | Scheduled tasks (blueprint Section 20). A single cron entry drives all of
+ | these on the server:
+ |   * * * * * cd /path && php artisan schedule:run >> /dev/null 2>&1
+ */
+
+// Shared-hosting queue drain (blueprint Section 20). On shared cPanel there is
+// no Redis and no long-running worker, so every external API job (money paths
+// included, money rule 8) sits in the `jobs` table until we drain it. The one
+// schedule:run cron above triggers this each minute; --stop-when-empty keeps it
+// short-lived so it never becomes a runaway process. On a VPS the queue is
+// Redis + Horizon, so this drain is skipped entirely.
+if (config('queue.default') === 'database') {
+    // --tries=1 is the safe floor: money jobs never blind-retry (money rule 7).
+    // Jobs that DO want retries opt in via their own $tries (e.g. the catalogue
+    // sync), which takes precedence over this worker default.
+    // Queues in priority order: money sends first, then Payout Guardian evaluations, then the rest.
+    Schedule::command('queue:work --queue=payouts,payout-guard,default --stop-when-empty --tries=1 --max-time=50')
+        ->everyMinute()
+        ->withoutOverlapping()
+        ->runInBackground();
+}
+
+// Payout engine safety (Addendum C fix A): resolve payouts whose provider outcome is
+// unknown by asking the PROVIDER — never by guessing. Cheap when idle.
+Schedule::command('payouts:reconcile-unknown')->everyTwoMinutes()->withoutOverlapping();
+if (class_exists(\App\Console\Commands\HandbooksSyncCommand::class)) {   // master-only
+    Schedule::command('handbooks:sync')->daily()->withoutOverlapping();
+}
+if (class_exists(\App\Console\Commands\HandbooksImportCommand::class)) {   // master-only: new seed-pack titles land on their own after a deploy
+    Schedule::command('handbooks:import', [database_path('seeders/handbooks'), '--missing-only', '--publish', '--refresh-files'])->hourly()->withoutOverlapping();
+}
+if (class_exists(\App\Console\Commands\HandbooksWatchDownloadsCommand::class)) {   // master-only
+    Schedule::command('handbooks:watch-downloads')->hourly()->withoutOverlapping();
+}
+if (class_exists(\App\Console\Commands\N2NPruneBrandVisits::class)) {   // master-only
+    Schedule::command('n2n:prune-brand-visits')->dailyAt('03:20')->withoutOverlapping();
+}
+Schedule::command('cookies:prune')->daily()->withoutOverlapping();   // consent proof older than the retention period
+if (class_exists(\App\Console\Commands\MessagingReconcileCommand::class)) {   // master-only; a fork without it schedules nothing
+    Schedule::command('messaging:reconcile')->hourly()->withoutOverlapping();
+}
+
+// Payout Guardian (Addendum C §6). The sweeper only CLAIMS and DISPATCHES; evaluation
+// runs on the `payout-guard` queue so a slow evaluation never blocks a scheduler tick.
+Schedule::command('payouts:guard-sweep')->everyMinute()->withoutOverlapping();
+Schedule::command('payouts:float-retry')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('payouts:float-sync')->everyThirtyMinutes()->withoutOverlapping();
+// Funding Radar (Addendum A): snapshot + hourly stats every 5 minutes, prune nightly.
+Schedule::command('payouts:radar-snapshot')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('payouts:stats-hourly')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('payouts:radar-alerts')->everyFiveMinutes()->withoutOverlapping();
+Schedule::command('payouts:guide-audit')->monthlyOn(1, '04:10')->withoutOverlapping();
+Schedule::command('payouts:radar-prune')->dailyAt('03:40')->withoutOverlapping();
+Schedule::command('payouts:peer-expire')->everyTenMinutes()->withoutOverlapping();
+Schedule::command('payouts:stuck-watchdog')->everyTenMinutes()->withoutOverlapping();
+Schedule::command('payouts:guard-metrics')->hourly()->withoutOverlapping();
+Schedule::command('payouts:trust-recompute')->dailyAt('03:20')->withoutOverlapping();
+Schedule::command('payouts:invariants-check')->dailyAt('03:40')->withoutOverlapping();
+Schedule::command('payouts:webhook-prune')->dailyAt('03:55')->withoutOverlapping();
+Schedule::command('payouts:guard-digest')->dailyAt('07:30')->withoutOverlapping();
+
+// Ping provider wallets and alert on low balance (Section 17.2).
+Schedule::command('providers:health-check')->everyFifteenMinutes()->withoutOverlapping();
+
+// Worker-layer watchdog (Platform Health): alerts admins if Redis/Horizon has
+// stopped processing jobs. Runs off the cron (independent of the queue it
+// watches) so it can still raise the alarm when the workers themselves are down.
+Schedule::command('ops:worker-health')->everyFiveMinutes()->withoutOverlapping();
+
+// NCI (NAARA-BUILD-16 §3.2): daily full recompute of every provider's score,
+// confidence and risk over the trailing window. Observational only.
+Schedule::command('nci:recompute')->dailyAt('02:15')->withoutOverlapping()->runInBackground();
+
+// BUILD-19 §4 — keep provider_outcomes bounded: prune rows past the 90-day
+// retention horizon weekly (NCI scores over 30d, the breaker over 24h, so
+// anything older is dead weight). Off-peak, withoutOverlapping, background.
+Schedule::command('nci:prune-outcomes')->weekly()->sundays()->at('02:40')->withoutOverlapping()->runInBackground();
+
+// Journey Engine J2: push/email protective alerts to users who opted in (a no-op until journey.delivery_enabled).
+Schedule::command('naara:journey:deliver')->hourly()->withoutOverlapping();
+
+// Charge permanent-number (Naara Line) monthly subscriptions + release lapsed ones.
+Schedule::command('virtual:renew')->dailyAt('04:00')->withoutOverlapping();
+
+// Refresh eSIM catalogues + recompute retail via the PricingEngine.
+Schedule::command('esim:sync')->dailyAt('03:00')->withoutOverlapping();
+
+// Connectivity Analytics (Part A): poll active eSIMs for a usage reading —
+// the interval is config-driven so it's tunable per environment without a
+// code change (config('esim.usage_sync_interval_minutes'), default 15).
+Schedule::command('esim:sync-usage')
+    ->everyMinute()
+    ->when(fn () => now()->minute % max(1, (int) config('esim.usage_sync_interval_minutes', 15)) === 0)
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// Keep esim_usage_snapshots bounded — prune past the retention window weekly.
+Schedule::command('esim:prune-usage-snapshots')->weekly()->sundays()->at('02:50')->withoutOverlapping();
+
+// Refresh the number country + service catalogue from the providers so the
+// storefront always lists everything they support (blueprint Section 12).
+Schedule::command('numbers:catalogue-sync')->weekly()->sundays()->at('03:30')->withoutOverlapping();
+
+// Nightly encrypted database backup + cleanup of old archives (Section 28).
+Schedule::command('backup:clean')->dailyAt('02:30')->withoutOverlapping();
+
+// GDPR erasure fix, stage 3: permanently purge accounts anonymized by
+// AccountService::erase() once their admin-configured retention window has
+// elapsed (Section 26 / erasure-fix Phase A). Off-peak, once a day is plenty.
+Schedule::command('account:purge-erased')->dailyAt('03:15')->withoutOverlapping();
+
+// Auto-promote eligible users to Merchant V1 — no-op unless the admin enabled it
+// (BUILD-4 §4.3; the default is the manual "Ready to promote" queue).
+Schedule::command('merchants:auto-promote')->dailyAt('05:00')->withoutOverlapping();
+
+// Recompute the volume-based payout-gateway ranking (BUILD-4 §8) — cached daily.
+Schedule::command('payouts:rank')->dailyAt('05:30')->withoutOverlapping();
+
+// Refresh live currency-display FX rates (localized pricing) — display only.
+Schedule::command('fx:sync')->dailyAt('05:00')->withoutOverlapping();
+Schedule::command('backup:run --only-db')->dailyAt('02:45')->withoutOverlapping();
+
+// Promote local platform media to Wasabi once cloud keys go live (no-ops
+// without keys, so it's safe to run hourly — the migration is automatic).
+Schedule::command('media:migrate-to-wasabi')->hourly()->withoutOverlapping();
+
+// Partner profit-share payouts — daily, but each partner is only paid when a
+// full weekly/monthly period has elapsed (idempotent per period).
+Schedule::command('partners:payout-run')->dailyAt('04:30')->withoutOverlapping();
+
+// Automatic recurring merchant + referral earnings payouts (BUILD-22 §6) —
+// staggered after the partner run. Each earner is paid their available balance
+// when a verified account exists and they haven't passed the free-payout KYC
+// threshold; idempotent (holds + unique reference).
+Schedule::command('payouts:earnings-run')->dailyAt('04:45')->withoutOverlapping();
+
+// Staff profit-share monthly close (BUILD-23 §3) — 1st of each month, quiet slot.
+// Computes the prior month's platform profit once and accrues each active staff
+// member's share; idempotent per profile+period.
+Schedule::command('staff:compensation-close')->monthlyOn(1, '03:15')->withoutOverlapping();
+
+// Merchant V2 client eSIM control: settle due auto-renewals, expire lapsed
+// subscriptions, and alert merchants about upcoming renewals (money-safe).
+Schedule::command('merchant:client-subscriptions')->dailyAt('05:35')->withoutOverlapping();
+
+// Naara Gift: sync the gift-card catalogue from every registered provider.
+Schedule::command('giftcards:sync')->dailyAt('03:15')->withoutOverlapping();
+
+// Naara Gift: recover an order stuck 'processing' because its provider's
+// async-delivery webhook never arrived — polls the real order-status
+// endpoint (Reloadly/Bitrefill/Tillo) rather than leaving the buyer's
+// receipt screen stuck forever on a dropped webhook.
+Schedule::command('giftcards:reconcile-processing')->everyFifteenMinutes()->withoutOverlapping();
+
+// Brand Directory (BUILD-9 §5.2/§6): charge due brand-listing subscriptions,
+// pause short ones, and update follower-guarantee priority scores. runInBackground
+// because this scales with subscriber count (real per-subscription computation)
+// and must never block the per-minute queue:work tick. The command itself processes
+// in chunks so its runtime stays flat. 05:45 sits just after the payout ranking
+// (05:30) and the merchant sweep (05:35), clear of every other slot in the
+// staggered window.
+Schedule::command('brand-subscriptions:bill')->dailyAt('05:45')->withoutOverlapping()->runInBackground();
+// Prompt 21-EXT2 §6: complete an in_progress white-label project intake once
+// its admin-set deploy timeline has elapsed, and email the merchant.
+Schedule::command('whitelabel:intake-deploy-check')->dailyAt('06:00')->withoutOverlapping();
+
+// Content/billing/hot-menu blueprint Phase F2: Basic-to-Extended installment
+// upgrades — advance notice, then attempt the charge once an admin-confirmed
+// deadline arrives (owner decision on a missed deadline: revert to standard
+// Basic terms, handled inside the command/service — never a silent stall).
+Schedule::command('white-label:upgrade-installments')->dailyAt('06:05')->withoutOverlapping();
+
+// Oversight/Withdrawal blueprint Phase E2: Claude's advisory cross-check on
+// every escalated (pending) KYC submission — attaches reasoning for the
+// human reviewer, never decides anything itself. "Every 2 days" via cron's
+// day-of-month step (0 3 */2 * *): this restarts at day 1 on each new month,
+// so the gap between the last odd day of a 31-day month and the 1st is a
+// single day rather than two — an accepted approximation, since cron has no
+// true "every N days" continuous concept and this command is fully idempotent
+// (whereNull('ai_assessed_at')) regardless of how often it fires.
+Schedule::command('kyc:cross-check')->cron('0 3 */2 * *')->withoutOverlapping();
+
+// Tier 5 #14 (Provider Capability Radar, master-only): watches each
+// registered provider's changelog/spec/response-shape for real capability
+// changes and turns a genuine diff into a reviewable proposal — never on a
+// fixed schedule regardless of whether anything changed (Claude is only
+// called when a hash comparison actually detects a change). Not time-critical.
+Schedule::command('provider:capability-scan')->dailyAt('06:10')->withoutOverlapping();
+
+// API version-watch (Updater, master-only): is any provider announcing a newer API version, a Deprecation header or a Sunset date? Read-only, queued.
+if (class_exists(\App\Console\Commands\ProviderApiWatchCommand::class)) {
+    Schedule::command('provider:api-watch')->dailyAt('06:40')->withoutOverlapping();
+}
+
+// NaaraBusiness Suite (master-only; absent from a white-label install): pay the monthly NaaraCredit refill a Naara Pro plan includes. Idempotent per owner
+// per calendar month, so a daily run is safe and a missed day is caught up the next one.
+if (class_exists(\App\Console\Commands\BusinessRefillCredits::class)) {
+    Schedule::command('business:refill-credits')->dailyAt('03:25')->withoutOverlapping();
+}
+
+// NaaraBrain Sprint 0 (master-only): trim the AI usage log (numbers only) past its retention window.
+if (class_exists(\App\Console\Commands\AiPruneUsage::class)) {
+    Schedule::command('ai:prune-usage')->dailyAt('03:50')->withoutOverlapping();
+}
+
+// Engineering blueprint Phase 0: keep browser error reports for 30 days, and run every verify check once a day.
+Schedule::command('client-errors:prune')->dailyAt('03:55')->withoutOverlapping();
+Schedule::command('naara:verify --trigger=schedule')->dailyAt('04:05')->withoutOverlapping();
+
+// Naara Respond (MASTER-ONLY): start scheduled broadcasts. Guarded so a stray copy can never half-register it on a fork.
+if (class_exists(\App\Console\Commands\OmniStartDueBroadcasts::class)) {
+    Schedule::command('omni:start-due-broadcasts')->everyMinute()->withoutOverlapping();
+}

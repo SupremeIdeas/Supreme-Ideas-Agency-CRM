@@ -1,0 +1,69 @@
+[
+ {
+  "id": "hiw-1-device",
+  "path": "/catalogue?country=TR&plan=34",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "text=Is your device eSIM-ready?"
+  ],
+  "wait": 900
+ },
+ {
+  "id": "hiw-2-plans",
+  "path": "/catalogue?country=TR",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "hiw-3-buy",
+  "path": "/catalogue?country=TR&plan=34",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "hiw-4-install",
+  "path": "/numbers/lines",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "button:has-text('Show setup')"
+  ],
+  "scrollTo": ".nx-card:has(img[alt='eSIM QR code'])",
+  "scrollOffset": 84,
+  "hide": [
+   "a[href$=\"/numbers/port-in\"]"
+  ]
+ },
+ {
+  "id": "hiw-5-active",
+  "path": "/numbers/lines",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "hide": [
+   "a[href$=\"/numbers/port-in\"]"
+  ],
+  "scrollTo": ".nx-card",
+  "scrollOffset": 84
+ },
+ {
+  "id": "hiw-6-connected",
+  "path": "/dashboard",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "scrollY": 1020
+ },
+ {
+  "id": "hiw-7-topup",
+  "path": "/wallet",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ }
+]

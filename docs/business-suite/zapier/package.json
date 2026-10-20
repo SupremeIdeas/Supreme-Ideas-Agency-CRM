@@ -1,0 +1,9 @@
+{
+  "name": "naara-business",
+  "version": "1.0.0",
+  "description": "Naara Business Suite for Zapier: new messages, new calls and recordings ready, from your own workspace.",
+  "main": "index.js",
+  "scripts": { "test": "zapier test", "validate": "zapier validate" },
+  "dependencies": { "zapier-platform-core": "^15.0.0" },
+  "private": true
+}

@@ -1,0 +1,71 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\ProviderRegistry;
+use Illuminate\Database\Seeder;
+
+/**
+ * NAARA-BUILD-14 §3.4 — seeds the admin-facing metadata for every already-
+ * integrated provider (onboarding tier + the practical dashboard/docs links an
+ * admin clicks through to when grabbing or rotating keys). Live-truth fields are
+ * left for ProviderHealth to fill on its next run.
+ *
+ * URL discipline: only URLs confirmed with high confidence are seeded. Where a
+ * provider's current portal URL can't be confirmed here, it's left null for the
+ * admin to fill in — a wrong link is worse than a blank one (blueprint §3.4).
+ * The nulls are listed in docs/PLATFORM-STATE.md.
+ *
+ * onboarding_tier is best-effort admin metadata (how much friction each vendor
+ * took to onboard) and is freely editable later; it only drives the Ops Center
+ * sort order in BUILD-17.
+ */
+class ProviderRegistrySeeder extends Seeder
+{
+    /** provider_key => [onboarding_tier, dashboard_login_url|null, docs_url|null]. */
+    private const META = [
+        // eSIM stack
+        'esimgo' => ['enterprise', 'https://portal.esim-go.com/', 'https://docs.esim-go.com/'],
+        'airalo' => ['enterprise', 'https://partners.airalo.com/', 'https://partners-doc.airalo.com/'],
+        'quibity' => ['small_business', null, null],
+        'zendit' => ['self_service', null, null],
+        'oneglobal' => ['enterprise', null, null],
+        'montymobile' => ['enterprise', null, null],
+        'gigs' => ['small_business', null, null],
+        // SMS / OTP / rental stack
+        'getatext' => ['self_service', null, null],
+        'fivesim' => ['self_service', 'https://5sim.net/', null],
+        'herosms' => ['self_service', null, null],
+        'virtsms' => ['self_service', null, null],
+        // Owner audit (2026-09-15) — URLs confirmed live during API verification.
+        'smspool' => ['self_service', 'https://www.smspool.net/', 'https://www.smspool.net/article/smspool-api-order-view-and-cancel-numbers-9883b6969fad'],
+        'onlinesim' => ['self_service', 'https://onlinesim.io/', null],
+        // Permanent / voice stack
+        'twilio' => ['individual_kyc', 'https://console.twilio.com/', 'https://www.twilio.com/docs'],
+        'telnyx' => ['individual_kyc', 'https://portal.telnyx.com/', 'https://developers.telnyx.com/'],
+        // Regional send-only SMS aggregator (no lane): self-service account, sandbox without spend.
+        'africastalking' => ['self_service', 'https://account.africastalking.com/', 'https://developers.africastalking.com/'],
+        // Owner audit (2026-09-15) — OAuth2 account (not a self-service key panel).
+        'sonetel' => ['individual_kyc', 'https://www.sonetel.com/', 'https://github.com/Sonetel/sonetel-api-docs'],
+    ];
+
+    public function run(): void
+    {
+        foreach (self::META as $key => [$tier, $loginUrl, $docsUrl]) {
+            $meta = ProviderRegistry::deriveMeta($key);
+
+            ProviderRegistry::updateOrCreate(
+                ['provider_key' => $key],
+                [
+                    'stack' => $meta['stack'],
+                    'product_families' => $meta['product_families'],
+                    'onboarding_tier' => $tier,
+                    'dashboard_login_url' => $loginUrl,
+                    'docs_url' => $docsUrl,
+                ],
+            );
+        }
+
+        ProviderRegistry::flushSnapshot();
+    }
+}

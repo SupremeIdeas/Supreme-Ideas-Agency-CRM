@@ -1,0 +1,3 @@
+{{-- nx:converted (skin tokens; legacy palette classes removed 2026-10-05) --}}
+{{-- Promo banners (Theme Batch 2 §2, extracted verbatim). --}}
+<x-banner-zone placement="dashboard_home" class="mb-8" />

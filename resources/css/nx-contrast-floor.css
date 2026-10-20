@@ -1,0 +1,18 @@
+/* ===== Contrast floor for every skinned screen (A-Z audit, 2026-10-05). The accent fills (--nx-cta-a/-b) are generated so white text on them keeps >= 4.5:1;
+   everything below closes what the page scan (tests/visual/skins/dom-pages.mjs) found beyond that. Non-text contrast (WCAG 1.4.11): a field's edge reaches 3:1 on its own
+   skin (--nx-edge is generated per skin and mode by scripts/gen-chat-contrast.mjs). ===== */
+html[data-nx-skin] :is(.ns-input, .ns-select, .ns-search):not(:focus):not(:focus-within) { box-shadow: inset 0 0 0 1px rgb(var(--nx-edge)); }
+html[data-nx-skin] :is(input.ns-input, select.ns-input, textarea.ns-input):not(:focus) { border-color: rgb(var(--nx-edge)); }
+html[data-nx-skin] .ns-field { box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+/* Initials avatars: white letters on a tinted fill that is darkened until they read. */
+html[data-nx-skin] .ns-avatar { background-image: linear-gradient(rgb(0 0 0 / .34), rgb(0 0 0 / .34)) !important; color: #fff; font-weight: 700; }
+/* Glass (dark): frosted panels sit on a moving colour mesh, so edges and tinted pills get a lighter ink than the flat skins. */
+html.dark[data-nx-skin=glass] { --nx-edge: 196 212 222; }
+html.dark[data-nx-skin=glass] .ns-pill { color: color-mix(in srgb, rgb(var(--nx-teal-ink)) 78%, #fff); }
+/* Every text field, select and text area on a skinned screen (admin forms included) gets the skin's 3:1 edge colour; width, radius and focus ring stay as built. */
+html[data-nx-skin] :is(input, select, textarea):not([type=checkbox], [type=radio], [type=range], [type=file], [type=hidden], [type=color], [type=submit], [type=button], .cc-text):not(:focus) { border-color: rgb(var(--nx-edge)); }
+/* Trix (email broadcast editor): its toolbar glyphs are black masks, so on dark surfaces they are inverted. */
+html.dark trix-toolbar .trix-button--icon::before { filter: invert(1); opacity: .92; }
+html[data-nx-skin] trix-toolbar .trix-button { color: rgb(var(--nx-text)); }
+html[data-nx-skin] trix-toolbar .trix-button-group { border-color: rgb(var(--nx-edge)); }
+html[data-nx-skin] trix-toolbar .trix-button:not(:first-child) { border-color: rgb(var(--nx-line-strong)); }

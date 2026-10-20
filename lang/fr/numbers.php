@@ -1,0 +1,116 @@
+<?php
+
+return [
+    // get-number.blade.php — active order card
+    'your_number' => 'Votre numéro',
+    'code' => 'Code',
+    'waiting_for_code' => 'En attente du code…',
+    'done' => 'Terminé',
+    'send_sms' => 'Envoyer un SMS',
+    'view_on_dashboard' => 'Voir sur le tableau de bord',
+
+    // numbers-modals.blade.php — shared modal chrome
+    'modal_title' => [
+        'verify' => \App\Support\BrandSettings::rebrand('Naara Verify'),
+        'rent' => \App\Support\BrandSettings::rebrand('Naara Rent'),
+        'line' => \App\Support\BrandSettings::rebrand('Naara Line'),
+        'default' => 'Numéros',
+    ],
+    'back_to_numbers' => 'Retour aux numéros',
+    'close' => 'Fermer',
+    'your_naara' => \App\Support\BrandSettings::rebrand('Votre Naara'),
+    'line_active' => 'Actif',
+    'manage' => 'Gérer',
+    'top_up' => 'Recharger',
+    'what_today' => 'De quoi avez-vous besoin aujourd’hui ?',
+    'what_today_sub' => 'Choisissez un service et démarrez en quelques secondes.',
+
+    // shared across verify/rent step partials
+    'taxes_and_fees' => 'Taxes et frais',
+    'you_pay' => 'Vous payez',
+    'priced_at_reservation' => 'Prix fixé à la réservation',
+    'use_naaracredits' => \App\Support\BrandSettings::rebrand('Utiliser mes NaaraCredits'),
+    'credits_balance' => 'Vous avez :balance crédits. Appliquez :credits pour économiser :amount sur cette commande.',
+    'reserving' => 'Réservation…',
+    'country_label' => 'Pays',
+    'service_label' => 'Service',
+
+    // verify.blade.php
+    'verify' => [
+        'banner_title' => \App\Support\BrandSettings::rebrand('Naara Verify'),
+        'banner_text' => 'Sécurisez votre réseau. Vérifiez votre identité.',
+        'reserved_title' => 'Numéro réservé',
+        'reserved_body' => 'Votre numéro de vérification est prêt — nous récupérons le code maintenant.',
+        'buy_another' => 'En acheter un autre',
+        'manual_buy' => 'Achat manuel',
+        'smart_buy' => 'Achat intelligent',
+        'smart_buy_hint' => 'Choisissez un service — nous sélectionnons automatiquement le pays et le réseau les mieux tarifés pour vous.',
+        'networks' => 'Réseaux',
+        'prices_tab' => 'Prix',
+        'stats_tab' => 'Statistiques',
+        'export_csv' => 'Exporter en CSV',
+        'auto_best_network' => 'Auto — meilleur réseau',
+        'recommended' => 'Recommandé',
+        'best' => 'Meilleur',
+        'out_of_stock' => 'Rupture de stock',
+        'available_short' => ':count disp.',
+        'get_my_code' => 'Obtenir mon code',
+        'refund_guarantee' => 'Aucun code sous :minutes minutes → remboursement automatique sur votre portefeuille, sans ticket requis.',
+    ],
+
+    // rent.blade.php
+    'rent' => [
+        'step_country' => '1. Choisir le pays',
+        'step_country_hint' => 'Choisissez le pays de votre numéro',
+        'step_service' => '2. Choisir le service',
+        'step_service_hint' => 'À quoi servira ce numéro ?',
+        'step_length_hint' => 'Pendant combien de temps avez-vous besoin du numéro ?',
+        'why_title' => 'Pourquoi louer un numéro ?',
+        'why_text' => 'Gardez votre numéro personnel privé, vérifiez des comptes et accédez aux services du monde entier.',
+        'reserved_title' => 'Location réservée',
+        'reserved_body' => 'Votre numéro de location est prêt — il reçoit des SMS pendant sa période de location.',
+        'rent_another' => 'En louer un autre',
+        'single_service' => 'Service unique',
+        'any_service' => 'N\'importe quel service',
+        'soon' => '(bientôt)',
+        'any_service_note' => 'Un numéro, :bold — reçoit des SMS de tous les services pendant la période de location.',
+        'any_service_bold' => 'n\'importe quel service',
+        'rental_length' => 'Durée de location',
+        'auto_renew' => 'Renouvellement automatique à l\'expiration',
+        'short_term_note' => 'Une location de courte durée — reçoit des SMS pendant une période fixe. Pour une location plus longue, choisissez un numéro américain.',
+        'rent_this_number' => 'Louer ce numéro',
+        'wallet_note' => 'Débité de votre portefeuille. Remboursement automatique si indisponible.',
+    ],
+
+    // line.blade.php
+    'line' => [
+        'mobile_numbers' => 'Numéros mobiles',
+        'toll_free' => 'Numéro vert',
+        'coming_soon_title' => \App\Support\BrandSettings::rebrand('Naara Line arrive bientôt'),
+        'coming_soon_body' => 'Un numéro international permanent avec voix et SMS — nous finalisons les derniers contrôles avec notre opérateur.',
+        'intro' => 'Un numéro international permanent qui vous appartient — :bold, facturé mensuellement.',
+        'intro_bold' => 'appels vocaux et SMS',
+        'vanity_label' => 'Trouver un numéro mémorable (facultatif)',
+        'vanity_placeholder' => 'ex. 777 ou se terminant par 0000',
+        'active_title' => \App\Support\BrandSettings::rebrand('Naara Line active'),
+        'active_hint' => 'Configurez le renvoi d\'appel ou le composeur depuis votre tableau de bord.',
+        'active_hint_sms_only' => 'Ce numéro ne prend en charge que les SMS — les appels vocaux et le renvoi d\'appel ne sont pas disponibles.',
+        'monthly_note' => \App\Support\BrandSettings::rebrand('Naara Line est un abonnement mensuel — le premier mois est facturé maintenant, puis il se renouvelle chaque mois. Voix et SMS inclus.'),
+        'mobile_fallback' => 'Mobile',
+        'get_this_number' => 'Obtenir ce numéro',
+        'search_again' => 'Rechercher à nouveau',
+        'search_available' => 'Rechercher les numéros disponibles',
+        'searching' => 'Recherche…',
+    ],
+
+    // my-lines.blade.php — port-in premium card
+    'portin_card' => [
+        'kicker' => 'Portabilité · États-Unis et Canada',
+        'title' => 'Apportez votre numéro chez Naara',
+        'text' => 'Vous avez déjà un numéro américain ou canadien ? Gardez-le. Nous gérons le transfert avec l’opérateur.',
+        'cta' => 'Démarrer le transfert',
+        'chip_keep' => 'Gardez votre numéro',
+        'chip_days' => '5 à 15 jours ouvrés',
+        'chip_voice' => 'Voix + SMS',
+    ],
+];

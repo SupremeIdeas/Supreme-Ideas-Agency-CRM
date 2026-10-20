@@ -1,0 +1,47 @@
+# Naara desktop app and Chrome extension. MANUAL ONLY (Actions budget rule in CLAUDE.md): Actions tab > Run workflow.
+# The Windows installer (.exe) and the macOS disk image (.dmg) can only be built on Windows and macOS runners; this is where they come from.
+name: Naara desktop and extension
+on:
+  workflow_dispatch:
+
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: wrappers/master-marketing } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: node --test tests/core.test.mjs
+      - run: node build.mjs chrome
+      - uses: actions/upload-artifact@v4
+        with: { name: naara-chrome-extension, path: wrappers/master-marketing/dist/*.zip }
+
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, script: 'dist:win' }
+          - { os: macos-latest, script: 'dist:mac' }
+          - { os: ubuntu-latest, script: 'dist:linux' }
+    runs-on: ${{ matrix.os }}
+    defaults: { run: { working-directory: wrappers/master-marketing/desktop } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: npm ci || npm install
+      - run: npm test
+      - run: npm run ${{ matrix.script }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'   # unsigned until you add signing certificates
+      - uses: actions/upload-artifact@v4
+        with:
+          name: naara-desktop-${{ matrix.os }}
+          path: |
+            wrappers/master-marketing/desktop/dist/*.exe
+            wrappers/master-marketing/desktop/dist/*.dmg
+            wrappers/master-marketing/desktop/dist/*.zip
+            wrappers/master-marketing/desktop/dist/*.AppImage
+            wrappers/master-marketing/desktop/dist/*.deb

@@ -1,0 +1,10 @@
+{
+  "slug": "nowpayments",
+  "label": "NOWPayments (crypto payouts)",
+  "provider": "nowpayments",
+  "gateway": "App\\PayoutRails\\Nowpayments\\NowpaymentsPayoutGateway",
+  "version": "1.0.0",
+  "min_core": "1.0.0",
+  "rail": "global",
+  "files": ["NowpaymentsPayoutClient.php", "NowpaymentsPayoutGateway.php"]
+}

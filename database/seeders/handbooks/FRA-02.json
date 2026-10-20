@@ -1,0 +1,17 @@
+{
+  "language": "en",
+  "series": "The France Series",
+  "title": "France Explorer: Cities, Food and Itineraries",
+  "subtitle": "Cities, landmarks, food and ready-made itineraries across France",
+  "description": "Cities, landmarks, food and ready-made itineraries across France.\n\nCoverage in progress; this title is a draft until the manuscript is added.",
+  "country_code": "FR",
+  "list_price_usd": 7.99,
+  "categories": [
+    "Explore and travel"
+  ],
+  "moods": [
+    "Itinerary"
+  ],
+  "sort_order": 2,
+  "series_slot": "S7"
+}

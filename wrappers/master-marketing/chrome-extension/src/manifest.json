@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Naara: eSIM, numbers and calls",
+  "short_name": "Naara",
+  "version": "1.0.2",
+  "description": "Open Naara in its own app window from your toolbar. eSIM data for 190+ countries, virtual and verification numbers, one wallet.",
+  "minimum_chrome_version": "114",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Open Naara",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://www.naara.app/*"
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+N",
+        "mac": "Alt+Shift+N"
+      },
+      "description": "Open Naara"
+    }
+  }
+}

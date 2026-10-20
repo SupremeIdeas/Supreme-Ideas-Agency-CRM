@@ -1,0 +1,115 @@
+{
+  "name": "naara-desktop",
+  "productName": "Naara",
+  "version": "1.0.2",
+  "description": "Naara for desktop: eSIM data, virtual numbers, calls and one wallet, in its own window.",
+  "author": "Naara Connect Technologies Limited <hello@naara.app>",
+  "homepage": "https://www.naara.app",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/policy.test.js",
+    "prebuild": "node scripts/sync-shared.mjs",
+    "dist": "npm run prebuild && electron-builder --publish never",
+    "dist:win": "npm run prebuild && electron-builder --win --publish never",
+    "dist:mac": "npm run prebuild && electron-builder --mac --publish never",
+    "dist:linux": "npm run prebuild && electron-builder --linux --publish never"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "app.naara.desktop",
+    "productName": "Naara",
+    "copyright": "Naara Connect Technologies Limited",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "shared/**/*",
+      "package.json"
+    ],
+    "protocols": [
+      {
+        "name": "Naara",
+        "schemes": [
+          "naara"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Naara"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.utilities",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Naara uses the microphone for voice calls and voice notes.",
+        "NSCameraUsageDescription": "Naara uses the camera for video calls and scanning QR codes.",
+        "NSLocationWhenInUseUsageDescription": "Naara uses your location only when you choose to share it or to suggest your country."
+      }
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Network",
+      "maintainer": "Naara Connect Technologies Limited <hello@naara.app>",
+      "synopsis": "Naara: eSIM, numbers and calls"
+    },
+    "artifactName": "Naara-${version}-${os}-${arch}.${ext}",
+    "electronLanguages": [
+      "en-US",
+      "fr",
+      "es",
+      "pt-BR",
+      "ar"
+    ],
+    "compression": "maximum",
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://www.naara.app/download"
+      }
+    ]
+  }
+}

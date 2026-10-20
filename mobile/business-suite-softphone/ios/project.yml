@@ -1,0 +1,42 @@
+# Generate the Xcode project on a Mac:  brew install xcodegen && xcodegen generate && open NaaraPhone.xcodeproj
+name: NaaraPhone
+options:
+  bundleIdPrefix: app.naara
+  deploymentTarget: { iOS: "15.0" }
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Your Naara site, no trailing slash. Override: xcodebuild ... NAARA_BASE_URL=https://your-domain
+    NAARA_BASE_URL: "https:/$()/example.invalid"
+packages:
+  TwilioVoice:
+    url: https://github.com/twilio/twilio-voice-ios
+    from: 6.13.6
+targets:
+  NaaraPhone:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    dependencies:
+      - package: TwilioVoice
+    entitlements:
+      path: NaaraPhone.entitlements
+      properties:
+        aps-environment: development
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Naara Phone
+        NaaraBaseURL: $(NAARA_BASE_URL)
+        UILaunchStoryboardName: ""
+        UIRequiredDeviceCapabilities: [armv7]
+        UIBackgroundModes: [voip, audio]
+        NSMicrophoneUsageDescription: Naara Phone needs the microphone so you can talk on business calls.
+  NaaraPhoneTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: NaaraPhone

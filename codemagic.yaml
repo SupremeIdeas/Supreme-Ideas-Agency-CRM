@@ -1,0 +1,74 @@
+workflows:
+  # iOS-only (owner audit, 2026-09-15 — Doc B Stage 1): Android always builds
+  # via .github/workflows/android-build.yml on GitHub Actions instead (no paid
+  # macOS runner needed) — see docs/APP-EXPORT.md. This workflow is triggered
+  # by TriggerAppBuildJob::triggerCodemagic() (POST /builds, appId +
+  # `ios-release` workflowId), which sends NAARA_* variables as
+  # environment.variables — see NAARA_* below.
+  #
+  # `android`/`ios` are NOT committed to this repo — `npx cap add ios` below
+  # generates the native Xcode project fresh on every run from
+  # capacitor.config.json + the compiled web assets, the same pattern
+  # android-build.yml uses.
+  ios-release:
+    name: NaaraSim iOS Release
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      # App Store Connect API key — Doc B's recommended default: Apple's
+      # modern, non-interactive signing auth (no manually-managed certs/
+      # provisioning profiles to expire). Configure this Codemagic app's iOS
+      # code signing identity in the Codemagic dashboard (Team settings → Code
+      # signing identities), NOT here — Codemagic then handles automatic
+      # signing for this workflow without any of these values ever touching
+      # this repo or NaaraSim's own admin panel.
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.supremeideas.naara   # must equal the iOS bundle id in App Builder (default com.supremeideas.naara); permanent once published
+      vars:
+        XCODE_SCHEME: "App"
+      node: 20
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events: []  # trigger only via the REST API (TriggerAppBuildJob) — never on push/PR
+    scripts:
+      # app-export/ holds the build logic, shared with the free local build (app-export/README.md): it turns the admin's App Studio config into the Capacitor project,
+      # generates the icon and Naara splash, adds the permission strings, associated domains and version, and runs pod install. Codemagic then signs and archives it.
+      - name: Prepare the iOS project from the live app config
+        script: |
+          if [ -n "${NAARA_APP_CONFIG:-}" ]; then echo "$NAARA_APP_CONFIG" > "$CM_BUILD_DIR/app-config.json"; else echo '{}' > "$CM_BUILD_DIR/app-config.json"; fi
+          export NAARA_WORK="$CM_BUILD_DIR/naara-ios"
+          app-export/build-ios.sh --prepare-only --config "$CM_BUILD_DIR/app-config.json" --version "${NAARA_VERSION:-1.0.0}" --code "${NAARA_BUILD_NUMBER:-1}"
+
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --workspace "$CM_BUILD_DIR/naara-ios/ios/App/App.xcworkspace" \
+            --scheme "$XCODE_SCHEME" \
+            --archive-flags="CODE_SIGN_ENTITLEMENTS=App.entitlements"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      # Codemagic doesn't push a completion webhook by default — the
+      # documented pattern (NAARA-CODEMAGIC-INTEGRATION-REFERENCE.md, verified
+      # against docs.codemagic.io/yaml-distributing/post-publish/) is a
+      # post-publish script reading $CM_ARTIFACT_LINKS, HMAC-signing the
+      # result with the SAME $APPEXPORT_CI_SECRET the app's .env holds, and
+      # POSTing to AppBuildWebhookController — which was never changed and
+      # already expects exactly this {build_id, status, artifact_url} shape.
+      scripts:
+        - name: Report status back to NaaraSim
+          script: |
+            ARTIFACT_URL=$(echo "$CM_ARTIFACT_LINKS" | jq -r '.[0].url // empty')
+            STATUS=$([ -n "$ARTIFACT_URL" ] && echo ready || echo failed)
+            BODY=$(jq -n --arg id "$NAARA_BUILD_ID" --arg status "$STATUS" --arg url "$ARTIFACT_URL" \
+              '{build_id: ($id|tonumber), status: $status} + (if $url != "" then {artifact_url: $url} else {} end)')
+            SIGNATURE=$(echo -n "$BODY" | openssl dgst -sha256 -hmac "$APPEXPORT_CI_SECRET" | sed 's/^.* //')
+            curl -sS -X POST "$NAARA_CALLBACK_URL" \
+              -H "Content-Type: application/json" \
+              -H "X-Naara-Signature: $SIGNATURE" \
+              -d "$BODY" || true

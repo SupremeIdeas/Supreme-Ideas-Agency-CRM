@@ -1,0 +1,86 @@
+@props([
+    'name' => null,      // pure-Alpine: opens on window `open-modal` {name} event
+    'wire' => null,      // Livewire: entangle the open state to this property
+    'title' => null,
+    'maxWidth' => 'lg',  // sm|md|lg|xl|2xl
+])
+
+@php
+    $id = 'modal-'.($name ?? \Illuminate\Support\Str::random(6));
+    $widths = ['sm' => 'sm:max-w-sm', 'md' => 'sm:max-w-md', 'lg' => 'sm:max-w-lg', 'xl' => 'sm:max-w-xl', '2xl' => 'sm:max-w-2xl'];
+@endphp
+
+{{--
+    The ONE modal engine (blueprint Section 31): focus-trap, ESC + backdrop
+    close, body-scroll lock, and full ARIA. Every dialog uses this — no
+    per-feature modal markup.
+
+    x-teleport="body" (root-caused via Playwright, frontend-UX-fix blueprint
+    Phase A): any ancestor with a CSS `filter`/`transform`/`backdrop-filter`
+    creates a new containing block for `position: fixed` descendants, so a
+    modal instance triggered from inside the sticky header — which applies
+    `filter: drop-shadow(...)` to its direct children via `.nx-header-fade
+    > *` — was rendering pinned to a tiny box near the trigger instead of
+    covering the viewport (reproduced live: computed rect ~148x40px at the
+    bell icon, not full-screen). This is the exact trap `global-sidebar.
+    blade.php`'s own panel already works around the same way — the fix
+    just hadn't been applied to this shared engine yet, which is why the
+    notification popup specifically (triggered from inside that header)
+    kept resurfacing across prior fix attempts while other modals
+    triggered from elsewhere on the page never showed the bug.
+--}}
+<template x-teleport="body">
+<div
+    x-data="{
+        open: @if ($wire) @entangle($wire).live @else false @endif,
+        focusables() {
+            return [...$refs.panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex=\'-1\'])')]
+                .filter(el => el.offsetParent !== null);
+        },
+        trapTab(e) {
+            const f = this.focusables();
+            if (! f.length) { e.preventDefault(); return; }
+            let i = f.indexOf(document.activeElement);
+            i = e.shiftKey ? i - 1 : i + 1;
+            if (i < 0) i = f.length - 1;
+            if (i >= f.length) i = 0;
+            e.preventDefault();
+            f[i].focus();
+        },
+    }"
+    @if ($name)
+        x-on:open-modal.window="if ($event.detail?.name === '{{ $name }}') open = true"
+        x-on:close-modal.window="if (! $event.detail || $event.detail.name === '{{ $name }}') open = false"
+    @endif
+    x-on:keydown.escape.window="open = false"
+    x-effect="document.body.style.overflow = open ? 'hidden' : ''; if (open) $nextTick(() => $refs.panel?.focus())"
+    x-show="open"
+    x-cloak
+    class="fixed inset-0 z-[80] flex items-end justify-center sm:items-center"
+    role="dialog" aria-modal="true" aria-labelledby="{{ $id }}-title"
+    style="display:none;"
+>
+    {{-- Backdrop --}}
+    <div x-show="open" x-transition.opacity @click="open = false" class="absolute inset-0 bg-navy/50 "></div>
+
+    {{-- Panel --}}
+    <div x-ref="panel" tabindex="-1" @keydown.tab="trapTab($event)"
+         x-show="open"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="translate-y-6 opacity-0 sm:scale-95"
+         x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+         class="relative z-10 max-h-[90vh] w-full overflow-y-auto rounded-t-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6 shadow-xl outline-none sm:w-full {{ $widths[$maxWidth] ?? $widths['lg'] }} sm:rounded-2xl">
+        <div class="flex items-start justify-between gap-4">
+            <h2 id="{{ $id }}-title" class="text-lg font-bold text-[rgb(var(--nx-text))] ">{{ $title }}</h2>
+            <button type="button" @click="open = false" aria-label="Close"
+                    class="shrink-0 rounded-lg p-1 text-[rgb(var(--nx-text-2))] hover:bg-[rgb(var(--nx-surface-3))] hover:text-[rgb(var(--nx-text-2))]  ">
+                <x-icon name="x" class="h-5 w-5" />
+            </button>
+        </div>
+
+        <div class="mt-4">
+            {{ $slot }}
+        </div>
+    </div>
+</div>
+</template>

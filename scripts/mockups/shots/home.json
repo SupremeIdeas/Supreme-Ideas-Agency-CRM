@@ -1,0 +1,38 @@
+[
+ {
+  "id": "home-step-1",
+  "path": "/catalogue",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "hide": [
+   "[x-data^=\"esimHero\"]"
+  ]
+ },
+ {
+  "id": "home-step-2",
+  "path": "/catalogue?country=FR",
+  "w": 390,
+  "h": 844,
+  "dpr": 3
+ },
+ {
+  "id": "home-step-3",
+  "path": "/numbers/lines",
+  "w": 390,
+  "h": 844,
+  "dpr": 3,
+  "click": [
+   "button:has-text('Show setup')"
+  ],
+  "scrollTo": ".nx-card:has(img[alt='eSIM QR code'])",
+  "scrollOffset": 84
+ },
+ {
+  "id": "home-features-desktop",
+  "path": "/dashboard",
+  "w": 1440,
+  "h": 829,
+  "dpr": 1.5
+ }
+]

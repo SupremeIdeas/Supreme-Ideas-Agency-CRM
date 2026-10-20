@@ -1,0 +1,67 @@
+@page { size: 6in 9in; margin: 0.85in 0.7in 0.8in 0.7in;
+  @top-left { content: element(runhead-l); }
+  @top-right { content: string(shorttitle); font: 600 7.5pt Carlito, sans-serif; color: #0A6E6E; vertical-align: middle; }
+  @bottom-left { content: "Naara Handbook Series \00B7  " string(bookid) "  \00B7  naara.app"; font: 7pt Carlito, sans-serif; color: #5b6b73; }
+  @bottom-right { content: counter(page); font: 600 8.5pt Carlito, sans-serif; color: #0A6E6E; } }
+@page cover { margin: 0; @top-left { content: none } @top-right { content: none } @bottom-left { content: none } @bottom-right { content: none } }
+@page part { margin: 0.7in; @top-left { content: none } @top-right { content: none } @bottom-left { content: none } }
+@page :first { @top-left { content: none } @top-right { content: none } @bottom-left { content: none } @bottom-right { content: none } }
+html { font: 9.6pt/1.5 "Bitstream Charter", "Caladea", Georgia, serif; color: #14262c; hyphens: auto; }
+body { margin: 0; }
+.runhead { position: running(runhead-l); }
+.runhead img { height: 15pt; display: block; }
+.shorttitle { string-set: shorttitle content(); display: none; }
+.bookid { string-set: bookid content(); display: none; }
+/* cover */
+.cover { page: cover; page-break-after: always; height: 9in; text-align: center; background: #fff; position: relative; }
+.cover .wordmark { width: 3.1in; margin: 1.75in auto 0; display: block; }
+.cover .series { margin-top: 0.7in; font: 700 8pt Carlito, sans-serif; letter-spacing: .22em; color: #D4701F; }
+.cover h1 { font: 700 25pt/1.15 Carlito, sans-serif; color: #0A6E6E; margin: .12in .6in 0; border-bottom: 2px solid #0A6E6E; padding-bottom: .15in; }
+.cover .sub { font-style: italic; margin: .18in .7in 0; font-size: 11pt; color: #1b3138; }
+.cover .meta { margin-top: .5in; font: 8.5pt Carlito, sans-serif; color: #5b6b73; }
+.cover .imprint { margin-top: .12in; font: 700 9pt Carlito, sans-serif; color: #0A6E6E; }
+.cover .hero { position: absolute; left: 0; right: 0; bottom: 0; height: 2.55in; background-size: cover; background-position: center; }
+/* headings */
+h1, h2, h3, h4 { font-family: Carlito, "Inter", sans-serif; color: #0A6E6E; line-height: 1.2; break-after: avoid; }
+h3 { font-size: 12.5pt; margin: 1.25em 0 .35em; }
+h4 { font-size: 10.5pt; margin: 1em 0 .25em; color: #14262c; }
+h2 { font-size: 20pt; margin: 0 0 .5em; padding-bottom: .15in; border-bottom: 2px solid #0A6E6E; string-set: none; }
+h2 .ch-label { display: block; font: 700 8pt Carlito, sans-serif; letter-spacing: .22em; color: #D4701F; margin-bottom: .08in; }
+section.chapter > h2, h2.chapter { break-before: page; } h2.front { break-before: page; }
+.part h1 { break-before: auto; }
+.part { page: part; break-before: page; break-after: page; padding-top: 2.2in; display: block; }
+.part .part-label { font: 700 9pt Carlito, sans-serif; letter-spacing: .25em; color: #D4701F; }
+.part h1 { font-size: 30pt; margin: .1in 0 .2in; }
+.part .part-sub { font-style: italic; font-size: 11pt; color: #1b3138; border-top: 2px solid #0A6E6E; padding-top: .18in; }
+.front-title { font: 700 18pt Carlito, sans-serif; color: #0A6E6E; margin: 0 0 .4em; padding-bottom: .12in; border-bottom: 2px solid #0A6E6E; break-before: page; }
+p { margin: 0 0 .62em; orphans: 3; widows: 3; text-align: left; }
+ul, ol { margin: 0 0 .7em; padding-left: 1.25em; } li { margin-bottom: .28em; }
+a { color: #0A6E6E; text-decoration: none; }
+.v { color: #9a5b00; font-style: italic; }
+/* boxes */
+.box { margin: .8em 0 1em; padding: .12in .16in; border: 1px solid #0A6E6E; background: #eef7f7; break-inside: avoid; font-family: Carlito, sans-serif; font-size: 9.4pt; line-height: 1.42; }
+.box p { margin: 0 0 .45em; } .box p:last-child { margin-bottom: 0; } .box ul, .box ol { margin-bottom: .3em; }
+.box-title p { font: 700 7.6pt Carlito, sans-serif; letter-spacing: .1em; color: #0A6E6E; margin-bottom: .5em; }
+.box-verify { background: #fff8e6; border-color: #c28a00; } .box-verify .box-title p { color: #8a5b00; }
+.box-example { background: #f3f5fb; border-color: #4a5fa8; } .box-example .box-title p { color: #34478c; }
+.box-checklist { background: #fff; } .box-checklist ul { list-style: none; padding-left: 0; } .box-checklist li { padding-left: 1.3em; text-indent: -1.3em; } .box-checklist li::before { content: "\2610\00a0\00a0"; color: #0A6E6E; }
+.box-insight { background: #0d1b2a; border-color: #0d1b2a; color: #e6f2f2; } .box-insight .box-title p { color: #e8b84a; }
+.box-next { background: #eef8ef; border-color: #2f8f4e; } .box-next .box-title p { color: #1f6f3a; }
+.box-warn { background: #fdeeee; border-color: #b03a3a; } .box-warn .box-title p { color: #962d2d; }
+/* tables */
+colgroup, col { width: auto !important; }
+table { width: 100%; table-layout: auto; border-collapse: collapse; margin: .6em 0 .35em; font: 8.4pt/1.35 Carlito, sans-serif; break-inside: auto; }
+th { background: #0A6E6E; color: #fff; text-align: left; padding: .05in .07in; font-weight: 700; }
+td { padding: .045in .07in; border-bottom: 1px solid #c9dcdc; vertical-align: top; } tr { break-inside: avoid; } tbody tr:nth-child(even) td { background: #f5fafa; }
+.source-note p { font: italic 7.6pt/1.35 Carlito, sans-serif; color: #5b6b73; margin: .1em 0 .9em; }
+/* figures */
+figure { margin: .9em 0 1em; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; max-height: 3.3in; border-radius: 4px; }
+figcaption { font: italic 7.8pt/1.35 Carlito, sans-serif; color: #5b6b73; margin-top: .06in; text-align: left; }
+figure.wide img { width: 100%; }
+/* toc */
+#TOC { break-before: page; } #TOC > ul, #TOC ul { list-style: none; padding-left: 0; font: 9.2pt/1.4 Carlito, sans-serif; } #TOC ul ul { padding-left: .22in; font-size: 8.3pt; color: #3d5057; }
+#TOC li { margin: .1em 0; } #TOC a { color: inherit; display: block; } #TOC a::after { content: leader('.') target-counter(attr(href url), page); float: none; }
+#TOC > ul > li > a { font-weight: 700; color: #0A6E6E; margin-top: .5em; }
+.toc-title { font: 700 18pt Carlito, sans-serif; color: #0A6E6E; margin: 0 0 .4em; padding-bottom: .12in; border-bottom: 2px solid #0A6E6E; }
+hr { border: 0; border-top: 1px solid #c9dcdc; margin: 1em 0; }

@@ -1,0 +1,3 @@
+[{"id":"prod-data","path":"/catalogue","w":390,"h":844,"dpr":3,"hide":["[x-data^=\"esimHero\"]"]},
+ {"id":"prod-verify","path":"/numbers","w":390,"h":844,"dpr":3,"click":["text=Naara Verify >> nth=0"],"wait":1400},
+ {"id":"prod-rent","path":"/numbers","w":390,"h":844,"dpr":3,"click":["text=Naara Rent >> nth=0"],"wait":1400}]

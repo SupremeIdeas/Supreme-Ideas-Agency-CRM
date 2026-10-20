@@ -1,0 +1,6 @@
+let chromium;try{({chromium}=require('playwright'))}catch(e){({chromium}=require(process.env.PW_MODULE||'/opt/node22/lib/node_modules/playwright'))}
+const CHROME=process.env.CHROME||'/opt/pw-browsers/chromium-1194/chrome-linux/chrome', BASE='http://127.0.0.1:8099';
+(async()=>{const b=await chromium.launch({executablePath:CHROME});const p=await (await b.newContext({viewport:{width:+(process.env.W||1280),height:900}})).newPage();
+await p.goto(BASE+'/login');await p.fill('input[name="email"]','nx-diff@naara.test');await p.fill('input[name="password"]','password');await Promise.all([p.waitForNavigation().catch(()=>{}),p.click('button[type="submit"]')]);
+await p.goto(BASE+(process.env.URL||'/numbers'),{waitUntil:'networkidle'});await p.evaluate(()=>{document.documentElement.dataset.nxSkin='neo'});await p.waitForTimeout(300);
+console.log(JSON.stringify(await p.evaluate(()=>{const W=innerWidth;return [...document.querySelectorAll('main *, .ns-app *')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&(r.right>W+2||r.left<-2)&&getComputedStyle(e).position!=='fixed'}).slice(0,8).map(e=>e.tagName+'.'+String(e.className).slice(0,60)+' r='+Math.round(e.getBoundingClientRect().right)+' l='+Math.round(e.getBoundingClientRect().left))}),null,1));await b.close();})();

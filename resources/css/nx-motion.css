@@ -1,0 +1,28 @@
+/* Dashboard page transitions (PageMotion, MASTER-ONLY). Only opacity and transform are animated, so the browser runs it on the compositor with no layout or paint.
+   The header, bottom bar and splash sit OUTSIDE [data-nx-page] and never move: only the page content changes, which is what makes it feel like one app.
+   Off unless <html data-nx-pt> is present (admin switch), and off for anyone who asks the OS for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+    html[data-nx-pt] { --nxm-t: 1; }
+    html[data-nx-pt][data-nx-pt-speed="fast"] { --nxm-t: .7; }
+    html[data-nx-pt][data-nx-pt-speed="slow"] { --nxm-t: 1.45; }
+
+    /* leaving: a quick dim the instant a link is tapped, so the tap feels answered while the next page loads */
+    html[data-nx-pt].nx-leave [data-nx-page] { opacity: .55; transition: opacity calc(110ms * var(--nxm-t)) ease-out; }
+    html[data-nx-pt="fluid"].nx-leave [data-nx-page] { opacity: .5; transform: translateY(-3px) scale(.997); transition: opacity calc(120ms * var(--nxm-t)) ease-out, transform calc(140ms * var(--nxm-t)) cubic-bezier(.4, 0, .6, 1); }
+
+    /* arriving: soft fade + a small lift */
+    html[data-nx-pt].nx-enter [data-nx-page] { animation: nxm-fade calc(300ms * var(--nxm-t)) cubic-bezier(.22, .8, .3, 1) both; will-change: opacity, transform; }
+    @keyframes nxm-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* fluid: a spring (linear() easing with a gentle overshoot), and the first blocks of the page rise one after another */
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] { animation: nxm-flow calc(520ms * var(--nxm-t)) linear(0, .22 8%, .62 18%, .9 30%, 1.035 42%, 1.04 50%, 1.015 62%, .998 74%, 1) both; }
+    @keyframes nxm-flow { from { opacity: 0; transform: translateY(18px) scale(.985); } 38% { opacity: 1; } to { opacity: 1; transform: none; } }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > * { animation: nxm-rise calc(460ms * var(--nxm-t)) cubic-bezier(.2, .9, .25, 1) both; animation-delay: calc(var(--nxm-i, 0) * 38ms * var(--nxm-t)); }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > :nth-child(1) { --nxm-i: 0; }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > :nth-child(2) { --nxm-i: 1; }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > :nth-child(3) { --nxm-i: 2; }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > :nth-child(4) { --nxm-i: 3; }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > :nth-child(5) { --nxm-i: 4; }
+    html[data-nx-pt="fluid"].nx-enter [data-nx-page] > :nth-child(n+6) { --nxm-i: 5; }
+    @keyframes nxm-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+}

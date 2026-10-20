@@ -1,0 +1,151 @@
+{{-- nx:converted (skin tokens; legacy palette classes removed 2026-10-05) --}}
+<div class="mx-auto max-w-3xl" x-data="{ term: '' }" @search.window="term = $event.detail.term">
+    <h1 class="mb-1 text-2xl font-bold text-[rgb(var(--nx-text))]">UI Kit</h1>
+    <p class="mb-8 text-sm text-[rgb(var(--nx-text-2))]">The reusable, themed, accessible components (Section 31). Everything here is keyboard-usable and dark-mode ready.</p>
+
+    <div class="space-y-6">
+        {{-- Star rating --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6">
+            <h2 class="mb-3 text-sm font-semibold text-[rgb(var(--nx-text))]">Star rating</h2>
+            <div class="flex flex-wrap items-center gap-6">
+                <div>
+                    <p class="mb-1 text-xs text-[rgb(var(--nx-text-2))]">Display (4.5)</p>
+                    <x-ui.star-rating :value="4.5" />
+                </div>
+                <div>
+                    <p class="mb-1 text-xs text-[rgb(var(--nx-text-2))]">Interactive (click / arrow keys)</p>
+                    <x-ui.star-rating :value="$demoRating" :readonly="false" wire="demoRating" size="h-7 w-7" />
+                    <p class="mt-1 text-xs text-[rgb(var(--nx-text-2))]">You picked: <span class="font-semibold">{{ $demoRating }}</span></p>
+                </div>
+            </div>
+        </section>
+
+        {{-- Modal engine --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6">
+            <h2 class="mb-3 text-sm font-semibold text-[rgb(var(--nx-text))]">Modal engine (the only one)</h2>
+            <button type="button" x-data
+                    @click="$dispatch('open-modal', { name: 'demo' })"
+                    class="inline-flex items-center gap-2 rounded-lg bg-[rgb(var(--nx-cta-b))] px-4 py-2 text-sm font-semibold text-white hover:bg-[rgb(var(--nx-cta-a))]">
+                <x-icon name="help-circle" class="h-4 w-4" /> Open dialog
+            </button>
+            <p class="mt-2 text-xs text-[rgb(var(--nx-text-2))]">Focus is trapped inside; ESC or backdrop closes it.</p>
+
+            <x-ui.modal name="demo" title="Demo dialog" max-width="md">
+                <p class="text-sm text-[rgb(var(--nx-text-2))]">This dialog uses the shared engine. Tab cycles only these controls; ESC closes.</p>
+                <div class="mt-4 flex justify-end gap-2">
+                    <button type="button" x-data @click="$dispatch('close-modal')" class="rounded-lg border border-[rgb(var(--nx-line-strong))] px-3 py-1.5 text-sm">Cancel</button>
+                    <button type="button" x-data @click="$dispatch('close-modal')" class="rounded-lg bg-[rgb(var(--nx-cta-b))] px-3 py-1.5 text-sm font-semibold text-white">Confirm</button>
+                </div>
+            </x-ui.modal>
+        </section>
+
+        {{-- Countdown --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6">
+            <h2 class="mb-3 text-sm font-semibold text-[rgb(var(--nx-text))]">Server-anchored countdown</h2>
+            <div class="text-2xl font-bold text-[rgb(var(--nx-text))]">
+                <x-ui.countdown :until="$countdownUntil" />
+            </div>
+            <p class="mt-2 text-xs text-[rgb(var(--nx-text-2))]">Anchored to server time — a wrong device clock can’t speed it up or slow it down.</p>
+        </section>
+
+        {{-- Search --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6">
+            <h2 class="mb-3 text-sm font-semibold text-[rgb(var(--nx-text))]">Search (debounced)</h2>
+            <x-ui.search placeholder="Type to search…" class="max-w-sm" />
+            <p class="mt-2 text-xs text-[rgb(var(--nx-text-2))]">Debounced term: <span class="font-mono" x-text="term || '—'"></span></p>
+        </section>
+
+        {{-- Theme toggle --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6">
+            <h2 class="mb-3 text-sm font-semibold text-[rgb(var(--nx-text))]">Theme toggle</h2>
+            <div class="flex items-center gap-3">
+                <x-theme-toggle />
+                <span class="text-sm text-[rgb(var(--nx-text-2))]">Flips light / dark with no flash.</span>
+            </div>
+        </section>
+
+        {{-- Branded elements (Module 32 — adapted from the hand-picked Uiverse set) --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6 lg:col-span-2">
+            <h2 class="mb-1 text-sm font-semibold text-[rgb(var(--nx-text))]">Branded elements</h2>
+            <p class="mb-5 text-xs text-[rgb(var(--nx-text-2))]">Adapted from the hand-picked Uiverse library — re-coloured to the brand, dark-mode ready, no third-party runtime.</p>
+
+            <div class="space-y-6">
+                <div class="flex flex-wrap items-center gap-3">
+                    <x-ui.btn variant="primary" type="button" icon="badge-check">Primary action</x-ui.btn>
+                    <x-ui.btn variant="gold" type="button">Gold highlight</x-ui.btn>
+                    <x-ui.btn variant="ghost" type="button">Ghost</x-ui.btn>
+                    <x-ui.btn variant="danger" type="button">Danger</x-ui.btn>
+                </div>
+
+                {{-- Component-library batch 2 button variants. --}}
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="button" class="nx-btn nx-btn--glow">Border glow</button>
+                    <button type="button" class="nx-btn nx-btn--get-started">
+                        Get started <x-icon name="chevron-right" class="nx-btn__arrow h-4 w-4" />
+                    </button>
+                    <button type="button" class="nx-btn nx-btn--premium">
+                        <x-icon name="zap" class="h-4 w-4" /> Unlock Pro
+                    </button>
+                    <button type="button" class="nx-btn nx-btn--pill-reveal">
+                        <span class="nx-btn__stack">
+                            <span class="nx-btn__face">Learn more</span>
+                            <span class="nx-btn__reveal">Let's go →</span>
+                        </span>
+                    </button>
+                    <button type="button" class="nx-btn nx-btn--danger-confirm" wire:confirm="This cannot be undone. Continue?">
+                        <x-icon name="trash" class="h-4 w-4" /> Delete account
+                    </button>
+                    <x-ui.icon-button icon="edit" label="Edit" />
+                </div>
+
+                <div class="flex flex-wrap items-center gap-6">
+                    <label class="flex items-center gap-3 text-sm text-[rgb(var(--nx-text-2))]">
+                        <x-ui.switch checked label="Demo switch" /> Switch
+                    </label>
+                    <label class="flex items-center gap-3 text-sm text-[rgb(var(--nx-text-2))]">
+                        <x-ui.checkbox checked label="Demo checkbox" /> Checkbox
+                    </label>
+                    <x-ui.tag variant="live">Active</x-ui.tag>
+                    <x-ui.tag variant="soon">Coming Soon</x-ui.tag>
+                    <x-ui.tag variant="gold">Featured</x-ui.tag>
+                    <x-ui.loader size="1.75rem" />
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-3">
+                    <x-ui.alert variant="info" title="Heads up" icon="info">Informational alert card.</x-ui.alert>
+                    <x-ui.alert variant="warning" title="Careful" icon="shield">Warning alert card.</x-ui.alert>
+                    <x-ui.alert variant="danger" title="Problem" icon="x">Danger alert card.</x-ui.alert>
+                </div>
+
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="space-y-2">
+                        <x-ui.skeleton class="h-4 w-3/4" />
+                        <x-ui.skeleton class="h-4 w-1/2" />
+                        <x-ui.skeleton class="h-24 w-full" />
+                    </div>
+                    <x-ui.upload label="Click or drop a file here" hint="Skeletons load, uploads drop." />
+                </div>
+
+                <button type="button"
+                        x-on:click="window.dispatchEvent(new CustomEvent('nx-toast', { detail: { type: 'success', message: 'Toast test — it works.' } }))"
+                        class="text-xs font-medium text-[rgb(var(--nx-teal-ink))] hover:underline">
+                    Fire a test toast
+                </button>
+            </div>
+        </section>
+
+        {{-- Chat Composer Pro — every feature switched on, events only (nothing is delivered). The real surfaces enable the subset their
+             server accepts: see docs/chat-composer-plan.md. --}}
+        <section class="rounded-2xl border border-[rgb(var(--nx-line))] bg-[rgb(var(--nx-surface))] p-6 lg:col-span-2"
+                 x-data="{ last: null, ev: [] }"
+                 x-on:cc:transmit="$event.detail.wait(Promise.resolve($event.detail.payload).then(p => { last = { text: p.text, files: p.files.map(f => f.name), items: p.items.map(i => i.type), voice: p.voice ? Math.round(p.voice.duration) + 's' : null, scheduledAt: p.scheduledAt }; }))"
+                 x-on:cc:typing="ev = ['typing', ...ev].slice(0, 4)" x-on:cc:queued="ev = ['queued', ...ev].slice(0, 4)" x-on:cc:sent="ev = ['sent', ...ev].slice(0, 4)">
+            <h2 class="mb-1 text-sm font-semibold text-[rgb(var(--nx-text))]">Chat Composer Pro</h2>
+            <p class="mb-3 text-xs text-[rgb(var(--nx-text-2))]">The one composer for every chat surface (<code>&lt;naara-composer&gt;</code>). All features on here; Enter sends, Shift+Enter is a new line.</p>
+            <x-composer convo-id="ui-kit-demo" :features="['emoji', 'attach', 'voice', 'gif', 'schedule', 'hints', 'snippets', 'captions']"
+                        :attach-kinds="['media', 'camera', 'video', 'document', 'audio', 'contact', 'poll']" placeholder="Message" />
+            <p class="mt-3 text-[11px] text-[rgb(var(--nx-text-2))]">Events: <span x-text="ev.join(' · ') || '—'"></span></p>
+            <pre class="mt-1 overflow-x-auto rounded-lg bg-[rgb(var(--nx-surface-2))] p-3 text-[11px] text-[rgb(var(--nx-text-2))]" x-text="last ? JSON.stringify(last, null, 2) : 'Last payload will appear here.'"></pre>
+        </section>
+    </div>
+</div>

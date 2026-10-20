@@ -1,0 +1,40 @@
+// N2N desktop panels (draggable + resizable) and the configurable Naara chat logo. Needs the dev app on BASE with frank@n2n.test. Run: node tests/visual/n2n/panels-smoke.mjs
+import { createRequire } from 'node:module';
+import { execSync } from 'node:child_process';
+const { chromium } = createRequire(execSync('npm root -g').toString().trim() + '/')('playwright');
+const BASE = process.env.BASE || 'http://127.0.0.1:8765';
+const ok = (n, c) => { console.log((c ? 'PASS ' : 'FAIL ') + n); if (!c) { process.exitCode = 1; } };
+const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+const p = await ctx.newPage();
+try {
+  await p.goto(BASE + '/login'); await p.fill('input[name=email]', 'frank@n2n.test'); await p.fill('input[name=password]', 'password');
+  await Promise.all([p.waitForNavigation().catch(() => {}), p.click('button[type=submit]')]);
+  await p.goto(BASE + '/n2n/chat', { waitUntil: 'domcontentloaded' }); await p.waitForSelector('.nc__list'); await p.waitForTimeout(3500);
+  const w = (sel) => p.$eval(sel, (e) => Math.round(e.getBoundingClientRect().width));
+  ok('list starts at its default width', (await w('.nc__list')) === 360);
+  const logo = await p.$eval('.nn__brandimg', (e) => ({ src: e.currentSrc, w: e.naturalWidth, box: e.getBoundingClientRect().width }));
+  ok('rail shows the configured chat logo (loaded, not clipped)', logo.w > 0 && logo.box >= 50 && /naara-chat-mark/.test(logo.src));
+  const g = await (await p.$('[data-nn-grip=list]')).boundingBox();
+  await p.mouse.move(g.x + g.width / 2, g.y + 300); await p.mouse.down(); await p.mouse.move(g.x + g.width / 2 + 100, g.y + 300, { steps: 8 }); await p.mouse.up();
+  ok('dragging the divider widens the list by ~100px', Math.abs((await w('.nc__list')) - 460) <= 4);
+  await p.mouse.move(g.x + 100 + 5, g.y + 300); await p.mouse.down(); await p.mouse.move(0, g.y + 300, { steps: 8 }); await p.mouse.up();
+  ok('the list stops at its minimum (260px)', (await w('.nc__list')) === 260);
+  const r = await (await p.$('[data-nn-grip=rail]')).boundingBox();
+  await p.mouse.move(r.x + r.width / 2, r.y + 300); await p.mouse.down(); await p.mouse.move(r.x - 40, r.y + 300, { steps: 6 }); await p.mouse.up();
+  ok('narrowing the rail hides its labels', (await p.$eval('html', (e) => e.hasAttribute('data-nn-rail-narrow'))) && (await w('.nn__rail')) <= 76);
+  await p.screenshot({ path: 'test-results/panels-1-narrow-1280.png' });
+  await p.reload({ waitUntil: 'domcontentloaded' }); await p.waitForSelector('.nc__list');
+  ok('widths persist after a reload', (await w('.nc__list')) === 260 && (await w('.nn__rail')) <= 76);
+  await p.dblclick('[data-nn-grip=list]'); await p.dblclick('[data-nn-grip=rail]');
+  ok('double-click resets both', (await w('.nc__list')) === 360 && (await w('.nn__rail')) === 92);
+  await p.focus('[data-nn-grip=list]'); await p.keyboard.press('ArrowRight');
+  ok('keyboard nudges the divider', (await w('.nc__list')) === 376);
+  await p.keyboard.press('Home');
+  await p.screenshot({ path: 'test-results/panels-2-default-1280.png' });
+  const m = await browser.newContext({ viewport: { width: 390, height: 844 } }); const mp = await m.newPage();
+  await mp.goto(BASE + '/login'); await mp.fill('input[name=email]', 'frank@n2n.test'); await mp.fill('input[name=password]', 'password');
+  await Promise.all([mp.waitForNavigation().catch(() => {}), mp.click('button[type=submit]')]);
+  await mp.goto(BASE + '/n2n/chat', { waitUntil: 'domcontentloaded' }); await mp.waitForSelector('.nc__list');
+  ok('no divider on a phone', !(await mp.$eval('[data-nn-grip=list]', (e) => getComputedStyle(e).display !== 'none')));
+} finally { await browser.close(); }

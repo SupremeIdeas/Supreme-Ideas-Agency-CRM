@@ -1,0 +1,1 @@
+import"./realtime-DqCTxFpM.js";import"./call-NaG4YvtT.js";import"./preload-helper-BfFHrpNk.js";import"./gesture-config-Cjf_J9fu.js";const n=window.N2NRealtime;function t(){n&&(n.start(),window.__n2nPing||(window.__n2nPing=setInterval(()=>n.ping(),45e3),n.ping()))}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",t):t();

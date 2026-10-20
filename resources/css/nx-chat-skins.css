@@ -1,0 +1,346 @@
+/* ===== Naara chat x skins (MASTER-ONLY). The skins' own CSS styles .ns-card / .ns-row / .ns-cta, which the chat does not use, so without this file every skin
+   looked like the default in chat. Here each skin's signature is expressed on the chat's own parts (list rows, bubbles, composer, thread/list surface, cards in a
+   bubble) from the SAME tokens the skin already defines. Rules:
+   - colours come from tokens, so text contrast is the skin's own; a member's custom chat theme (data-nc-theme / --nc-*) always wins for colours and wallpaper;
+   - nothing here changes layout or sizes, only radius, edge, shadow, surface pattern and type;
+   - every skin not listed gets the generic radius mapping at the top, so all 35 follow their own corner language. ===== */
+
+/* ---- Generic: every skin's corner language (its --nx-r-* tokens) reaches the bubbles, rows and composer ---- */
+html[data-nx-skin] .nc__thread .ncb { --cs-r: calc(var(--nx-r-row, 18px) * .95); --cs-t: min(6px, var(--cs-r)); border-start-start-radius: var(--cs-r); border-start-end-radius: var(--cs-r); border-end-start-radius: var(--cs-r); border-end-end-radius: var(--cs-r); }
+html[data-nx-skin] .nc__thread .ncb.ncb--in { border-end-start-radius: var(--cs-t); }
+html[data-nx-skin] .nc__thread .ncb.ncb--out { border-end-end-radius: var(--cs-t); }
+html[data-nx-skin] .cc-box { border-radius: max(14px, calc(var(--nx-r-card, 24px) * .9)); }
+html[data-nx-skin] .nev, html[data-nx-skin] .nlive { border-radius: max(10px, calc(var(--nx-r-row, 18px) * .8)); }
+
+
+/* ---- Cards and controls INSIDE a bubble (polls, documents, events, live location): explicit token palettes, never grey mixes of the text colour.
+   --cs-acc is the skin's accent deepened until white text on it passes 4.5:1 in every skin/accent. In an incoming bubble controls are neutral surfaces with a firm
+   border and the chosen state is solid accent + white; in an outgoing (accent) bubble they sit on a darker tint with white text and the chosen state is white + accent. ---- */
+html[data-nx-skin] { --cs-acc: color-mix(in srgb, rgb(var(--nx-cta-b)) 58%, #000); }
+html[data-nx-skin] .ncb--in .npoll__opt { color: var(--nc-in-fg, rgb(var(--nx-text))); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-line-strong)); }
+html[data-nx-skin] .ncb--in .npoll__bar { background: color-mix(in srgb, var(--cs-acc) 26%, transparent); }
+html[data-nx-skin] .ncb--in .npoll__opt.is-mine { color: #fff; background: var(--cs-acc); box-shadow: none; }
+html[data-nx-skin] .ncb--in .npoll__opt.is-mine .npoll__bar { background: rgb(255 255 255 / .22); }
+html[data-nx-skin] .ncb--out .npoll__opt { color: #fff; background: rgb(0 0 0 / .24); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .5); }
+html[data-nx-skin] .ncb--out .npoll__bar { background: rgb(255 255 255 / .22); }
+html[data-nx-skin] .ncb--out .npoll__opt.is-mine { color: var(--cs-acc); background: #fff; box-shadow: none; }
+html[data-nx-skin] .ncb--out .npoll__opt.is-mine .npoll__bar { background: color-mix(in srgb, var(--cs-acc) 18%, transparent); }
+html[data-nx-skin] .npoll__opt.is-mine .npoll__n small, html[data-nx-skin] .npoll__hint, html[data-nx-skin] .npoll__foot { opacity: 1; }
+html[data-nx-skin] .ncb--in .ndoc { color: var(--nc-in-fg, rgb(var(--nx-text))); background: rgb(var(--nx-surface-3)); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-line-strong)); }
+html[data-nx-skin] .ncb--in .ndoc__ic, html[data-nx-skin] .ncb--in .ndoc__dl { background: var(--cs-acc); color: #fff; }
+html[data-nx-skin] .ncb--out .ndoc { color: #fff; background: rgb(0 0 0 / .24); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .5); }
+html[data-nx-skin] .ncb--out .ndoc__ic, html[data-nx-skin] .ncb--out .ndoc__dl { background: #fff; color: var(--cs-acc); }
+html[data-nx-skin] .ndoc__t small { opacity: 1; }
+/* Event / live cards: solid deepened accent, white text; controls wrap instead of clipping. */
+html[data-nx-skin] .nev, html[data-nx-skin] .nlive { background: var(--cs-acc); min-width: 0; width: min(280px, 100%); }
+html[data-nx-skin] .ncb--out .nev, html[data-nx-skin] .ncb--out .nlive { background: rgb(0 0 0 / .28); }
+html[data-nx-skin] .nev__a { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 6px; }
+html[data-nx-skin] .nev__btn, html[data-nx-skin] .nlive__btn { min-width: 0; padding: 6px 10px; line-height: 1.15; text-align: center; white-space: normal; }
+html[data-nx-skin] .nev__btn.is-on { color: var(--cs-acc); }
+
+/* ---- Clay: soft, raised, neumorphic ---- */
+html[data-nx-skin=clay] .nc__thread .ncb { --cs-r: 22px; }
+html[data-nx-skin=clay] .nc__thread .ncb.ncb--in { background: linear-gradient(145deg, rgb(var(--nx-surface-2)), rgb(var(--nx-surface))); box-shadow: 6px 8px 16px -6px rgb(0 0 0 / .45), -4px -4px 10px rgb(255 255 255 / .05), inset 2px 2px 4px rgb(255 255 255 / .07), inset -3px -3px 7px rgb(0 0 0 / .22); }
+html[data-nx-skin=clay] .nc__thread .ncb.ncb--out { box-shadow: 6px 9px 18px -6px rgb(var(--nx-cta-b) / .7), inset 3px 3px 6px rgb(255 255 255 / .3), inset -4px -5px 9px rgb(0 0 0 / .25); }
+html:not(.dark)[data-nx-skin=clay] .nc__thread .ncb.ncb--in { box-shadow: 6px 8px 16px -8px rgb(0 0 0 / .22), -5px -5px 12px rgb(255 255 255 / .9), inset 2px 2px 4px rgb(255 255 255 / .8), inset -3px -3px 7px rgb(0 0 0 / .07); }
+html[data-nx-skin=clay] .nc__rows > li { margin: 6px 10px; border-radius: 22px; overflow: hidden; background: linear-gradient(145deg, rgb(var(--nx-surface-2)), rgb(var(--nx-surface))); box-shadow: 6px 8px 16px -8px rgb(0 0 0 / .45), -4px -4px 10px rgb(255 255 255 / .04); }
+html:not(.dark)[data-nx-skin=clay] .nc__rows > li { box-shadow: 6px 8px 16px -9px rgb(0 0 0 / .25), -5px -5px 12px rgb(255 255 255 / .9); }
+html[data-nx-skin=clay] .nc__rows > li > * { background: transparent; }
+html[data-nx-skin=clay] .cc-box { border-radius: 26px; box-shadow: 8px 10px 20px -10px rgb(0 0 0 / .5), -5px -5px 12px rgb(255 255 255 / .05), inset 2px 2px 4px rgb(255 255 255 / .06), inset -3px -3px 7px rgb(0 0 0 / .22); }
+html[data-nx-skin=clay] .nev, html[data-nx-skin=clay] .nlive { box-shadow: 5px 7px 14px -6px rgb(var(--nx-cta-b) / .6), inset 2px 2px 4px rgb(255 255 255 / .28), inset -3px -3px 6px rgb(0 0 0 / .22); }
+
+/* ---- Neo: flat colour, hard outline, hard offset shadow ---- */
+html[data-nx-skin=neo] .nc__thread .ncb { --cs-r: 10px; --cs-t: 3px; }
+html[data-nx-skin=neo] .nc__thread .ncb.ncb--in { background: color-mix(in srgb, rgb(var(--nx-teal)) 16%, rgb(var(--nx-surface))); box-shadow: 0 0 0 2px rgb(var(--nx-text)), 4px 4px 0 rgb(var(--nx-text)); margin-inline-end: 4px; margin-bottom: 4px; }
+html[data-nx-skin=neo] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: 0 0 0 2px rgb(var(--nx-text)), 4px 4px 0 rgb(var(--nx-text)); margin-inline-end: 4px; margin-bottom: 4px; }
+html[data-nx-skin=neo] .nc__rows > li { border-bottom: 2px solid rgb(var(--nx-text) / .85); }
+html[data-nx-skin=neo] .cc-box { border-radius: 12px; box-shadow: 0 0 0 2px rgb(var(--nx-text)), 4px 4px 0 rgb(var(--nx-text)); border-color: transparent; }
+html[data-nx-skin=neo] .nev, html[data-nx-skin=neo] .nlive { background: var(--cs-acc); box-shadow: 0 0 0 2px rgb(var(--nx-text)), 3px 3px 0 rgb(var(--nx-text)); }
+html[data-nx-skin=neo] .nc__list::before, html[data-nx-skin=neo] .nc__list::after, html[data-nx-skin=neo] .nn__main::before { display: none; }
+html[data-nx-skin=neo] .nn__main:not(:has([data-n2n-chat])) { background-image: none; }
+
+/* ---- Passport: stamped double hairline, serif names, monospaced stamps, guilloche ---- */
+html[data-nx-skin=passport] .nc__thread .ncb { --cs-r: 8px; --cs-t: 3px; }
+html[data-nx-skin=passport] .nc__thread .ncb.ncb--in { box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)), inset 0 0 0 4px rgb(var(--nx-surface-2)), inset 0 0 0 5px rgb(var(--nx-line-strong) / .55); padding: 10px 14px; }
+html[data-nx-skin=passport] .nc__thread .ncb.ncb--out { box-shadow: inset 0 0 0 1px rgb(255 255 255 / .7), inset 0 0 0 4px rgb(var(--nx-cta-b)), inset 0 0 0 5px rgb(255 255 255 / .35); padding: 10px 14px; }
+html[data-nx-skin=passport] .ncb__meta, html[data-nx-skin=passport] .nc__rows time { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .4px; }
+html[data-nx-skin=passport] .nc__thead b, html[data-nx-skin=passport] .nc__rows b, html[data-nx-skin=passport] .nn__title span, html[data-nx-skin=passport] .nev__t, html[data-nx-skin=passport] .npoll__q { font-family: Georgia, 'Times New Roman', serif; }
+html[data-nx-skin=passport] .nc__msgs:not([data-nc-theme]) { background-image: repeating-radial-gradient(circle at 108% -6%, transparent 0 9px, rgb(var(--nx-dc, 214 206 176) / .10) 9px 10px); }
+html[data-nx-skin=passport] .nc__list::before { opacity: .35; }
+html[data-nx-skin=passport] .nc__rows > li { box-shadow: inset 0 -1px 0 rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=passport] .cc-box { border-radius: 8px; box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)), inset 0 0 0 4px rgb(var(--nx-surface)), inset 0 0 0 5px rgb(var(--nx-line-strong) / .55); }
+html[data-nx-skin=passport] .nev, html[data-nx-skin=passport] .nlive { border-radius: 8px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .7), inset 0 0 0 4px rgb(var(--nx-cta-b)), inset 0 0 0 5px rgb(255 255 255 / .35); padding: 12px 14px; }
+
+/* ---- Paper: warm sheets stacked on a ruled notebook page, serif titles ---- */
+html[data-nx-skin=paper] .nc__thread .ncb { --cs-r: 14px; --cs-t: 4px; }
+html[data-nx-skin=paper] .nc__thread .ncb.ncb--in { box-shadow: inset 0 0 0 1px rgb(var(--nx-line)), 0 4px 0 -2px rgb(var(--nx-line)), 0 10px 18px -14px rgb(42 34 24 / .45); }
+html[data-nx-skin=paper] .nc__thread .ncb.ncb--out { box-shadow: 0 4px 0 -2px rgb(var(--nx-cta-b) / .55), 0 10px 18px -14px rgb(42 34 24 / .5); }
+html[data-nx-skin=paper] .nc__msgs:not([data-nc-theme]) { background-image: repeating-linear-gradient(transparent 0 31px, rgb(var(--nx-line) / .7) 31px 32px), linear-gradient(90deg, transparent 0 46px, rgb(220 120 110 / .22) 46px 47px, transparent 47px); background-color: rgb(var(--nx-canvas)); }
+html[data-nx-skin=paper] .nc__thead b, html[data-nx-skin=paper] .nc__rows b, html[data-nx-skin=paper] .nev__t, html[data-nx-skin=paper] .npoll__q, html[data-nx-skin=paper] .nn__title span { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; }
+html[data-nx-skin=paper] .nc__list::before { opacity: .25; }
+html[data-nx-skin=paper] .nc__rows > li { box-shadow: inset 0 -1px 0 rgb(var(--nx-line)); }
+html[data-nx-skin=paper] .cc-box { border-radius: 16px; box-shadow: inset 0 0 0 1px rgb(var(--nx-line)), 0 4px 0 -2px rgb(var(--nx-line)), 0 10px 18px -14px rgb(42 34 24 / .45); }
+html[data-nx-skin=paper] .nev, html[data-nx-skin=paper] .nlive { box-shadow: 0 4px 0 -2px rgb(0 0 0 / .35); }
+
+/* ---- Dot grid: engineering paper, square corners, thin lines, dashed composer ---- */
+html[data-nx-skin=dotgrid] .nc__thread .ncb { --cs-r: 8px; --cs-t: 2px; box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .8); }
+html[data-nx-skin=dotgrid] .nc__thread .ncb.ncb--out { box-shadow: inset 0 0 0 1px rgb(255 255 255 / .55); }
+html[data-nx-skin=dotgrid] .nc__msgs:not([data-nc-theme]), html[data-nx-skin=dotgrid] .nc__list { background-image: radial-gradient(rgb(var(--nx-line-strong) / .55) 1.2px, transparent 1.7px); background-size: 16px 16px; }
+html[data-nx-skin=dotgrid] .nc__list::before { opacity: .35; }
+html[data-nx-skin=dotgrid] .nc__rows > li { border-bottom: 1px dashed rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=dotgrid] .cc-box { border: 1px dashed rgb(var(--nx-line-strong)); border-radius: 10px; box-shadow: none; }
+html[data-nx-skin=dotgrid] .nev, html[data-nx-skin=dotgrid] .nlive { border-radius: 8px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .5); }
+
+/* ---- Aurora: glowing, translucent, light pools behind everything ---- */
+html[data-nx-skin=aurora] .nc__thread .ncb { --cs-r: 20px; }
+html[data-nx-skin=aurora] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2) / .72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgb(var(--nx-teal) / .35), 0 0 22px -8px rgb(var(--nx-teal) / .55); }
+html[data-nx-skin=aurora] .nc__thread .ncb.ncb--out { background: linear-gradient(135deg, rgb(var(--nx-cta-a)), rgb(var(--nx-cta-b))); box-shadow: 0 0 26px -6px rgb(var(--nx-teal) / .8), inset 0 1px 0 rgb(255 255 255 / .35); }
+html[data-nx-skin=aurora] .nc__list::before { opacity: 1; background: radial-gradient(52% 40% at 12% 66%, rgb(var(--nx-teal) / .6), transparent 72%), radial-gradient(44% 36% at 66% 46%, rgb(var(--nx-gold) / .32), transparent 72%), radial-gradient(50% 38% at 96% 92%, rgb(var(--nx-cta-b) / .5), transparent 74%), radial-gradient(62% 32% at 40% 100%, rgb(var(--nx-teal) / .55), transparent 75%); }
+html[data-nx-skin=aurora] .nc__msgs:not([data-nc-theme]) { background-image: radial-gradient(60% 30% at 20% 0, rgb(var(--nx-teal) / .28), transparent 70%), radial-gradient(50% 28% at 90% 100%, rgb(var(--nx-cta-b) / .30), transparent 72%); }
+html[data-nx-skin=aurora] .cc-box { border-radius: 26px; box-shadow: 0 0 26px -10px rgb(var(--nx-teal) / .7), inset 0 0 0 1px rgb(var(--nx-teal) / .4); }
+html[data-nx-skin=aurora] .nev, html[data-nx-skin=aurora] .nlive { box-shadow: 0 0 22px -6px rgb(var(--nx-teal) / .8), inset 0 1px 0 rgb(255 255 255 / .3); }
+
+/* ---- Contrast fixes found by tests/visual/n2n/skin-contrast.mjs (every skin x accent x mode) ---- */
+html[data-nx-skin] .nev__flag { background: rgb(0 0 0 / .28); color: #fff; }
+html[data-nx-skin] .nev__w small, html[data-nx-skin] .nev__k { color: #fff; opacity: 1; }
+html[data-nx-skin] .nlive.is-ended { opacity: 1; }
+html[data-nx-skin] .nlive.is-ended .nlive__dot { opacity: .5; }
+/* Rail "New chat": white text on the skin's deepened accent (the shared .ns-cta gradient is too light at its top for 11px text). */
+html[data-nx-skin] .nn__compose { background: linear-gradient(180deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 86%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 66%, #000)); color: #fff; }
+/* Initials avatars in the chat list (light mode): deepen the ink so letters pass 4.5:1 on the accent tint. */
+html:not(.dark)[data-nx-skin] .nc__rows span.rounded-full, html:not(.dark)[data-nx-skin] .nc__rows .rounded-full > span { color: color-mix(in srgb, rgb(var(--nx-cta-b)) 55%, #000); }
+
+/* ---- Legibility floor (strict pass: small text >= 7:1, body >= 5.5:1, large >= 4.5:1) ---- */
+/* Your own bubbles: a deepened accent gradient for every skin (a member's custom chat theme still wins via --nc-out-bg set closer), white text, readable meta. */
+html[data-nx-skin] .nc__thread { --nc-out-bg: linear-gradient(180deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 66%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 50%, #000)); --nc-out-meta: #fff; }
+html[data-nx-skin] .ncb__meta { font-size: 11px; font-weight: 500; }
+html[data-nx-skin] .ncb--in .ncb__meta { color: rgb(var(--nx-text)); }
+html[data-nx-skin] .nev__btn, html[data-nx-skin] .nlive__btn { font-size: 13px; font-weight: 700; background: rgb(0 0 0 / .26); border-color: rgb(255 255 255 / .7); }
+html[data-nx-skin] .nev__btn.is-on { background: #fff; color: var(--cs-acc); border-color: #fff; }
+html[data-nx-skin] .nev__d, html[data-nx-skin] .nev__r, html[data-nx-skin] .nev__w, html[data-nx-skin] .nlive__s, html[data-nx-skin] .nlive__n { font-size: 13px; }
+html[data-nx-skin] .nev__k { font-size: 12px; font-weight: 700; }
+html[data-nx-skin] .nev__flag { font-size: 11.5px; }
+html[data-nx-skin] .npoll__hint, html[data-nx-skin] .npoll__foot { font-size: 12.5px; }
+html[data-nx-skin] .ncb--in .npoll__hint, html[data-nx-skin] .ncb--in .npoll__foot { color: rgb(var(--nx-text)); }
+html[data-nx-skin] .ncb--out .npoll__hint, html[data-nx-skin] .ncb--out .npoll__foot { color: #fff; }
+html[data-nx-skin] .nc__chip.is-on, html[data-nx-skin] .nc__chips .is-on { background: var(--cs-acc, rgb(var(--nx-cta-b))); color: #fff; font-weight: 700; }
+html:not(.dark) .nn__head .nn__wide, html:not(.dark) .nn__head .nn__wide * { --nx-text-2: 255 255 255; color: #fff; }
+html[data-nx-skin] .nn__railitem span { font-size: 11.5px; font-weight: 600; }
+html[data-nx-skin] .nn__compose { background: linear-gradient(180deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 66%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 50%, #000)); font-size: 12px; font-weight: 700; }
+html[data-nx-skin] .nc__chips .nc__chip.is-on { background: var(--cs-acc, rgb(var(--nx-cta-b))); color: #fff; font-weight: 700; }
+.nn__head .nn__wide, .nn__head .nn__wide * { color: rgb(var(--nx-text)); }
+html[data-nx-skin] .nc__reqchip { font-weight: 700; }
+html[data-nx-skin] .ncb--in .npoll__n small { opacity: 1; }
+html[data-nx-skin] .ncb--out .npoll__n small, html[data-nx-skin] .npoll__opt.is-mine .npoll__n small { color: inherit; }
+html[data-nx-skin] .nn__credits { font-size: 14px; }
+html[data-nx-skin] .nn__head .nn__wide, html[data-nx-skin] .nn__head .nn__wide * { font-size: 14px; font-weight: 700; }
+html[data-nx-skin] .nc__rows span.rounded-full.px-1\.5 { background: rgb(var(--nx-surface-3)); color: rgb(var(--nx-text)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6); }
+
+/* ---- Every other chat surface (forms, panels, tabs, menus): primary buttons, tabs, links, avatars ---- */
+.nn .ns-cta, .nn .ns-cta--sm, .nn .ns-cta--pill, .nn .ns-cta--gold { background: linear-gradient(180deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 66%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 50%, #000)); color: #fff; font-weight: 700; }
+.nn .ns-cta:disabled, .nn .ns-cta[disabled] { opacity: .78; }
+.nn .nc__ptabs button { font-weight: 700; }
+.nn .nc__ptabs button.is-on { background: var(--cs-acc); color: #fff; }
+.nn .nc__plink, .nn .ns-pg__act { color: rgb(var(--nx-text)); }
+.nn .nc__danger { color: color-mix(in srgb, rgb(var(--nx-bad)) 58%, rgb(var(--nx-text))); }
+.nn .ns-avatar { box-shadow: inset 0 0 0 100px rgb(0 0 0 / .30); color: #fff; font-weight: 700; }
+.nn .nc__thead .ns-avatar, .nn .nc__thead .rounded-full { box-shadow: inset 0 0 0 100px rgb(0 0 0 / .30); }
+.nn .ncp__b { font-size: 14px; }
+html:not(.dark) .nn span.rounded-full[class*="bg-primary"] { color: color-mix(in srgb, rgb(var(--nx-cta-b)) 55%, #000); }
+html[data-nx-skin] .nn .ns-cta, html[data-nx-skin] .nn .ns-cta--sm, html[data-nx-skin] .nn .ns-cta--pill { background: linear-gradient(180deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 66%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 50%, #000)); color: #fff; }
+html[data-nx-skin] .nn .ns-seg button.is-on, html[data-nx-skin] .nn .ns-tabs .is-on, html[data-nx-skin] .nn [role=tab][aria-selected=true] { background: var(--cs-acc); color: #fff; font-weight: 700; }
+html[data-nx-skin] .nn .ns-seg button:not(.is-on) { color: rgb(var(--nx-text)); font-weight: 600; }
+.nn .ns-avatar { background-image: linear-gradient(rgb(0 0 0 / .42), rgb(0 0 0 / .42)) !important; }
+html:not(.dark) .nn span.rounded-full.font-bold:not([class*="bg-white"]) { color: color-mix(in srgb, rgb(var(--nx-cta-b)) 55%, #000); }
+html[data-nx-skin] .nn__actions span.absolute.rounded-full.font-bold { color: #140f05; font-size: 11px; font-weight: 800; }
+.dark .nn .nc__rows span.rounded-full.font-bold, .dark .nn .nc__rows .rounded-full > span { color: rgb(var(--nx-text)); }
+html[data-nx-skin=vivid] .ns-more .ns-list__row { background-image: linear-gradient(rgb(0 0 0 / .22), rgb(0 0 0 / .22)), linear-gradient(rgb(6 118 128), rgb(5 108 119)); }
+html[data-nx-skin] .ns-more .ns-list__row > span:not(.ns-tile) { font-size: 14px; font-weight: 600; }
+html[data-nx-skin=vivid] .ns-more .ns-list__row { background-image: linear-gradient(rgb(0 0 0 / .45), rgb(0 0 0 / .45)), linear-gradient(180deg, rgb(var(--nx-acc-a)), rgb(var(--nx-acc-b))) !important; }
+.dark html .n2nx__group > .is-danger, .dark .n2nx__group > .is-danger, .dark .n2nx__group > .is-danger .ns-i { color: rgb(255 168 168); }
+html:not(.dark) .n2nx__group > .is-danger, html:not(.dark) .n2nx__group > .is-danger .ns-i { color: rgb(122 16 16); }
+html[data-nx-skin] .nc__chip.is-danger { color: rgb(var(--nx-text)); font-weight: 700; background: rgb(var(--nx-surface-3)); }
+html[data-nx-skin=dotgrid] .nc__list { background-image: none; }
+.nn__main h2 { color: rgb(var(--nx-text)); }
+
+/* ===== Signature set 2: nebula, noir, prism, vivid, neon, golden, halo, ledger, receipt. Same rules as above: tokens only, no size/layout change, outgoing bubbles
+   stay on the deepened accent (--cs-acc) so white text keeps its contrast; a member's custom chat theme still wins. ===== */
+
+/* ---- Nebula: deep-space gradient, soft pink flare on your bubbles, faint star field ---- */
+html[data-nx-skin=nebula] .nc__thread .ncb { --cs-r: 20px; }
+html[data-nx-skin=nebula] .nc__thread .ncb.ncb--in { background: linear-gradient(160deg, color-mix(in srgb, rgb(var(--nx-teal)) 8%, rgb(var(--nx-surface-2))), rgb(var(--nx-surface-2)) 60%); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6), 0 12px 22px -16px rgb(var(--nx-teal) / .7); }
+html[data-nx-skin=nebula] .nc__thread .ncb.ncb--out { background: radial-gradient(60% 80% at 100% 0, rgb(255 120 200 / .16), transparent 70%), linear-gradient(150deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 56%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 36%, #1a0638)); box-shadow: 0 10px 22px -12px rgb(var(--nx-cta-b) / .8), inset 0 1px 0 rgb(255 255 255 / .22); }
+html[data-nx-skin=nebula] .nc__msgs:not([data-nc-theme]) { background-image: radial-gradient(1.2px 1.2px at 12% 18%, rgb(255 255 255 / .45), transparent), radial-gradient(1px 1px at 38% 62%, rgb(255 255 255 / .35), transparent), radial-gradient(1.4px 1.4px at 71% 30%, rgb(255 255 255 / .4), transparent), radial-gradient(1px 1px at 88% 78%, rgb(255 255 255 / .3), transparent), radial-gradient(60% 30% at 80% 0, rgb(var(--nx-cta-b) / .22), transparent 72%); }
+html:not(.dark)[data-nx-skin=nebula] .nc__msgs:not([data-nc-theme]) { background-image: radial-gradient(60% 30% at 80% 0, rgb(var(--nx-cta-b) / .14), transparent 72%); }
+html[data-nx-skin=nebula] .cc-box { box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .7), 0 12px 24px -16px rgb(var(--nx-teal) / .8); }
+
+/* ---- Noir: flat black, hairlines, one electric edge on what is yours ---- */
+html[data-nx-skin=noir] .nc__thread .ncb { --cs-r: 8px; --cs-t: 2px; }
+html[data-nx-skin=noir] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+html[data-nx-skin=noir] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-teal-ink) / .9), 0 0 24px -10px rgb(var(--nx-teal) / .8); }
+html[data-nx-skin=noir] .nc__rows > li { border-bottom: 1px solid rgb(var(--nx-line)); }
+html[data-nx-skin=noir] .cc-box { border-radius: 10px; box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong)); }
+html[data-nx-skin=noir] .nev, html[data-nx-skin=noir] .nlive { box-shadow: inset 0 0 0 1.5px rgb(var(--nx-teal-ink) / .9), 0 0 22px -10px rgb(var(--nx-teal) / .8); }
+html[data-nx-skin=noir] .nc__list::before, html[data-nx-skin=noir] .nc__list::after, html[data-nx-skin=noir] .nn__main::before { display: none; }
+
+/* ---- Prism: a diagonal light sheen across every bubble ---- */
+html[data-nx-skin=prism] .nc__thread .ncb { --cs-r: 18px; }
+html[data-nx-skin=prism] .nc__thread .ncb.ncb--in { background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / .09) 45%, rgb(120 200 255 / .10) 55%, transparent 70%), linear-gradient(160deg, rgb(var(--nx-teal) / .14), rgb(var(--nx-surface-2)) 65%); box-shadow: 0 12px 22px -16px rgb(0 0 0 / .6), inset 0 0 0 1px rgb(var(--nx-line) / .8); }
+html[data-nx-skin=prism] .nc__thread .ncb.ncb--out { background: linear-gradient(115deg, transparent 28%, rgb(255 255 255 / .12) 45%, rgb(255 160 220 / .14) 56%, transparent 72%), linear-gradient(160deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 66%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 46%, #000)); box-shadow: 0 0 26px -10px rgb(var(--nx-cta-a) / .7), inset 0 1px 0 rgb(255 255 255 / .25); }
+
+/* ---- Vivid: saturated colour, a halftone corner on your bubbles ---- */
+html[data-nx-skin=vivid] .nc__thread .ncb { --cs-r: 22px; }
+html[data-nx-skin=vivid] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .18), inset 0 0 0 1px rgb(var(--nx-line-strong) / .7), 0 12px 22px -16px rgb(var(--nx-cta-b) / .6); }
+html[data-nx-skin=vivid] .nc__thread .ncb.ncb--out { background: radial-gradient(rgb(255 255 255 / .2) 1.2px, transparent 1.7px) 100% 0 / 10px 10px no-repeat, linear-gradient(150deg, color-mix(in srgb, rgb(var(--nx-cta-a)) 70%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 60%, #000) 58%, color-mix(in srgb, rgb(var(--nx-cta-b)) 40%, #000)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), 0 14px 26px -14px rgb(var(--nx-cta-b) / .8); }
+
+/* ---- Neon: dark glass with a glowing edge ---- */
+html[data-nx-skin=neon] .nc__thread .ncb { --cs-r: 16px; }
+html[data-nx-skin=neon] .nc__thread .ncb.ncb--in { background: linear-gradient(160deg, rgb(var(--nx-teal) / .16), rgb(var(--nx-surface-2)) 72%); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-teal) / .75), 0 0 18px -6px rgb(var(--nx-teal) / .55); }
+html[data-nx-skin=neon] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-teal-ink)), 0 0 24px -4px rgb(var(--nx-teal) / .75); }
+html[data-nx-skin=neon] .cc-box { box-shadow: inset 0 0 0 1.5px rgb(var(--nx-teal) / .7), 0 0 20px -8px rgb(var(--nx-teal) / .6); }
+html[data-nx-skin=neon] .nev, html[data-nx-skin=neon] .nlive { box-shadow: inset 0 0 0 1.5px rgb(var(--nx-teal-ink)), 0 0 22px -4px rgb(var(--nx-teal) / .7); }
+html[data-nx-skin=neon] .nc__msgs:not([data-nc-theme]) { background-image: linear-gradient(rgb(var(--nx-teal) / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--nx-teal) / .06) 1px, transparent 1px); background-size: 28px 28px; }
+
+/* ---- Golden: warm metallic hairline, gilded highlights ---- */
+html[data-nx-skin=golden] .nc__thread .ncb { --cs-r: 16px; }
+html[data-nx-skin=golden] .nc__thread .ncb.ncb--in { background: linear-gradient(165deg, rgb(var(--nx-gold) / .16), rgb(var(--nx-surface-2)) 55%); box-shadow: inset 0 1px 0 rgb(var(--nx-gold) / .8), inset 0 0 0 1px rgb(var(--nx-line)), 0 12px 22px -18px rgb(var(--nx-gold) / .8); }
+html[data-nx-skin=golden] .nc__thread .ncb.ncb--out { background: radial-gradient(60% 70% at 100% 0, rgb(var(--nx-gold) / .32), transparent 70%), linear-gradient(150deg, color-mix(in srgb, rgb(var(--nx-cta-b)) 64%, #000), color-mix(in srgb, rgb(var(--nx-cta-b)) 44%, #000)); box-shadow: inset 0 1px 0 rgb(var(--nx-gold) / .7), 0 14px 26px -16px rgb(var(--nx-gold) / .8); }
+html[data-nx-skin=golden] .cc-box { box-shadow: inset 0 1px 0 rgb(var(--nx-gold) / .7), inset 0 0 0 1px rgb(var(--nx-line)); }
+
+/* ---- Halo: a soft aura around every bubble ---- */
+html[data-nx-skin=halo] .nc__thread .ncb { --cs-r: 20px; }
+html[data-nx-skin=halo] .nc__thread .ncb.ncb--in { background: linear-gradient(160deg, rgb(var(--nx-teal) / .14), rgb(var(--nx-surface-2)) 70%); box-shadow: 0 0 30px -14px rgb(var(--nx-teal) / .75), inset 0 0 0 1px rgb(var(--nx-teal) / .4); }
+html[data-nx-skin=halo] .nc__thread .ncb.ncb--out { box-shadow: 0 0 32px -10px rgb(var(--nx-gold) / .55), 0 0 22px -6px rgb(var(--nx-teal) / .7), inset 0 0 0 1.5px rgb(255 255 255 / .35); }
+html[data-nx-skin=halo] .cc-box { box-shadow: 0 0 30px -14px rgb(var(--nx-teal) / .7), inset 0 0 0 1px rgb(var(--nx-teal) / .4); }
+html[data-nx-skin=halo] .nev, html[data-nx-skin=halo] .nlive { box-shadow: 0 0 26px -6px rgb(var(--nx-teal) / .7), inset 0 0 0 1.5px rgb(255 255 255 / .3); }
+
+/* ---- Ledger: ruled paper, square-cornered entries with a margin rule ---- */
+html[data-nx-skin=ledger] .nc__thread .ncb { --cs-r: 6px; --cs-t: 2px; }
+html[data-nx-skin=ledger] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface)); box-shadow: inset 4px 0 0 rgb(var(--nx-teal-ink)), inset 0 0 0 1px rgb(var(--nx-line)); }
+html[data-nx-skin=ledger] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset -4px 0 0 rgb(255 255 255 / .55), inset 0 0 0 1px rgb(0 0 0 / .2); }
+html[data-nx-skin=ledger] .cc-box { border-radius: 8px; box-shadow: inset 4px 0 0 rgb(var(--nx-teal-ink)), inset 0 0 0 1px rgb(var(--nx-line)); }
+html[data-nx-skin=ledger] .nc__rows > li { border-bottom: 1px solid rgb(var(--nx-line)); }
+html[data-nx-skin=ledger] .nc__msgs:not([data-nc-theme]) { background-image: repeating-linear-gradient(transparent 0 31px, rgb(var(--nx-line) / .5) 31px 32px); }
+html[data-nx-skin=ledger] .nev, html[data-nx-skin=ledger] .nlive { box-shadow: inset 4px 0 0 rgb(255 255 255 / .55); }
+
+/* ---- Receipt: thermal-paper stitch line inside every bubble ---- */
+html[data-nx-skin=receipt] .nc__thread .ncb { --cs-r: 6px; --cs-t: 2px; }
+html[data-nx-skin=receipt] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface)); box-shadow: 0 8px 14px -12px rgb(0 0 0 / .5); outline: 1px dashed rgb(var(--nx-line-strong)); outline-offset: -4px; }
+html[data-nx-skin=receipt] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: 0 8px 14px -12px rgb(0 0 0 / .5); outline: 1px dashed rgb(255 255 255 / .6); outline-offset: -4px; }
+html[data-nx-skin=receipt] .cc-box { border-radius: 8px; outline: 1px dashed rgb(var(--nx-line-strong)); outline-offset: -4px; }
+html[data-nx-skin=receipt] .nc__rows > li { border-bottom: 1px dashed rgb(var(--nx-line-strong)); }
+
+/* ===== Signature set 3: the remaining themed skins. Textile / ticket skins carry their motif as an edge strip OUTSIDE the text padding (never behind a letter);
+   every incoming bubble keeps an opaque base so the contrast floor holds; outgoing bubbles stay on --cs-acc. ===== */
+
+/* ---- Adire: indigo and cream resist-dye diamonds down the bubble's edge ---- */
+html[data-nx-skin=adire] .nc__thread .ncb { --cs-r: 14px; }
+html[data-nx-skin=adire] .nc__thread .ncb.ncb--in { background: repeating-linear-gradient(45deg, rgb(var(--nx-cta-b)) 0 3px, rgb(var(--nx-surface-3)) 3px 6px) left / 6px 100% no-repeat, rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=adire] .nc__thread .ncb.ncb--out { background: repeating-linear-gradient(45deg, rgb(255 255 255 / .85) 0 3px, rgb(0 0 0 / .45) 3px 6px) right / 6px 100% no-repeat, var(--cs-acc); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .25); }
+
+/* ---- Airmail: striped envelope border top and bottom ---- */
+html[data-nx-skin=airmail] .nc__thread .ncb { --cs-r: 5px; --cs-t: 2px; }
+html[data-nx-skin=airmail] .nc__thread .ncb.ncb--in { background: repeating-linear-gradient(135deg, rgb(var(--nx-bad)) 0 8px, rgb(var(--nx-surface-2)) 8px 12px, rgb(var(--nx-cta-b)) 12px 20px, rgb(var(--nx-surface-2)) 20px 24px) top / 100% 4px no-repeat, repeating-linear-gradient(135deg, rgb(var(--nx-bad)) 0 8px, rgb(var(--nx-surface-2)) 8px 12px, rgb(var(--nx-cta-b)) 12px 20px, rgb(var(--nx-surface-2)) 20px 24px) bottom / 100% 4px no-repeat, rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=airmail] .nc__thread .ncb.ncb--out { background: repeating-linear-gradient(135deg, rgb(255 255 255 / .85) 0 8px, rgb(0 0 0 / .4) 8px 16px) top / 100% 4px no-repeat, repeating-linear-gradient(135deg, rgb(255 255 255 / .85) 0 8px, rgb(0 0 0 / .4) 8px 16px) bottom / 100% 4px no-repeat, var(--cs-acc); }
+
+/* ---- Ankara: bold woven-print band ---- */
+html[data-nx-skin=ankara] .nc__thread .ncb { --cs-r: 16px; }
+html[data-nx-skin=ankara] .nc__thread .ncb.ncb--in { background: repeating-linear-gradient(0deg, rgb(var(--nx-gold)) 0 4px, rgb(var(--nx-cta-b)) 4px 8px, rgb(var(--nx-bad)) 8px 12px) left / 6px 100% no-repeat, rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=ankara] .nc__thread .ncb.ncb--out { background: repeating-linear-gradient(0deg, rgb(var(--nx-gold)) 0 4px, rgb(255 255 255 / .85) 4px 8px, rgb(var(--nx-bad)) 8px 12px) right / 6px 100% no-repeat, var(--cs-acc); }
+
+/* ---- Asooke: wine / indigo / ochre woven strip ---- */
+html[data-nx-skin=asooke] .nc__thread .ncb { --cs-r: 12px; }
+html[data-nx-skin=asooke] .nc__thread .ncb.ncb--in { background: linear-gradient(90deg, rgb(var(--nx-bad)) 0 2px, rgb(var(--nx-gold)) 2px 4px, rgb(var(--nx-cta-b)) 4px 6px) left / 6px 100% no-repeat, rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=asooke] .nc__thread .ncb.ncb--out { background: linear-gradient(90deg, rgb(var(--nx-gold)) 0 2px, rgb(255 255 255 / .85) 2px 4px, rgb(var(--nx-bad)) 4px 6px) right / 6px 100% no-repeat, var(--cs-acc); }
+
+/* ---- Blueprint: technical drawing, dashed outlines, grid paper ---- */
+html[data-nx-skin=blueprint] .nc__thread .ncb { --cs-r: 3px; --cs-t: 1px; }
+html[data-nx-skin=blueprint] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: none; outline: 1px dashed rgb(var(--nx-cta-b) / .8); outline-offset: -4px; }
+html[data-nx-skin=blueprint] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: none; outline: 1px dashed rgb(255 255 255 / .7); outline-offset: -4px; }
+html[data-nx-skin=blueprint] .cc-box { border-radius: 4px; outline: 1px dashed rgb(var(--nx-cta-b) / .8); outline-offset: -4px; }
+html[data-nx-skin=blueprint] .nc__msgs:not([data-nc-theme]) { background-image: linear-gradient(rgb(var(--nx-cta-b) / .07) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--nx-cta-b) / .07) 1px, transparent 1px); background-size: 24px 24px; }
+
+/* ---- Boarding: ticket with side notches ---- */
+html[data-nx-skin=boarding] .nc__thread .ncb { --cs-r: 10px; }
+html[data-nx-skin=boarding] .nc__thread .ncb.ncb--in { background: radial-gradient(circle 6px at 0 50%, rgb(var(--nx-canvas)) 97%, transparent) , radial-gradient(circle 6px at 100% 50%, rgb(var(--nx-canvas)) 97%, transparent), rgb(var(--nx-surface-2)); box-shadow: 0 8px 14px -12px rgb(0 0 0 / .5); }
+html[data-nx-skin=boarding] .nc__thread .ncb.ncb--out { background: radial-gradient(circle 6px at 0 50%, rgb(var(--nx-canvas)) 97%, transparent), radial-gradient(circle 6px at 100% 50%, rgb(var(--nx-canvas)) 97%, transparent), var(--cs-acc); box-shadow: 0 8px 14px -12px rgb(0 0 0 / .5); }
+
+/* ---- Calm: flat and tonal, no shadows ---- */
+html[data-nx-skin=calm] .nc__thread .ncb { --cs-r: 14px; }
+html[data-nx-skin=calm] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: none; }
+html[data-nx-skin=calm] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: none; }
+html[data-nx-skin=calm] .cc-box, html[data-nx-skin=calm] .nev, html[data-nx-skin=calm] .nlive { box-shadow: none; }
+
+/* ---- Canopy: leaf-shaped bubbles ---- */
+html[data-nx-skin=canopy] .nc__thread .ncb.ncb--in { border-start-start-radius: 4px; border-start-end-radius: 22px; border-end-end-radius: 4px; border-end-start-radius: 22px; background: linear-gradient(135deg, color-mix(in srgb, rgb(var(--nx-teal)) 12%, rgb(var(--nx-surface-2))), rgb(var(--nx-surface-2)) 70%); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6); }
+html[data-nx-skin=canopy] .nc__thread .ncb.ncb--out { border-start-start-radius: 22px; border-start-end-radius: 4px; border-end-end-radius: 22px; border-end-start-radius: 4px; background: var(--cs-acc); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .25); }
+html[data-nx-skin=canopy] .cc-box { border-radius: 24px 6px 24px 6px; }
+
+/* ---- Chipset: SIM-card corner cut, foil contact outline ---- */
+html[data-nx-skin=chipset] .nc__thread .ncb { --cs-r: 6px; --cs-t: 3px; }
+html[data-nx-skin=chipset] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-gold) / .75); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); }
+html[data-nx-skin=chipset] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 0 0 1.5px rgb(var(--nx-gold) / .85); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); }
+
+/* ---- Clarity: high contrast, heavy frames ---- */
+html[data-nx-skin=clarity] .nc__thread .ncb { --cs-r: 12px; }
+html[data-nx-skin=clarity] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface)); box-shadow: inset 0 0 0 2px rgb(var(--nx-text)); }
+html[data-nx-skin=clarity] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 0 0 2px rgb(var(--nx-text)); }
+html[data-nx-skin=clarity] .cc-box { box-shadow: inset 0 0 0 2px rgb(var(--nx-text)); }
+
+/* ---- Danfo: Lagos transit sign, framed with a hazard stripe ---- */
+html[data-nx-skin=danfo] .nc__thread .ncb { --cs-r: 6px; --cs-t: 2px; }
+html[data-nx-skin=danfo] .nc__thread .ncb.ncb--in { background: repeating-linear-gradient(135deg, rgb(var(--nx-gold)) 0 8px, #111 8px 16px) top / 100% 4px no-repeat, rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 2px rgb(var(--nx-text) / .9); }
+html[data-nx-skin=danfo] .nc__thread .ncb.ncb--out { background: repeating-linear-gradient(135deg, rgb(var(--nx-gold)) 0 8px, #111 8px 16px) top / 100% 4px no-repeat, var(--cs-acc); box-shadow: inset 0 0 0 2px rgb(255 255 255 / .85); }
+
+/* ---- Daybreak: pastel, round, soft ---- */
+html[data-nx-skin=daybreak] .nc__thread .ncb { --cs-r: 24px; --cs-t: 8px; }
+html[data-nx-skin=daybreak] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: 0 8px 18px -10px rgb(0 0 0 / .22); }
+html[data-nx-skin=daybreak] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: 0 10px 20px -10px rgb(var(--nx-cta-b) / .6); }
+html[data-nx-skin=daybreak] .cc-box { border-radius: 28px; box-shadow: 0 10px 22px -12px rgb(0 0 0 / .25); }
+
+/* ---- Glass: frosted edge highlights on solid fills (solid by design: legibility over a mesh) ---- */
+html[data-nx-skin=glass] .nc__thread .ncb { --cs-r: 20px; }
+html[data-nx-skin=glass] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), inset 0 0 0 1px rgb(255 255 255 / .14), 0 10px 22px -14px rgb(0 0 0 / .5); }
+html[data-nx-skin=glass] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), inset 0 0 0 1px rgb(255 255 255 / .2), 0 10px 22px -12px rgb(var(--nx-cta-b) / .7); }
+
+/* ---- Handset: retro LCD, bevelled panels ---- */
+html[data-nx-skin=handset] .nc__thread .ncb { --cs-r: 3px; --cs-t: 1px; }
+html[data-nx-skin=handset] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 1px 1px 0 rgb(255 255 255 / .28), inset -1px -1px 0 rgb(0 0 0 / .45); }
+html[data-nx-skin=handset] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 1px 1px 0 rgb(255 255 255 / .35), inset -1px -1px 0 rgb(0 0 0 / .5); }
+html[data-nx-skin=handset] .cc-box { border-radius: 4px; box-shadow: inset 1px 1px 0 rgb(255 255 255 / .25), inset -1px -1px 0 rgb(0 0 0 / .45); }
+
+/* ---- Harmattan: dry-season haze, a hazy sun in the corner ---- */
+html[data-nx-skin=harmattan] .nc__thread .ncb { --cs-r: 16px; }
+html[data-nx-skin=harmattan] .nc__thread .ncb.ncb--in { background: linear-gradient(180deg, color-mix(in srgb, rgb(var(--nx-gold)) 10%, rgb(var(--nx-surface-2))), rgb(var(--nx-surface-2))); box-shadow: 0 10px 20px -14px rgb(var(--nx-gold) / .6), inset 0 0 0 1px rgb(var(--nx-line) / .8); }
+html[data-nx-skin=harmattan] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: 0 10px 20px -12px rgb(var(--nx-gold) / .7); }
+html[data-nx-skin=harmattan] .nc__msgs:not([data-nc-theme]) { background-image: radial-gradient(40% 24% at 88% 0, rgb(var(--nx-gold) / .16), transparent 72%); }
+
+/* ---- Pop: bold outline, hard colour offset ---- */
+html[data-nx-skin=pop] .nc__thread .ncb { --cs-r: 14px; --cs-t: 4px; }
+html[data-nx-skin=pop] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 2px rgb(var(--nx-text)), 3px 3px 0 rgb(var(--nx-gold)); margin-inline-end: 3px; margin-bottom: 3px; }
+html[data-nx-skin=pop] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 0 0 2px rgb(var(--nx-text)), 3px 3px 0 rgb(var(--nx-gold)); margin-inline-end: 3px; margin-bottom: 3px; }
+html[data-nx-skin=pop] .cc-box { box-shadow: inset 0 0 0 2px rgb(var(--nx-text)), 3px 3px 0 rgb(var(--nx-gold)); }
+
+/* ---- Tide: thin sea-green waves along the foot of the thread ---- */
+html[data-nx-skin=tide] .nc__thread .ncb { --cs-r: 20px; }
+html[data-nx-skin=tide] .nc__thread .ncb.ncb--in { background: linear-gradient(180deg, rgb(var(--nx-surface-2)), color-mix(in srgb, rgb(var(--nx-teal)) 12%, rgb(var(--nx-surface-2)))); box-shadow: inset 0 0 0 1px rgb(var(--nx-teal) / .35); }
+html[data-nx-skin=tide] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: 0 10px 20px -12px rgb(var(--nx-teal) / .7); }
+html[data-nx-skin=tide] .nc__msgs:not([data-nc-theme]) { background-image: radial-gradient(90% 46px at 20% 100%, rgb(var(--nx-teal) / .10), transparent 72%), radial-gradient(80% 36px at 80% 100%, rgb(var(--nx-teal) / .08), transparent 72%); }
+
+/* ---- Vault: black and champagne foil, a fine guilloche in the thread ---- */
+html[data-nx-skin=vault] .nc__thread .ncb { --cs-r: 12px; }
+html[data-nx-skin=vault] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 0 1px 0 rgb(var(--nx-gold) / .9), inset 0 0 0 1px rgb(var(--nx-gold) / .45); }
+html[data-nx-skin=vault] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: inset 0 1px 0 rgb(var(--nx-gold) / .95), inset 0 0 0 1px rgb(var(--nx-gold) / .6), 0 10px 22px -14px rgb(var(--nx-gold) / .7); }
+html[data-nx-skin=vault] .cc-box { box-shadow: inset 0 1px 0 rgb(var(--nx-gold) / .9), inset 0 0 0 1px rgb(var(--nx-gold) / .45); }
+html[data-nx-skin=vault] .nc__msgs:not([data-nc-theme]) { background-image: repeating-radial-gradient(circle at 50% 130%, transparent 0 12px, rgb(var(--nx-gold) / .06) 12px 13px); }
+
+/* ---- Wavelength: signal ripples spreading from your bubbles ---- */
+html[data-nx-skin=wavelength] .nc__thread .ncb { --cs-r: 20px; }
+html[data-nx-skin=wavelength] .nc__thread .ncb.ncb--in { background: rgb(var(--nx-surface-2)); box-shadow: inset 0 0 0 1px rgb(var(--nx-line-strong) / .6), 0 0 0 3px rgb(var(--nx-teal) / .10); }
+html[data-nx-skin=wavelength] .nc__thread .ncb.ncb--out { background: var(--cs-acc); box-shadow: 0 0 0 3px rgb(var(--nx-cta-b) / .22), 0 0 0 7px rgb(var(--nx-cta-b) / .10), 0 0 0 11px rgb(var(--nx-cta-b) / .04); }
+
+/* ---- Non-text contrast (WCAG 1.4.11): every field / composer edge inside the chat shell reaches 3:1 on its own skin (--nx-edge is generated per skin and mode). ---- */
+.nn :is(input, textarea, select):not([type=checkbox], [type=radio], [type=range], [type=file], [type=hidden], .cc-text) { border: 1px solid rgb(var(--nx-edge)); }
+/* every composer (NaaraCare, Naara Line, admin queue, Naara chat) */
+html[data-nx-skin] .cc { --cc-border: rgb(var(--nx-edge)); }
+html[data-nx-skin] .cc-box { border-color: rgb(var(--nx-edge)); }

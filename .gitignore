@@ -1,0 +1,69 @@
+# === Dependencies ===
+/vendor
+/node_modules
+
+# === Laravel build / runtime ===
+# NOTE: /public/build is intentionally COMMITTED (not ignored). Shared cPanel
+# hosting has no Node/npm to run `npm run build`, so the compiled Vite assets
+# must ship with the product for the app to render. Rebuild + recommit after any
+# front-end change (`npm run build`).
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/bootstrap/cache/*.php
+
+# === Environment & secrets (NEVER commit) ===
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+.phpunit.cache
+auth.json
+
+# === Editor / OS ===
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+/storage/logs/*.log
+npm-debug.log
+yarn-error.log
+
+# === Homestead / Vagrant ===
+/.vagrant
+Homestead.json
+Homestead.yaml
+
+# === Misc ===
+/.phpactor.json
+
+# Installer lock (environment state)
+/storage/installed
+
+# Graphify — generated knowledge-graph output (rebuilt per-machine via
+# `graphify update .`; large + volatile, never committed). Also in .claudeignore.
+/graphify-out/
+
+# Playwright/manual QA screenshot artifacts — throwaway verification output,
+# never a build input.
+/test-results/
+
+# App Export — native Capacitor platform projects. Generated fresh by CI on
+# every build (`npx cap add android|ios` — idempotent, see android-build.yml /
+# codemagic.yaml) from capacitor.config.json + the compiled web assets. Unlike
+# /public/build these never ship to end users directly (they're compiled into
+# an APK/AAB/IPA, not served), so there's no shared-cPanel reason to commit
+# generated native-project boilerplate here.
+/android
+/ios
+scripts/__pycache__/
+
+# Seed files carry real bank and wallet details: never commit them.
+/seed/
+*.seed.json

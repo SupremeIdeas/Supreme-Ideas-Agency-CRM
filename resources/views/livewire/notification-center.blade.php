@@ -1,0 +1,79 @@
+{{-- nx:converted (skin tokens only; see docs/appearance/SKIN-CONTRACT.md) --}}
+<div class="relative">
+    {{-- Poll keeps the unread badge current without a websocket server, and
+         (Tier 5 #11 Phase B) checks for a live shared-wallet invite to toast. --}}
+    <div wire:poll.30s="checkForWalletInvites" class="hidden"></div>
+    <div wire:poll.30s="checkForEventToasts" class="hidden"></div>
+
+    {{-- The modal `name` is keyed to THIS Livewire instance's own id (frontend-
+         UX-fix blueprint Phase A): the mobile and desktop headers each mount a
+         separate instance of this same component, and `open-modal`/`close-modal`
+         fire as GLOBAL window events matched by name — a shared literal name
+         meant BOTH instances' dialogs opened together. This went unnoticed
+         before the modal engine's own x-teleport fix, because the mobile
+         instance's dialog lived inside a `lg:hidden` header at desktop widths,
+         which happened to keep its (also-open) dialog invisible. Teleporting
+         removed that accidental masking, surfacing the real collision. --}}
+    @php
+        $modalName = 'notifications-'.$this->getId();
+    @endphp
+
+    {{-- Bell --}}
+    <button type="button" data-tour="header.bell" @click="$dispatch('open-modal', { name: '{{ $modalName }}' })" aria-label="Notifications"
+            class="relative flex h-10 w-10 items-center justify-center rounded-full text-[rgb(var(--nx-text-2))] hover:bg-[rgb(var(--nx-surface-3))]">
+        <x-icon name="bell" class="h-5 w-5" />
+        @if ($unread > 0)
+            <span class="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-[rgb(var(--nx-gold))] px-1 text-[10px] font-bold leading-none text-[rgb(var(--nx-on-gold))]"
+                  style="height:18px">{{ $unread > 99 ? '99+' : $unread }}</span>
+        @endif
+    </button>
+
+    {{-- The ONE modal engine (S31) — a proper slide-up-from-the-bottom sheet on
+         mobile (centered dialog on desktop), not the generic pop that used to
+         just fade/scale in. Same content as before, same "See all" hand-off
+         to the full /notifications page. --}}
+    <x-ui.modal :name="$modalName" title="Notifications" max-width="md">
+        @if ($unread > 0)
+            <div class="mb-2 flex items-center justify-end">
+                <button wire:click="markAllRead" class="text-xs font-medium text-[rgb(var(--nx-teal-ink))] hover:underline">Mark all read</button>
+            </div>
+        @endif
+
+        <div class="-mx-6 max-h-[60vh] overflow-y-auto border-t border-[rgb(var(--nx-line))]">
+            @forelse ($recent as $note)
+                @php $d = $note->data; $isUnread = is_null($note->read_at); @endphp
+                <button type="button" wire:click="go('{{ $note->id }}')"
+                        class="flex w-full items-start gap-3 border-b border-[rgb(var(--nx-line))] px-6 py-3 text-left transition hover:bg-[rgb(var(--nx-surface-2))] {{ $isUnread ? 'bg-[rgb(var(--nx-cta-b)/0.05)]' : '' }}">
+                    <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgb(var(--nx-cta-b)/0.1)] text-[rgb(var(--nx-teal-ink))]">
+                        <x-icon :name="$d['icon'] ?? 'bell'" class="h-4 w-4" />
+                    </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block text-sm font-medium text-[rgb(var(--nx-text))]">{{ $d['title'] ?? 'Notification' }}</span>
+                        @if (! empty($d['body']))
+                            <span class="mt-0.5 block text-xs text-[rgb(var(--nx-text-2))]">{{ $d['body'] }}</span>
+                        @endif
+                        <span class="mt-1 flex items-center gap-2">
+                            <span class="text-[11px] text-[rgb(var(--nx-text-2))]">{{ $note->created_at->diffForHumans() }}</span>
+                            @if (! empty($d['action_label']))
+                                <span class="text-[11px] font-medium text-[rgb(var(--nx-teal-ink))]">{{ $d['action_label'] }} →</span>
+                            @endif
+                        </span>
+                    </span>
+                    @if ($isUnread)
+                        <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[rgb(var(--nx-gold))]"></span>
+                    @endif
+                </button>
+            @empty
+                <div class="flex flex-col items-center gap-2 px-6 py-10 text-center text-[rgb(var(--nx-text-2))]">
+                    <x-icon name="bell" class="h-8 w-8 opacity-40" />
+                    <p class="text-sm">You’re all caught up.</p>
+                </div>
+            @endforelse
+        </div>
+
+        <a href="{{ route('notifications') }}" wire:navigate
+           class="-mx-6 -mb-6 mt-0 block border-t border-[rgb(var(--nx-line))] px-6 py-3 text-center text-xs font-medium text-[rgb(var(--nx-teal-ink))] hover:bg-[rgb(var(--nx-surface-2))] sm:rounded-b-2xl">
+            See all notifications
+        </a>
+    </x-ui.modal>
+</div>

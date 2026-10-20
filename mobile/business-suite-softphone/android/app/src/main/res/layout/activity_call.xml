@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:background="@color/navy" android:gravity="center_horizontal" android:padding="32dp">
+
+    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+
+    <ImageView android:layout_width="96dp" android:layout_height="96dp" android:padding="24dp"
+        android:background="@drawable/bg_circle_teal" android:src="@drawable/ic_call" android:contentDescription="@null" />
+
+    <TextView android:id="@+id/call_who" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="24dp" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" android:text="Naara" />
+
+    <TextView android:id="@+id/call_state" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="6dp" android:textColor="@color/muted" android:textSize="16sp" android:text="@string/incoming_call" />
+
+    <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="2" />
+
+    <LinearLayout android:id="@+id/row_answer" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageButton android:id="@+id/btn_decline" android:layout_width="72dp" android:layout_height="72dp" android:padding="20dp"
+                android:background="@drawable/bg_circle_red" android:src="@drawable/ic_call_end" android:contentDescription="@string/decline" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/white" android:text="@string/decline" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageButton android:id="@+id/btn_answer" android:layout_width="72dp" android:layout_height="72dp" android:padding="20dp"
+                android:background="@drawable/bg_circle_green" android:src="@drawable/ic_call" android:contentDescription="@string/answer" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/white" android:text="@string/answer" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/row_active" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center" android:visibility="gone">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageButton android:id="@+id/btn_mute" android:layout_width="64dp" android:layout_height="64dp" android:padding="18dp"
+                android:background="@drawable/bg_circle_dark" android:src="@drawable/ic_mic" android:contentDescription="@string/mute" />
+            <TextView android:id="@+id/label_mute" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/white" android:text="@string/mute" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageButton android:id="@+id/btn_end" android:layout_width="72dp" android:layout_height="72dp" android:padding="20dp"
+                android:background="@drawable/bg_circle_red" android:src="@drawable/ic_call_end" android:contentDescription="@string/end" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/white" android:text="@string/end" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+            <ImageButton android:id="@+id/btn_speaker" android:layout_width="64dp" android:layout_height="64dp" android:padding="18dp"
+                android:background="@drawable/bg_circle_dark" android:src="@drawable/ic_speaker" android:contentDescription="@string/speaker" />
+            <TextView android:id="@+id/label_speaker" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/white" android:text="@string/speaker" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="24dp" />
+</LinearLayout>

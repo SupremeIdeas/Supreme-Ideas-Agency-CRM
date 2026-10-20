@@ -1,0 +1,4 @@
+-keep class com.twilio.** { *; }
+-keep class tvo.webrtc.** { *; }
+-keep class org.webrtc.** { *; }
+-keepclassmembers class app.naara.softphone.NaaraNativeBridge { @android.webkit.JavascriptInterface <methods>; }

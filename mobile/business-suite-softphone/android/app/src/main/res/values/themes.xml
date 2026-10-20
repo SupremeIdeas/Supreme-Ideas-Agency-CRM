@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.Naara" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/teal</item>
+        <item name="colorAccent">@color/gold</item>
+        <item name="android:statusBarColor">@color/navy</item>
+        <item name="android:navigationBarColor">@color/navy</item>
+    </style>
+</resources>

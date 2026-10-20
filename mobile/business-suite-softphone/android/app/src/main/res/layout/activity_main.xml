@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:fitsSystemWindows="true" android:background="@color/navy">
+
+    <TextView android:id="@+id/banner" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/banner_warn" android:textColor="@color/white" android:textSize="13sp"
+        android:paddingHorizontal="16dp" android:paddingVertical="10dp" android:text="@string/banner_unpaired" />
+
+    <WebView android:id="@+id/web" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+</LinearLayout>
