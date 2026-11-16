@@ -148,7 +148,10 @@
                             <span class="bz-empty__ic"><x-nx.icon name="users" /></span>
                             <h2>{{ __('messages.no_contacts') }}</h2>
                             <p>{{ __('messages.no_contacts_text') }}</p>
-                            <a href="{{ route('numbers.contacts') }}" wire:navigate class="ns-cta ns-cta--pill ns-cta--sm">{{ __('messages.open_contacts') }}</a>
+                            {{-- DISCONNECTED (CRM Phase 1 fork-and-strip): numbers.contacts is unrouted on this fork. --}}
+                            @if (Illuminate\Support\Facades\Route::has('numbers.contacts'))
+                                <a href="{{ route('numbers.contacts') }}" wire:navigate class="ns-cta ns-cta--pill ns-cta--sm">{{ __('messages.open_contacts') }}</a>
+                            @endif
                         </li>
                     @endforelse
                 @endif
@@ -169,7 +172,7 @@
                         <span class="bz-av" aria-hidden="true">{{ $activeName ? mb_strtoupper(mb_substr($activeName, 0, 1)) : '#' }}</span>
                         <span style="min-width:0"><b>{{ $activeName ?: $active }}</b><small>@if ($activeName){{ $active }} · @endif{{ $chName($activeChannel) }}</small></span>
                     </button>
-                    @if ($activeChannel === 'sms')
+                    @if ($activeChannel === 'sms' && Illuminate\Support\Facades\Route::has('numbers.dialer'))
                         <a href="{{ route('numbers.dialer', ['to' => $active]) }}" wire:navigate class="bz-iconbtn" aria-label="{{ __('messages.call') }}"><x-nx.icon name="phone" /></a>
                     @else
                         <span class="bz-chtag" data-ch="{{ $activeChannel }}"><x-business.channel-logo :channel="$activeChannel" />{{ $chName($activeChannel) }}</span>
@@ -306,11 +309,14 @@
                     </div>
                     @if ($activeChannel === 'sms')
                         <div class="bz-actions">
-                            <a href="{{ route('numbers.dialer', ['to' => $active]) }}" wire:navigate class="ns-btn" style="justify-content:center;text-decoration:none"><x-nx.icon name="phone" /> {{ __('messages.call') }}</a>
+                            {{-- DISCONNECTED (CRM Phase 1 fork-and-strip): numbers.dialer is unrouted on this fork. --}}
+                            @if (Illuminate\Support\Facades\Route::has('numbers.dialer'))
+                                <a href="{{ route('numbers.dialer', ['to' => $active]) }}" wire:navigate class="ns-btn" style="justify-content:center;text-decoration:none"><x-nx.icon name="phone" /> {{ __('messages.call') }}</a>
+                            @endif
                             <button type="button" class="ns-btn" style="justify-content:center" wire:click="$dispatch('open-send-message', { to: '{{ $active }}', name: '{{ $c ? e($c->name) : '' }}' })"><x-nx.icon name="send" /> {{ __('messages.message') }}</button>
                         </div>
                     @endif
-                    @if (! $c && $activeChannel === 'sms')
+                    @if (! $c && $activeChannel === 'sms' && Illuminate\Support\Facades\Route::has('numbers.contacts'))
                         <x-nx.note variant="link" icon="plus" tag="a" :href="route('numbers.contacts')" wire:navigate style="margin-top:14px"><b>{{ __('messages.save_contact') }}</b>{{ __('messages.save_contact_text') }}</x-nx.note>
                     @endif
                     <dl class="bz-facts">

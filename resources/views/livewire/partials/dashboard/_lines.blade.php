@@ -1,6 +1,8 @@
 {{-- nx:converted (skin tokens; legacy palette classes removed 2026-10-05) --}}
 {{-- Slim connectivity summary (Theme Batch 2 §2). Only for an account that already has lines. --}}
-@if ($hasAny)
+{{-- DISCONNECTED (CRM Phase 1 fork-and-strip): numbers.lines is unrouted on
+     this fork, so guard on it existing rather than just $hasAny. --}}
+@if ($hasAny && Illuminate\Support\Facades\Route::has('numbers.lines'))
     <a href="{{ route('numbers.lines') }}" wire:navigate class="ns-card ns-ring ns-full" style="margin-top:20px;padding:16px;text-decoration:none">
         <span class="ns-card__row" style="justify-content:space-between">
             <b style="display:flex;align-items:center;gap:8px;font-size:15px"><x-nx.icon name="bars" style="color:rgb(var(--nx-teal-ink))" /> My Lines</b>

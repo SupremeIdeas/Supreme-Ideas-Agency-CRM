@@ -87,18 +87,18 @@ class BottomNav
      */
     public static function eligibleMainItems(?User $u): array
     {
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): the primary nav no
+        // longer promotes eSIMs/Numbers/Gifts — none of them Supreme Ideas
+        // CRM products. 'catalogue' is kept generic (relabelled) since it's
+        // a shared storefront route, not an eSIM-only one. The 'numbers' and
+        // 'numbers.messages' routes themselves stay registered (kept
+        // features link to them directly) but are no longer surfaced here.
         $primary = [
-            ['route' => 'catalogue', 'label' => 'eSIMs', 'icon' => 'globe'],
-            ['route' => 'numbers', 'label' => 'Numbers', 'icon' => 'hash'],
+            ['route' => 'catalogue', 'label' => 'Catalogue', 'icon' => 'globe'],
         ];
-        if (FeatureFlags::adminEnabled('naara_gift') && ! FeatureEntitlements::locked(FeatureLocks::F_GIFT_CARDS)) {
-            $primary[] = ['route' => 'gift-cards', 'label' => 'Gifts', 'icon' => 'gift',
-                'badge' => FeatureFlags::configured('naara_gift') ? null : 'Soon'];
-        }
         $primary[] = ['route' => 'wallet', 'label' => 'Wallet', 'icon' => 'wallet'];
 
         $more = [
-            ['route' => 'numbers.contacts', 'label' => 'Contacts', 'icon' => 'users'],
             ['route' => 'help.center', 'label' => 'Help & Support', 'icon' => 'message-circle'],
             ['route' => 'rewards', 'label' => 'Rewards', 'icon' => 'gift'],
             ['route' => 'journey', 'label' => 'My Journey', 'icon' => 'globe'],
@@ -174,7 +174,19 @@ class BottomNav
 
         array_unshift($more, ['route' => 'dashboard', 'label' => 'Home', 'icon' => 'signal']);
 
-        return ['primary' => $primary, 'more' => $more];
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): several entries above
+        // ('numbers.contacts' chief among them) point at routes unrouted on
+        // this fork. route($item['route']) is called unguarded wherever this
+        // list is rendered (app-shell.blade.php), so dropping any item whose
+        // route no longer exists here — once, centrally — is cheaper and
+        // more robust than chasing every render site. See
+        // SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+        $dropMissing = fn (array $items) => array_values(array_filter(
+            $items,
+            fn ($item) => ! empty($item['heading']) || \Illuminate\Support\Facades\Route::has($item['route'])
+        ));
+
+        return ['primary' => $dropMissing($primary), 'more' => $dropMissing($more)];
     }
 
     /**

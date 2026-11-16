@@ -33,7 +33,12 @@
     // layout is part of each navigation response): on /numbers/* the global nav +
     // standard header are hidden and the Numbers nav + wallet bar take their place;
     // everywhere else it's the reverse. Never two flags that could drift.
-    $inNumbers = request()->routeIs('numbers.*');
+    // DISCONNECTED (CRM Phase 1 fork-and-strip): numbers.lines (My Lines) is
+    // unrouted on this fork, and this whole alternate header/nav links to it,
+    // so gate it on the route actually existing — otherwise the dedicated
+    // Numbers chrome would still trigger on the one /numbers/* route still
+    // live ('numbers.messages', kept for Business Suite/N2N) and 500.
+    $inNumbers = request()->routeIs('numbers.*') && \Illuminate\Support\Facades\Route::has('numbers.lines');
     $numbersUnread = ($inNumbers && auth()->check())
         ? \App\Models\MessageThread::totalUnread(auth()->id()) : 0;
     $numbersWalletUsd = ($inNumbers && auth()->check())

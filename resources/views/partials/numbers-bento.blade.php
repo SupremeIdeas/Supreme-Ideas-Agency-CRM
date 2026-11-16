@@ -3,7 +3,9 @@
      same on mobile. Cards come from NumbersBento::cards() (admin copy, badge, image, order, visibility); every card is the one
      x-nx.bento-card so any skin can restyle it. --}}
 <x-nx.page style="margin-bottom:24px">
-    @if ($activeLine ?? null)
+    {{-- DISCONNECTED (CRM Phase 1 fork-and-strip): numbers.lines is unrouted
+         on this fork, so guard on it existing rather than just an active line. --}}
+    @if (($activeLine ?? null) && Illuminate\Support\Facades\Route::has('numbers.lines'))
         <div class="ns-strip ns-ring">
             <span class="ns-tile"><x-nx.icon name="cards" /></span>
             <div class="ns-text"><small>{{ __('numbers.your_naara') }}</small><b>{{ $activeLine->phone_number }}</b><span class="ns-live">{{ __('numbers.line_active') }}</span></div>

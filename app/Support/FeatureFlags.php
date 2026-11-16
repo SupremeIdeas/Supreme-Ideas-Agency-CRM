@@ -103,26 +103,11 @@ class FeatureFlags
             'guide' => 'elevenlabs',
             'default' => true,
         ],
-        'naara_connect' => [
-            'name' => 'Naara Connect (Data + Calls eSIM)',
-            'group' => 'Products',
-            'icon' => 'signal',
-            'description' => 'The Data + Calls tab in the eSIM store. Off until a Full-eSIM provider (1GLOBAL, Gigs or Monty Mobile) has its keys saved or a synced plan includes calls: it then switches itself on. Switch it off to hide the tab, or on to force it as soon as the line can deliver.',
-            'requires' => [],
-            'guide' => null,
-            'default' => 'auto',   // not stored yet: follows availability; once an admin flips the switch their choice wins
-        ],
-        'naara_gift' => [
-            'name' => 'Naara Gift (gift cards)',
-            'group' => 'Products',
-            'icon' => 'gift',
-            'description' => 'The gift-card storefront. On by default; it opens as soon as any gift provider (Reloadly, Zendit or Bitrefill) has its keys saved and the catalogue is synced, and shows "Coming Soon" until then.',
-            'requires' => ['services.reloadly.client_id', 'services.reloadly.client_secret'],
-            // Any ONE registered gift provider is enough to open the store (Zendit or Bitrefill alone must not leave it "Coming Soon").
-            'requires_any' => [['services.reloadly.client_id', 'services.reloadly.client_secret'], ['services.zendit.api_key'], ['services.bitrefill.api_key']],
-            'guide' => null,
-            'default' => true,
-        ],
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): naara_connect (eSIM) and
+        // naara_gift (gift cards) removed from the registry entirely — their
+        // routes/nav are unrouted on this fork, and FeatureFlags::enabled()
+        // returns false for an unknown key anyway, so no live code path
+        // needed either entry to stay. See SupremeIdeasCRM_Phase1_ForkAndStrip.md.
     ];
 
     /** Admin's on/off switch for a feature (ignores whether keys are present). */

@@ -70,47 +70,37 @@ Schedule::command('payouts:invariants-check')->dailyAt('03:40')->withoutOverlapp
 Schedule::command('payouts:webhook-prune')->dailyAt('03:55')->withoutOverlapping();
 Schedule::command('payouts:guard-digest')->dailyAt('07:30')->withoutOverlapping();
 
-// Ping provider wallets and alert on low balance (Section 17.2).
-Schedule::command('providers:health-check')->everyFifteenMinutes()->withoutOverlapping();
+// DISCONNECTED (CRM Phase 1 fork-and-strip): probes eSIM + number provider
+// wallets, which don't exist on this fork. Code untouched, just unscheduled.
+// Schedule::command('providers:health-check')->everyFifteenMinutes()->withoutOverlapping();
 
 // Worker-layer watchdog (Platform Health): alerts admins if Redis/Horizon has
 // stopped processing jobs. Runs off the cron (independent of the queue it
 // watches) so it can still raise the alarm when the workers themselves are down.
 Schedule::command('ops:worker-health')->everyFiveMinutes()->withoutOverlapping();
 
-// NCI (NAARA-BUILD-16 §3.2): daily full recompute of every provider's score,
-// confidence and risk over the trailing window. Observational only.
-Schedule::command('nci:recompute')->dailyAt('02:15')->withoutOverlapping()->runInBackground();
+// DISCONNECTED (CRM Phase 1 fork-and-strip): NCI scores eSIM/number provider
+// routing decisions that don't apply here. Code untouched, just unscheduled.
+// Schedule::command('nci:recompute')->dailyAt('02:15')->withoutOverlapping()->runInBackground();
 
-// BUILD-19 §4 — keep provider_outcomes bounded: prune rows past the 90-day
-// retention horizon weekly (NCI scores over 30d, the breaker over 24h, so
-// anything older is dead weight). Off-peak, withoutOverlapping, background.
-Schedule::command('nci:prune-outcomes')->weekly()->sundays()->at('02:40')->withoutOverlapping()->runInBackground();
+// DISCONNECTED (CRM Phase 1 fork-and-strip): see nci:recompute above.
+// Schedule::command('nci:prune-outcomes')->weekly()->sundays()->at('02:40')->withoutOverlapping()->runInBackground();
 
 // Journey Engine J2: push/email protective alerts to users who opted in (a no-op until journey.delivery_enabled).
 Schedule::command('naara:journey:deliver')->hourly()->withoutOverlapping();
 
-// Charge permanent-number (Naara Line) monthly subscriptions + release lapsed ones.
-Schedule::command('virtual:renew')->dailyAt('04:00')->withoutOverlapping();
-
-// Refresh eSIM catalogues + recompute retail via the PricingEngine.
-Schedule::command('esim:sync')->dailyAt('03:00')->withoutOverlapping();
-
-// Connectivity Analytics (Part A): poll active eSIMs for a usage reading —
-// the interval is config-driven so it's tunable per environment without a
-// code change (config('esim.usage_sync_interval_minutes'), default 15).
-Schedule::command('esim:sync-usage')
-    ->everyMinute()
-    ->when(fn () => now()->minute % max(1, (int) config('esim.usage_sync_interval_minutes', 15)) === 0)
-    ->withoutOverlapping()
-    ->runInBackground();
-
-// Keep esim_usage_snapshots bounded — prune past the retention window weekly.
-Schedule::command('esim:prune-usage-snapshots')->weekly()->sundays()->at('02:50')->withoutOverlapping();
-
-// Refresh the number country + service catalogue from the providers so the
-// storefront always lists everything they support (blueprint Section 12).
-Schedule::command('numbers:catalogue-sync')->weekly()->sundays()->at('03:30')->withoutOverlapping();
+// DISCONNECTED (CRM Phase 1 fork-and-strip): virtual/eSIM/number provider
+// sync jobs below are inert on this fork (no provider credentials configured).
+// Code untouched, just unscheduled — see SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+// Schedule::command('virtual:renew')->dailyAt('04:00')->withoutOverlapping();
+// Schedule::command('esim:sync')->dailyAt('03:00')->withoutOverlapping();
+// Schedule::command('esim:sync-usage')
+//     ->everyMinute()
+//     ->when(fn () => now()->minute % max(1, (int) config('esim.usage_sync_interval_minutes', 15)) === 0)
+//     ->withoutOverlapping()
+//     ->runInBackground();
+// Schedule::command('esim:prune-usage-snapshots')->weekly()->sundays()->at('02:50')->withoutOverlapping();
+// Schedule::command('numbers:catalogue-sync')->weekly()->sundays()->at('03:30')->withoutOverlapping();
 
 // Nightly encrypted database backup + cleanup of old archives (Section 28).
 Schedule::command('backup:clean')->dailyAt('02:30')->withoutOverlapping();
@@ -150,18 +140,15 @@ Schedule::command('payouts:earnings-run')->dailyAt('04:45')->withoutOverlapping(
 // member's share; idempotent per profile+period.
 Schedule::command('staff:compensation-close')->monthlyOn(1, '03:15')->withoutOverlapping();
 
-// Merchant V2 client eSIM control: settle due auto-renewals, expire lapsed
-// subscriptions, and alert merchants about upcoming renewals (money-safe).
-Schedule::command('merchant:client-subscriptions')->dailyAt('05:35')->withoutOverlapping();
+// DISCONNECTED (CRM Phase 1 fork-and-strip): Merchant V2 client eSIM
+// control — eSIM is not a Supreme Ideas CRM product. Code untouched, just
+// unscheduled.
+// Schedule::command('merchant:client-subscriptions')->dailyAt('05:35')->withoutOverlapping();
 
-// Naara Gift: sync the gift-card catalogue from every registered provider.
-Schedule::command('giftcards:sync')->dailyAt('03:15')->withoutOverlapping();
-
-// Naara Gift: recover an order stuck 'processing' because its provider's
-// async-delivery webhook never arrived — polls the real order-status
-// endpoint (Reloadly/Bitrefill/Tillo) rather than leaving the buyer's
-// receipt screen stuck forever on a dropped webhook.
-Schedule::command('giftcards:reconcile-processing')->everyFifteenMinutes()->withoutOverlapping();
+// DISCONNECTED (CRM Phase 1 fork-and-strip): gift-card provider sync jobs,
+// inert on this fork. Code untouched, just unscheduled.
+// Schedule::command('giftcards:sync')->dailyAt('03:15')->withoutOverlapping();
+// Schedule::command('giftcards:reconcile-processing')->everyFifteenMinutes()->withoutOverlapping();
 
 // Brand Directory (BUILD-9 §5.2/§6): charge due brand-listing subscriptions,
 // pause short ones, and update follower-guarantee priority scores. runInBackground

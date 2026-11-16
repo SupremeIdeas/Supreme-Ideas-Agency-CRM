@@ -202,7 +202,9 @@ if (class_exists(\App\Http\Controllers\Omni\WebChatController::class)) {
 if (class_exists(\App\Http\Controllers\MasterMarketing\LandingController::class)) {
     Route::get('/naara-chat', [\App\Http\Controllers\MasterMarketing\LandingController::class, 'chat'])->name('n2n.landing');
     Route::get('/naara-brain', [\App\Http\Controllers\MasterMarketing\LandingController::class, 'brain'])->name('brain.landing');
-    Route::get('/naara-gift', [\App\Http\Controllers\MasterMarketing\LandingController::class, 'gift'])->name('gift.landing');
+    // DISCONNECTED (CRM Phase 1 fork-and-strip): Naara Gift marketing landing
+    // page — not a Supreme Ideas CRM product. Code untouched, just unrouted.
+    // Route::get('/naara-gift', [\App\Http\Controllers\MasterMarketing\LandingController::class, 'gift'])->name('gift.landing');
     Route::get('/white-label', [\App\Http\Controllers\MasterMarketing\LandingController::class, 'whiteLabel'])->name('white-label.landing');
 // White Label purchase funnel (MASTER-ONLY, class_exists-guarded): the landing plan buttons start an instance, the purchase page is the conversational wizard.
 if (class_exists(\App\Http\Controllers\WlFunnelStartController::class)) {
@@ -378,11 +380,12 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('verified.mail')->group(function () {
         Route::get('/dashboard', Dashboard::class)->name('dashboard');
         Route::get('/catalogue', Catalogue::class)->name('catalogue');
-        // Naara Gift storefront (feature-gated: 404 until naara_gift is live).
-        Route::get('/gift-cards', GiftCards::class)->name('gift-cards');
-        Route::get('/gift-cards/orders', [GiftCardOrderController::class, 'index'])->name('gift-cards.orders');
-        Route::get('/gift-cards/orders/{order}', [GiftCardOrderController::class, 'show'])->name('gift-cards.order');
-        Route::post('/gift-cards/orders/{order}/balance', [GiftCardOrderController::class, 'balance'])->name('gift-cards.order.balance');
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): Naara Gift storefront —
+        // not a Supreme Ideas CRM product line. Code untouched, just unrouted.
+        // Route::get('/gift-cards', GiftCards::class)->name('gift-cards');
+        // Route::get('/gift-cards/orders', [GiftCardOrderController::class, 'index'])->name('gift-cards.orders');
+        // Route::get('/gift-cards/orders/{order}', [GiftCardOrderController::class, 'show'])->name('gift-cards.order');
+        // Route::post('/gift-cards/orders/{order}/balance', [GiftCardOrderController::class, 'balance'])->name('gift-cards.order.balance');
         Route::get('/checkout/{plan}', Checkout::class)->name('checkout');
         Route::get('/wallet', Wallet::class)->name('wallet');
         // Business Suite Prompt 13 §3/§4/§5 — workspace management + the
@@ -418,27 +421,25 @@ Route::middleware(['auth', 'active'])->group(function () {
         // The composer's GIF and sticker library, plus live search through the admin's own GIPHY / Tenor key.
         Route::get('/gifs/library', \App\Http\Controllers\GifLibraryController::class)->middleware('throttle:60,1')->name('gifs.library');
         Route::get('/gifs/search', \App\Http\Controllers\GifSearchController::class)->middleware('throttle:30,1')->name('gifs.search');
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): the virtual/eSIM Numbers
+        // product line below — not part of Supreme Ideas CRM. Code untouched,
+        // just unrouted. See SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+        //
+        // 'numbers' and 'numbers.messages' stay LIVE (not disconnected): kept
+        // generic features (the onboarding Wizard, Business Suite's dashboard
+        // + compose button, N2N chat's "text this contact" action) link to
+        // them unconditionally, so cutting them would 500 those kept pages
+        // instead of just hiding a dead link. GetNumber/Messages render fine
+        // with zero numbers owned — they're just not marketed anywhere.
         Route::get('/numbers', GetNumber::class)->name('numbers');
-        // My Lines — the dedicated management hub for owned eSIMs + numbers
-        // (active, grouped by Model, with an Archive). Numbers section home.
-        Route::get('/numbers/lines', MyLines::class)->name('numbers.lines');
-        // Call forwarding for permanent numbers (Live Voice — Part A). The
-        // component 404s unless Twilio is Active (voice rides the same keys).
-        Route::get('/numbers/forwarding', CallForwarding::class)->name('numbers.forwarding');
-        // In-browser international dialer (Live Voice — Part B). Also 404s until
-        // Twilio is Active. The token endpoint mints the short-lived WebRTC token.
-        Route::get('/numbers/dialer', Dialer::class)->name('numbers.dialer');
-        Route::post('/voice/token', VoiceTokenController::class)->name('voice.token');
-        // In-app contact book (Live Voice — Part C). Not provider-billed, so no
-        // feature gate — standard auth-scoped CRUD that feeds the dialer.
-        Route::get('/numbers/contacts', Contacts::class)->name('numbers.contacts');
-        // Conversation inbox (Numbers overhaul §1) — inbound + outbound threads.
         Route::get('/numbers/messages', Messages::class)->name('numbers.messages');
-        // Voicemail audio (Prompt 11) — streamed from the private disk, owner-only.
-        Route::get('/numbers/voicemail/{message}', VoicemailAudioController::class)->name('numbers.voicemail-audio');
-        // Port-in intake (Prompt 11) — bring an existing US/Canada number to Naara.
-        // Honest multi-day carrier process, not instant provisioning.
-        Route::get('/numbers/port-in', PortIn::class)->name('numbers.port-in');
+        // Route::get('/numbers/lines', MyLines::class)->name('numbers.lines');
+        // Route::get('/numbers/forwarding', CallForwarding::class)->name('numbers.forwarding');
+        // Route::get('/numbers/dialer', Dialer::class)->name('numbers.dialer');
+        // Route::post('/voice/token', VoiceTokenController::class)->name('voice.token');
+        // Route::get('/numbers/contacts', Contacts::class)->name('numbers.contacts');
+        // Route::get('/numbers/voicemail/{message}', VoicemailAudioController::class)->name('numbers.voicemail-audio');
+        // Route::get('/numbers/port-in', PortIn::class)->name('numbers.port-in');
         Route::get('/referrals', Referrals::class)->name('referrals');
 
         // NaaraCredits rewards area (loyalty module) — opt-in earning.
@@ -523,9 +524,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/account/white-label-document/{id}/pdf', [\App\Http\Controllers\WlInvoiceController::class, 'pdfOwn'])->whereNumber('id')->middleware('throttle:30,1')->name('wl-invoice.own');
         }
 
-        // eSIM activation QR (SVG), generated from the LPA string. Owner- or
-        // assigning-merchant-scoped inside the controller.
-        Route::get('/esim/{order}/qr', EsimQrController::class)->name('esim.qr');
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): eSIM activation QR —
+        // not a Supreme Ideas CRM product. Code untouched, just unrouted.
+        // Route::get('/esim/{order}/qr', EsimQrController::class)->name('esim.qr');
     });
 
     // Aurora Welcome entrance (first-login animation) — reachable while
@@ -575,23 +576,17 @@ Route::middleware(['auth', 'active'])->group(function () {
 });
 
 
-// Provider webhooks (CSRF-exempt — see bootstrap/app.php). Getatext OTP
-// delivery (blueprint Section 8.2).
-// Inbound SMS conversations (Numbers overhaul §1) — verify-before-trust, queued.
-Route::post('/webhooks/sms-inbound/{provider}', SmsInboundWebhookController::class)
-    ->name('webhooks.sms-inbound');
-
-// Delivery reports: Twilio (X-Twilio-Signature) and Telnyx (Ed25519) are signature-verified; Africa's Talking is token-guarded because it does not sign.
-Route::post('/webhooks/sms-delivery/{provider}', SmsDeliveryWebhookController::class)
-    ->name('webhooks.sms-delivery');
-
-Route::post('/webhooks/getatext', GetatextWebhookController::class)
-    ->name('webhooks.getatext');
-
-// Twilio inbound-call webhook (Live Voice — Part A): signature-verified, returns
-// TwiML that forwards the call to the user's configured target.
-Route::post('/webhooks/twilio/voice', TwilioVoiceWebhookController::class)
-    ->name('webhooks.twilio.voice');
+// DISCONNECTED (CRM Phase 1 fork-and-strip): Numbers/SMS/Voice provider
+// webhooks below — no provider credentials configured on this fork. Code
+// untouched, just unrouted. See SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+// Route::post('/webhooks/sms-inbound/{provider}', SmsInboundWebhookController::class)
+//     ->name('webhooks.sms-inbound');
+// Route::post('/webhooks/sms-delivery/{provider}', SmsDeliveryWebhookController::class)
+//     ->name('webhooks.sms-delivery');
+// Route::post('/webhooks/getatext', GetatextWebhookController::class)
+//     ->name('webhooks.getatext');
+// Route::post('/webhooks/twilio/voice', TwilioVoiceWebhookController::class)
+//     ->name('webhooks.twilio.voice');
 
 // Business Phone Core (Prompt 14): signature-verified continuation callbacks
 // for an org call flow — node entry/redirect, menu digits, queue dial result.
@@ -614,26 +609,20 @@ Route::post('/webhooks/twilio/call-recording/{callFlow}/{node}', [TwilioCallReco
 Route::post('/webhooks/twilio/call-flow/whisper', [TwilioCallRecordingController::class, 'whisper'])
     ->middleware('business.suite')->name('webhooks.twilio.call-flow.whisper');
 
-// Voicemail recording webhook (Prompt 11): signature-verified, fires when a
-// <Record> started by the voice webhook above finishes.
-Route::post('/webhooks/twilio/recording', TwilioRecordingWebhookController::class)
-    ->name('webhooks.twilio.recording');
-
-// Telnyx (TeXML) voice: the same controllers, told which driver to use by the route default. Ed25519-verified.
-Route::post('/webhooks/telnyx/voice', TwilioVoiceWebhookController::class)
-    ->defaults('voice_provider', 'telnyx')
-    ->name('webhooks.telnyx.voice');
-Route::post('/webhooks/telnyx/recording', TwilioRecordingWebhookController::class)
-    ->defaults('voice_provider', 'telnyx')
-    ->name('webhooks.telnyx.recording');
-
-// Twilio in-browser dialer webhooks (Live Voice — Part B): signature-verified.
-// `dial` returns the outbound <Dial> TwiML (with a funded timeLimit) for a
-// pre-authorised call; `dial-status` settles the wallet on hang-up.
-Route::post('/webhooks/twilio/dial', TwilioDialerWebhookController::class)
-    ->name('webhooks.twilio.dial');
-Route::post('/webhooks/twilio/dial-status', TwilioDialStatusWebhookController::class)
-    ->name('webhooks.twilio.dial-status');
+// DISCONNECTED (CRM Phase 1 fork-and-strip): retail Live Voice webhooks
+// (Numbers product), inert on this fork. Code untouched, just unrouted.
+// Route::post('/webhooks/twilio/recording', TwilioRecordingWebhookController::class)
+//     ->name('webhooks.twilio.recording');
+// Route::post('/webhooks/telnyx/voice', TwilioVoiceWebhookController::class)
+//     ->defaults('voice_provider', 'telnyx')
+//     ->name('webhooks.telnyx.voice');
+// Route::post('/webhooks/telnyx/recording', TwilioRecordingWebhookController::class)
+//     ->defaults('voice_provider', 'telnyx')
+//     ->name('webhooks.telnyx.recording');
+// Route::post('/webhooks/twilio/dial', TwilioDialerWebhookController::class)
+//     ->name('webhooks.twilio.dial');
+// Route::post('/webhooks/twilio/dial-status', TwilioDialStatusWebhookController::class)
+//     ->name('webhooks.twilio.dial-status');
 
 // Payment gateway webhooks (blueprint Section 19.3): signature-verified,
 // idempotent wallet credit.
@@ -671,10 +660,10 @@ Route::match(['get', 'post'], '/webhooks/offerwall', OfferwallPostbackController
 Route::post('/webhooks/appbuild/{provider}', AppBuildWebhookController::class)
     ->name('webhooks.appbuild');
 
-// Naara Gift async delivery callback (Reloadly/Zendit): HMAC-verified,
-// idempotent, fills the three-state receipt so the redemption screen updates.
-Route::post('/webhooks/giftcards/{provider}', GiftCardWebhookController::class)
-    ->name('webhooks.giftcards');
+// DISCONNECTED (CRM Phase 1 fork-and-strip): Naara Gift webhook — not a
+// Supreme Ideas CRM product. Code untouched, just unrouted.
+// Route::post('/webhooks/giftcards/{provider}', GiftCardWebhookController::class)
+//     ->name('webhooks.giftcards');
 
 // WhatsApp Cloud API webhook (WhatsApp Autopilot §7): GET verify handshake +
 // X-Hub-Signature-256-verified POST for delivery status and STOP opt-outs.
@@ -738,13 +727,13 @@ Route::middleware(['admin.gateway', 'admin', 'throttle:admin'])
             Route::get('/errors', ErrorLogViewer::class)->name('errors');
             // Feature toggles (owner request) — switch features on/off + setup guides.
             Route::get('/features', Features::class)->name('features');
-            // Port-in requests (Prompt 11) — ops workflow for customers bringing
-            // a US/Canada number to Naara.
-            Route::get('/port-in-requests', PortInRequests::class)->name('port-in-requests');
-            // eSIM storefront hero (esim_upgrade Part 2) — title, description, images.
-            Route::get('/esim-hero', EsimHero::class)->name('esim-hero');
-            Route::get('/numbers-hero', NumbersHero::class)->name('numbers-hero');
-            Route::get('/numbers-cards', NumbersBento::class)->name('numbers-cards');
+            // DISCONNECTED (CRM Phase 1 fork-and-strip): Numbers/eSIM admin
+            // storefront pages below — not Supreme Ideas CRM products. Code
+            // untouched, just unrouted.
+            // Route::get('/port-in-requests', PortInRequests::class)->name('port-in-requests');
+            // Route::get('/esim-hero', EsimHero::class)->name('esim-hero');
+            // Route::get('/numbers-hero', NumbersHero::class)->name('numbers-hero');
+            // Route::get('/numbers-cards', NumbersBento::class)->name('numbers-cards');
             Route::get('/bento-icons', BentoIcons::class)->name('bento-icons');
             // Frontend-UX-fix blueprint Phase G — "More from Naara" banner placement system.
             Route::get('/banner-placements', BannerPlacements::class)->name('banner-placements');
@@ -824,9 +813,10 @@ Route::middleware(['admin.gateway', 'admin', 'throttle:admin'])
             Route::get('/journey-studio', \App\Livewire\JourneyEngine\Studio::class)->name('journey-studio');
             Route::get('/social-hunt', SocialHunt::class)->name('social-hunt');
             Route::get('/brand-directory', BrandDirectory::class)->name('brand-directory');
-            Route::get('/gift-cards', App\Livewire\Admin\GiftCards::class)->name('gift-cards');
-            // Naara Gift storefront hero — same system as the dashboard home hero.
-            Route::get('/gift-hero', GiftHero::class)->name('gift-hero');
+            // DISCONNECTED (CRM Phase 1 fork-and-strip): Naara Gift admin
+            // pages — not a Supreme Ideas CRM product. Code untouched, just unrouted.
+            // Route::get('/gift-cards', App\Livewire\Admin\GiftCards::class)->name('gift-cards');
+            // Route::get('/gift-hero', GiftHero::class)->name('gift-hero');
             Route::get('/hunt-hero', HuntHero::class)->name('hunt-hero');
             Route::get('/developer-api', DeveloperApi::class)->name('developer-api');
             // White Label page video: resumable chunked upload + poster (MASTER-ONLY, class_exists-guarded so a stray copy can never half-register it).
@@ -954,22 +944,20 @@ Route::middleware(['admin.gateway', 'admin', 'throttle:admin'])
             Route::get('/tickets', SupportQueue::class)->name('tickets');
         });
 
-        // eSIM Control Center (BUILD-8 §4) — staff with the esim.manage scope,
-        // plus admin/super_admin. One section for sync, margins, tooltips, images.
-        Route::middleware('permission:esim.manage')->group(function () {
-            Route::get('/esim', EsimControlCenter::class)->name('esim');
-        });
-
-        // NCI Operations Center (NAARA-BUILD-17) — staff with the nci.view scope,
-        // plus admin/super_admin. Override actions inside each page additionally
-        // gate on nci.override.
-        Route::middleware('permission:nci.view')->prefix('nci')->name('nci.')->group(function () {
-            Route::get('/registry', ProviderRegistry::class)->name('registry');
-            Route::get('/provider/{provider}', ProviderDetail::class)->name('provider');
-            Route::get('/health', HealthMonitor::class)->name('health');
-            Route::get('/routing', RoutingConsole::class)->name('routing');
-            Route::get('/wallets', Wallets::class)->name('wallets');
-        });
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): eSIM Control Center +
+        // NCI Operations Center — both eSIM/Numbers-provider-only admin
+        // surfaces, not part of Supreme Ideas CRM. Code untouched, just
+        // unrouted. See SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+        // Route::middleware('permission:esim.manage')->group(function () {
+        //     Route::get('/esim', EsimControlCenter::class)->name('esim');
+        // });
+        // Route::middleware('permission:nci.view')->prefix('nci')->name('nci.')->group(function () {
+        //     Route::get('/registry', ProviderRegistry::class)->name('registry');
+        //     Route::get('/provider/{provider}', ProviderDetail::class)->name('provider');
+        //     Route::get('/health', HealthMonitor::class)->name('health');
+        //     Route::get('/routing', RoutingConsole::class)->name('routing');
+        //     Route::get('/wallets', Wallets::class)->name('wallets');
+        // });
 
         // Provider login manager (MASTER-ONLY, class_exists-guarded): where and how the owner signs in to each supplier dashboard. No passwords.
         if (class_exists(\App\Livewire\Admin\ProviderLogins::class)) {

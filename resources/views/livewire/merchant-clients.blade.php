@@ -186,7 +186,11 @@
             @else
                 {{-- QR + code (what the client scans / taps) --}}
                 <div class="ns-pg__card ns-pg__card--tight ns-ring" style="margin-top:0" x-data="{ copied: false }">
-                    <img src="{{ route('esim.qr', $order) }}" alt="eSIM QR code" width="176" height="176" class="ns-pg__qr">
+                    {{-- DISCONNECTED (CRM Phase 1 fork-and-strip): esim.qr is
+                         unrouted on this fork — guard before linking to it. --}}
+                    @if (Illuminate\Support\Facades\Route::has('esim.qr'))
+                        <img src="{{ route('esim.qr', $order) }}" alt="eSIM QR code" width="176" height="176" class="ns-pg__qr">
+                    @endif
                     @if ($order->lpa_string)
                         <span class="ns-pg__lbl" style="margin-top:14px">Activation code</span>
                         <div class="ns-pg__row" style="flex-wrap:nowrap;align-items:stretch">

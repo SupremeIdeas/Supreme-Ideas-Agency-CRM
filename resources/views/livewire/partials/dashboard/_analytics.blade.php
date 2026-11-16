@@ -2,7 +2,9 @@
 {{-- Connectivity Analytics blueprint Part A §2.5 — Home hero. Dependency-free SVG sparklines only (Chart.js is reserved for My Line's
      richer charts); real data-usage + wallet-flow figures, never invented. Only shown once an account has at least one line. Line colours
      are tokens (teal ink / money gold), so every skin and mode recolours them. --}}
-@if ($showAnalyticsHero)
+{{-- DISCONNECTED (CRM Phase 1 fork-and-strip): numbers.lines is unrouted on
+     this fork, so guard on it existing rather than just $showAnalyticsHero. --}}
+@if ($showAnalyticsHero && Illuminate\Support\Facades\Route::has('numbers.lines'))
     <a href="{{ route('numbers.lines') }}" wire:navigate class="ns-grid" style="text-decoration:none;margin-top:20px">
         <div class="ns-card ns-ring" style="padding:14px">
             <small class="ns-small" style="display:flex;align-items:center;gap:6px"><x-nx.icon name="bars" style="color:rgb(var(--nx-teal-ink))" /> Data used this week</small>

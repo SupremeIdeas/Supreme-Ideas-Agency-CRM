@@ -240,6 +240,20 @@
     if (\App\Support\AppExport::placementActive('admin_menu')) {
         $more[] = ['route' => 'download', 'label' => \App\Support\AppExport::placementLabel('admin_menu'), 'icon' => 'download'];
     }
+
+    // DISCONNECTED (CRM Phase 1 fork-and-strip): several admin.esim*/
+    // admin.nci.*/admin.gift-cards*/admin.port-in-requests entries above
+    // point at routes unrouted on this fork. <x-app-shell> calls
+    // route($item['route']) unguarded for every item it renders, so drop
+    // anything whose route no longer exists here, once, centrally — same
+    // fix as BottomNav::eligibleMainItems(). See
+    // SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+    $dropMissing = fn (array $items) => array_values(array_filter(
+        $items,
+        fn ($item) => ! empty($item['heading']) || \Illuminate\Support\Facades\Route::has($item['route'])
+    ));
+    $primary = $dropMissing($primary);
+    $more = $dropMissing($more);
 @endphp
 
 <x-layouts.app :title="($title ?? 'Admin').' — NaaraSim'" :page-type="$preloaderType" :body-class="\App\Support\PlatformTheme::bodyClass()">

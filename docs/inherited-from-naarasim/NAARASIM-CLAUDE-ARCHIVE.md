@@ -1,0 +1,338 @@
+# CLAUDE.md — NaaraSim Project Brief
+
+> Claude Code reads this file automatically at the start of every session.
+> It is the permanent context for this project. Do not delete it.
+> The full specification is `NaaraSim-Master-Build-Blueprint-v5.docx` in this folder (Sections 0–32).
+
+---
+
+## HOW WE BUILD (read this first)
+
+- **You are the single developer.** We are NOT using Ruflo or any multi-agent orchestration. Ignore all Ruflo / swarm / agent / SPARC references in Section 23 of the blueprint. Use Section 23 ONLY for the module order and the acceptance checks.
+- **Build ONE module at a time**, in the order listed in PROGRESS.md. Never attempt to "build the platform" in one go.
+- **Never start a module** whose dependency module isn't finished and passing its acceptance check.
+- **After every task, update PROGRESS.md** (move finished work to DONE, put the exact next step at the top of NEXT).
+- **Test money paths on SANDBOX keys only.** Real provider/payment keys go in last, after the hardening module.
+
+---
+
+## WHITE-LABEL SHIPPING DISCIPLINE (non-negotiable, read before touching either fork)
+
+Owner directive (2026-09-21, repeated verbatim because it matters): *"do not
+commit blindly, check that what we are committing is truly meant to be
+needed for the children repos... I don't want to come back re-explaining
+myself over and over again."* This section is the permanent, standing
+answer — do not ask the owner to re-litigate it; apply it and move on.
+
+**Default assumption: a new admin/oversight/billing feature is MASTER-ONLY
+until proven otherwise.** Never port or build something in
+`NaaraSim-WhiteLabel` / `NaaraSim-White-Label-Extented` on the assumption
+that "it's probably fine" — check first.
+
+**Named master-only examples (do not re-derive these, just remember them):**
+- The dedicated `/faq` page (owner decision, 2026-09-21) — a white-label
+  fork must 404 on it, hide its nav link, and drop it from the Site
+  Editor's page list. `FeatureEntitlements::isMaster()` is the gate.
+- Anything from the License Surgery boundary (Phases 1–6): the license
+  issuer, the oversight/distribution registry, the White Label purchase
+  route, `WhiteLabelInstance`/`WhiteLabelLicensePlan`/
+  `WhiteLabelLicensePayment`/project-intake models — these were REMOVED
+  from both children on purpose and must never be reintroduced.
+- Tier 3 #9 (content/billing/hot-menu blueprint) and the UX/localization/
+  platform-reach blueprint — both marked "master repo only" in master's own
+  PROGRESS.md when built; Phases F1/F2 of Tier 3 #9 specifically are
+  master's own oversight of *other* white-label instances' billing.
+- Tier 5 #14 (Provider Capability Radar) — admin Updater-only surface, its
+  own blueprint says "Master repo only" explicitly.
+- Any admin nav entry gated `FeatureEntitlements::isMaster()` (e.g. "More
+  Apps") — if the underlying route/feature was never built in a given
+  fork at all, don't add a nav entry referencing it, even inert/gated ones.
+
+- **N2N (Naara-to-Naara) — PERMANENTLY MASTER-ONLY (owner decision 2026-10-03, same standing as the License
+  Surgery boundary).** In-network calling and messaging between Naara IDs, its funding-source choice (NaaraCredit vs
+  Wallet), chat themes, conversation list/search/pins/stars, block-and-report, system-message bubbles, and every
+  table (`n2n_*`), route (`n2n.*`), job, view (`*/n2n/*`), language file (`n2n.php`), config (`n2n.php`) and test
+  that exists only for it. **It must NEVER be ported, packaged, synced or "reconciled" into `NaaraSim-WhiteLabel` or
+  `NaaraSim-White-Label-Extented` — not partly, not inert, not behind a flag, not as a stub.** All N2N code lives under
+  a path containing `N2N`/`n2n` so the guards can see it. Mechanical enforcement: `App\Support\MasterOnlyModules`
+  (master: `PackageBuilder` and `PackagePublisher` refuse it in any distributable package) and each fork's
+  `WhiteLabelBoundaryFitnessTest` (fails the build if any N2N class, route, table, migration, view, lang or config file
+  appears). A skin/i18n/appearance change that touches shared files is fine; a file whose purpose is N2N is not. Do
+  not ask the owner to re-confirm this; apply it, and if a task seems to need N2N in a fork, stop and say so.
+
+- **Naara Widgets (merchant embed + WordPress loader) — PERMANENTLY MASTER-ONLY (owner decision 2026-10-03, same standing as
+  N2N and the License Surgery boundary).** The merchant distribution channel: widget keys (`merchant_widget_keys`), the
+  `v1/merchant-widget/*` API, the hosted checkout (`/widget/checkout/*`, the ONLY page the app lets a third party frame), guest
+  checkout, `merchant_widget_orders`/`merchant_widget_events`, the WordPress plugin, its dashboard tab and admin controls. **It must
+  NEVER be ported, packaged, synced or "reconciled" into `NaaraSim-WhiteLabel` or `NaaraSim-White-Label-Extented` — not partly, not
+  inert, not behind a flag, not as a stub.** Every file carries `MerchantWidget`/`merchant_widget`/`merchant-widget` in its path so the
+  guards can see it (`App\Support\MasterOnlyModules::SUBSTRING_TOKENS`; both forks' `WhiteLabelBoundaryFitnessTest`). Shared files that
+  carry a hook (`CreditWalletJob`, `routes/*.php`) guard it with `class_exists` so a stray copy can never half-register it. Do not ask
+  the owner to re-confirm this; apply it.
+
+**What DOES belong in both children:** generic platform reliability,
+security, and consumer-facing fixes with zero license/oversight content —
+e.g. the role-mass-assignment fix, session/`DecryptException` resilience,
+scheduled-job observability (`job_heartbeats`/`SchedulerHealth`), UI bug
+fixes (notification popup, chat input, layout). These have no cross-tenant
+or billing-of-other-instances content, so they ship to every install.
+
+**The actual test before porting or building anything admin-facing:** does
+it reference *another* white-label instance, a license purchase/issuance/
+approval flow, or oversight of accounts/data outside this one install? If
+yes → master-only, full stop. If it's purely this install's own operation
+(its own users, its own scheduled jobs, its own UI bugs) → fine for both
+children, subject to the master-only exclusions already named above.
+
+**Never assume "already fixed elsewhere" without checking the actual
+committed state of the target repo.** (2026-09-21 near-miss: assumed the
+role-mass-assignment security fix was already present in a child based on
+a stale read; the committed `HEAD` state did NOT have it. Always `git show
+HEAD:<file>` the target repo directly before concluding parity.)
+
+When in doubt on a genuinely new, ambiguous case not covered above, ask
+the owner once — but for everything already named here, just apply it.
+
+---
+
+## GITHUB ACTIONS BUDGET (non-negotiable until usage resets — 2026-10-01)
+
+The SupremeIdeas GitHub account hit 90% of its 2,000 included Actions
+minutes/month (owner alert, 2026-09-13). Until the allowance resets on
+2026-10-01, conserve Actions minutes hard:
+
+- **CI is manual-only.** `tests.yml` and `deploy.yml` in `.github/workflows/`
+  are set to `workflow_dispatch` — the daily test `schedule` cron and a full
+  PHP-matrix re-run on every push to an open PR were the drain. Do NOT
+  re-enable `push:` / `pull_request:` / `schedule:` triggers before the reset.
+- **Test locally, never on CI.** Run `vendor/bin/phpunit` (and `npm run build`
+  for view changes) in the dev environment — that is the acceptance gate while
+  we build. A manual CI pass (Actions tab / `gh workflow run Tests`) is only
+  for a deliberate milestone check the owner asks for.
+- **Push with `[skip ci]`** in the commit subject as a belt-and-suspenders
+  guard. Never kick CI with empty commits, re-runs, or close/reopen.
+- Applies to all three repos (master + both white-labels). Restore normal
+  push/PR CI triggers after 2026-10-01 only if the owner asks.
+
+---
+
+## What we are building
+
+**NaaraSim** — a Pan-African travel-connectivity SaaS selling:
+1. **eSIM data plans** for 190+ countries
+2. **Virtual phone numbers** (permanent, voice + SMS) and **SMS verification numbers** (disposable OTP + rentals)
+3. It uniquely sells BOTH data AND numbers in one app — most competitors are data-only. Lean into that.
+
+Owner: Frank Charles Ebubedike, Supreme Ideas Agency, Onitsha, Nigeria.
+Tagline: *"Stay Connected. No Borders. No Swaps."*
+Brand: Deep Teal `#0A6E6E`, Warm Gold `#D4A017`, Midnight Navy `#0D1B2A`.
+
+---
+
+## Tech stack (do not substitute)
+
+- **Laravel 12** (PHP 8.2+), TALL stack. (Upgraded from Laravel 11 on 2026-07-14 — L11 was past its 2026-03-12 security-EOL. Keep on a security-supported release.)
+- **Livewire 3** + **Alpine.js 3** + **Tailwind 3.4** (`darkMode: 'class'`)
+- **MySQL 8** (utf8mb4, strict) · **Redis** (queue/cache/session) · **Horizon**
+- **Sanctum** + **Fortify** (2FA/TOTP) + **Spatie Permission** (roles)
+- **Wasabi S3** for all file storage (never local disk)
+- Deploy: BOTH VPS and shared cPanel, installable like a CodeCanyon product
+- Scale target: 1M+ users
+
+---
+
+## Providers (exact roles)
+
+**eSIM (interchangeable -> failover chain):**
+- eSIM Go (PRIMARY) · Airalo (SECONDARY — honor minimum_selling_price) · Quibity/eSIM.sm (TERTIARY)
+
+**Numbers (NOT interchangeable -> capability routing by country + type, never blind failover):**
+- Getatext -> US (SMS/OTP + long rental)
+- 5sim -> GLOBAL, 180+ countries incl. Nigeria/Ghana/Kenya/South Africa (activation + hosting; rating discipline required)
+- HeroSMS (primary) / VirtSMS (fallback) -> global backup, same legacy handler_api.php protocol (SMS-Activate shut down 2025-12-29 and was replaced by these two) · Telnyx -> permanent/voice backup
+- Twilio -> permanent numbers + voice (PRIMARY for calls)
+- **Lane rule:** match country+type to the owning provider; fall back only WITHIN the same lane. Never cross lanes.
+
+---
+
+## MONEY-SAFETY RULES (non-negotiable — Sections 1 & 13)
+
+1. **Golden Rule:** Retail = Provider Cost + Margin. User ALWAYS pays retail; NaaraSim ALWAYS pays cost. Never reversed.
+2. **Never expose cost.** cost_price_usd / net_price never appears in ANY user-facing response, template, or payload.
+3. **All prices flow through PricingEngine.** No price literals anywhere. Number/SMS costs fetched live before quoting.
+4. **MarginGuard mandatory.** Retail never at/below cost + min profit. Auto-correct upward + log. Airalo min-price guard too.
+5. **Wallet debits/credits atomic.** DB transaction + lockForUpdate(); write wallet_transactions with balance_before/after.
+6. **Never charge without delivering.** Orphan-charge guard: charged but downstream save failed -> auto-refund + release.
+7. **Money actions never blind-retry.** Failed order/debit -> refund + alert. Idempotency keys on order jobs.
+8. **Every external API call is a queued job** (Horizon, retry+backoff) — never synchronous in the request cycle.
+9. **Verify every webhook** with HMAC + hash_equals() before touching the payload. Idempotency on provider refs.
+10. **No secrets in code.** Keys in .env via config(). Rotate provider/wallet keys every 90 days.
+
+## UI RULES (non-negotiable)
+
+- **SVG icons only — no emoji anywhere.** Inline sprite (Section 16) + admin custom-icon override.
+- **Dark mode on every element.** Every bg/text/border/shadow has a `dark:` variant.
+- **Every action shows a loading state.** Money actions disable their button while in flight.
+
+## PLATFORM STANDARD (Sections 24–32)
+
+- **S24 Splash screen:** admin-configurable, product logo + "from Supreme Ideas", auto dark/light, no theme flash.
+- **S25 Admin at `/adminmaster`:** env-driven, plain 404 for non-admins, zero links from user UI.
+- **S26 Account lifecycle (GDPR):** self-deactivate; data export (filters third-party PII); deletion = super-admin approval only; erasure reaches backups.
+- **S27 Staff + scoped roles:** granular permissions. Staff can do almost anything EXCEPT delete users.
+- **S28 DB backup:** spatie/laravel-backup to Wasabi; on shared cPanel where mysqldump is blocked, FALL BACK to ifsnop/mysqldump-php (needs SELECT + SHOW VIEW).
+- **S29 Claude maintenance loop:** reads error log, proposes diff, on approval commits to a branch + PR (CI-gated). Never straight to prod; secrets never touched; one-click rollback.
+- **S30 Security matrix:** every OWASP mistake + attack class mapped to a defense.
+- **S31 UI kit:** star rating, ONE modal engine, theme toggle, server-anchored countdown, search+debounce — themed + accessible.
+- **S32 Niche edge:** manual LPA install fallback, device-compat check BEFORE purchase, clear refund policy, live chat + WhatsApp, NaaraCredits loyalty, data estimator, i18n + multi-currency.
+
+---
+
+## THEME VISUAL REBUILD RULES (non-negotiable — every batch, every theme)
+
+The platform is mid-way through giving each of the 40 theme presets its own
+full "swappable section" suite (header, bottom nav, login, login_bg, footer,
+landing page, about/how-it-works/contact pages — see `App\Support\ThemePreset`
+`SECTION_STYLE_ALLOW`, `LandingHeroLibrary`, `ThemePageLibrary`). These rules
+came from direct owner correction after an early batch shipped a recolour
+instead of a redesign — read them before touching ANY theme batch, and apply
+them from the first commit, not as a later cleanup pass.
+
+1. **No shared section skeleton across themes.** Never reuse the same
+   section arrangement (e.g. "2-card band → 3-card grid → centred card")
+   recoloured for a different theme. Each theme's header/footer/landing
+   page/about/how-it-works/contact must be a genuinely different structural
+   composition — research a real reference (Dribbble/Behance/Awwwards-
+   calibre layout patterns; browser-fetch and look at actual pages, don't
+   guess from memory) and adapt ITS layout DNA to NaaraSim's content, not a
+   generic template. If two themes end up sharing a pattern, recolour is not
+   enough — vary the arrangement, not just the palette.
+2. **No empty image placeholders, ever.** If a themed section calls for an
+   image and no real asset exists yet, pick a real, on-brand stock photo —
+   never ship a bare gradient box or an obviously blank slot "to fill in
+   later." Exception: a placeholder that stands in for a SPECIFIC named
+   real person (e.g. the owner) without a real photo on file — use an
+   initials avatar or similar honest placeholder instead of a stock photo
+   of a stranger mislabelled with their name.
+3. **Images are committed assets, never live hotlinks.** Download the
+   chosen photo once (through whatever network path actually works in the
+   current environment — verify with `curl` first), evaluate whether it
+   needs background removal (only for cutout/isolated-subject use, e.g. a
+   floating mascot or device cutout with no card frame around it — a normal
+   photo shown inside a rounded card frame does NOT need bg removal), fit
+   it to brand messaging (does the actual photo content match what the
+   copy/section is about — verify by looking at the downloaded image, not
+   just the source description), convert to WebP, and commit it under
+   `public/images/themes/{theme-slug}/...` (or `public/images/themes/shared/`
+   for a photo reused by more than one theme) — same convention as the
+   existing `public/images/audiences/` and `public/images/steps/` assets.
+   Target similar file sizes (tens of KB, not hundreds) via reasonable
+   width caps and WebP quality ~80. Reference the committed file with
+   `asset('images/themes/...')`, never an external URL, so no page ever
+   depends on a third-party host being reachable — "so we don't see a
+   stale section ignorantly seeing blank areas." `rembg` (Python) is
+   installed in dev environments for background removal when a cutout
+   actually needs it; Pillow handles the WebP conversion. For a batch with
+   many images, parallelize the fetch/process step (e.g. one agent or one
+   script pass per theme) rather than doing it one photo at a time.
+4. **Footer is swappable too, like header/bottom_nav.** Every full-suite
+   theme gets its own footer treatment via the same `SECTION_STYLE_ALLOW`
+   pattern (`'footer' => ['default', 'theme-slug', ...]`) — never assume
+   the shared straight default footer is "good enough" once a theme has a
+   custom header/landing page/page suite. Same content (brand blurb,
+   product/company link columns, legal links), reskinned to match that
+   theme's persona.
+5. **No flat straight-line section dividers.** Wherever two stacked
+   sections meet with genuinely different background colours, give that
+   boundary either (a) a ~30px rounded-top-corner "sheet" treatment
+   (`rounded-t-[30px]` on the later section, pulled up with a small
+   negative top margin, e.g. `-mt-8`, so the curve reveals the earlier
+   section's colour underneath) or (b) another deliberate divider shape
+   (wave, angled cut, notch) — pick whichever fits that theme's persona.
+   A plain flush line where two different-coloured sections touch reads as
+   generic and is not acceptable. (Sections that already share the same
+   background colour have no seam to decorate — don't invent one.)
+6. **Use the actual tooling, don't guess.** Verify a candidate image's
+   real content by opening it (not just trusting the source URL's
+   description), verify a candidate icon exists in
+   `resources/views/partials/icon-sprite.blade.php` before referencing it
+   (add it properly, lucide-style stroke paths, if it doesn't — never
+   substitute a mismatched icon or emoji), and run `npm run build` before
+   any final screenshot verification pass — Tailwind only compiles
+   classes present in blade files at the moment of the build, so a brand
+   new arbitrary-value class (e.g. `grid-cols-[1fr_260px]`) silently does
+   nothing in a stale build and can look exactly like a real layout bug.
+   Browser-verify every new page at both mobile and desktop viewports
+   before calling a batch done.
+
+---
+
+## FEATURE SWITCHES AND SKINS (standing rules, owner 2026-10-05)
+
+- **Every new screen is skin-aware from its first commit.** Build it from the `x-nx.*` kit and `--nx-*` tokens (no hex, no Tailwind palette classes, no per-element `dark:` colour), wrap pages in `<x-nx.page>` (inside a single plain Livewire root), register the view in `config('appearance.coverage.batches')` and run `php artisan nx:coverage` + `node tests/visual/skins/dom-pages.mjs` on it. The Business Suite has a guard test (`BusinessSuiteSkinDisciplineTest`) that fails if a Suite view is unregistered, unconverted or carries a hard-coded colour; give any new module the same guard.
+- **A switched-off feature never answers a bare 404 to a person.** A page load gets the friendly, skin-aware "Coming soon" sheet (`App\Support\ComingSoon`, `feature.live:<key>` middleware, or `ComingSoon::abortIfOff('<key>')` in a component). Webhooks, API, JSON, Livewire updates, images and POSTs stay a plain 404, and a master-only feature on a white-label install stays a plain 404 (it must not be hinted at). New switches register in `ComingSoon::FEATURES` and `isLive()`.
+
+---
+
+## HANDBOOK EDITORIAL STANDARD (owner standing instruction, 2026-10-19, master only)
+
+Whenever the owner sends a handbook manuscript (DOCX/PDF/notes, e.g. GBR-04, GBR-05, then 06 and 07), treat the Naara platform as your own and
+turn the draft into the best book on its subject. Do not ask again; apply it.
+
+1. **Correct, then expand.** Fix anything wrong or stale in the draft (re-check every fee, date, rule against official sources; keep the book's
+   as-of date, the [VERIFY] discipline and the Source Log), then expand the knowledge until the book is genuinely insightful: the real costs, the
+   traps, worked examples (marked invented), country-specific advice for Africa-origin readers, checklists, what changed recently, and what to do next.
+   Finish every part the draft only promised ("Parts II to VI follow"). The imprint "Naara.app" and "Naara Connect Technologies Limited" stays in
+   the first spine documents (EpubInspector).
+2. **Seed images strategically.** Readers should see real things that matter (the place, the document, the process, the money), not only read.
+   Research the right photo per section on Wikimedia Commons (CC0/PD/CC BY/CC BY-SA; the same method as `docs/ESIM-COUNTRY-PHOTO-CREDITS.md`).
+   Open every candidate and check the content actually fits the section before using it. Never hotlink.
+3. **Lightest images possible.** Convert to WebP (about 900 px wide, quality about 70, target 25 to 70 KB each, hard cap 120 KB) and strip metadata.
+   Name them so they can be seeded exactly: `{ID}-{part}-{chapter}-{section-slug}.webp` (e.g. `GBR-04-c03-visa-biometrics.webp`), kept with the
+   manuscript source under `handbooks-src/{ID}/images/`, with a `credits.json` (file, title, author, licence, URL) that feeds a "Photo credits" page.
+4. **Images go in the EPUB and the PDF.** Same figures, same captions, in both downloads; the PDF must look premium (page numbers, running header, figure
+   captions, no orphaned headings). Verify by rendering pages and looking at them.
+5. **Images only where they matter, and one logo.** 6 to 14 figures per book, one pass of searching; if no honest photo is found, drop the figure rather than spend time. The Naara wordmark already contains the N, so covers and headers use the wordmark alone, never the icon beside it. Plan, scaffold and gate every book with `handbooks-src/_tools/packager.py` (see `docs/HANDBOOK-PACKAGER-BLUEPRINT.md`); the handbook work is paused after GBR-05 and resumes from that blueprint.
+6. **Source of truth** is the Markdown manuscript in `handbooks-src/{ID}/` and the build script, so a correction is one edit and a rebuild. Output
+   goes to `database/seeders/handbooks/{ID}.epub` and `.pdf` and the title is published only when its checklist passes.
+
+---
+
+## Graphify Rules
+
+Graphify maps this codebase into a queryable knowledge graph under `graphify-out/`
+(regenerated per-machine with `graphify update .` — no API cost, no LLM). Use it as
+the primary architectural navigation layer for this large, highly-interconnected
+platform.
+
+- Before broad multi-file exploration or cascading searches, use Graphify when
+  architectural relationships would materially speed up the investigation.
+- Consult `graphify-out/GRAPH_REPORT.md` for system entry points, architectural
+  boundaries, dependency relationships, and the most-connected files ("God Nodes").
+- Use `graphify query "..."`, `graphify explain "X"`, and `graphify path "A" "B"`
+  when the graph answers an architectural relationship question faster than a broad
+  repository search.
+- Use Graphify to decide **where** to start, then read the actual source directly.
+  It is never a substitute for reading implementation code, tests, config, DB
+  schemas, API definitions, or docs.
+- Do not blindly modify a highly-connected file. Before changing one, inspect its
+  callers, dependencies, side effects, tests, and downstream impact — this is
+  doubly true for the money-path hubs (`WalletService`, `PricingEngine`) and the
+  `User`/`Setting` god nodes.
+- Prefer the smallest relevant search scope when the target file/function/class is
+  already known. Don't query the graph for simple, localized tasks.
+- When the graph is stale (code changed since it was built — compare
+  `git rev-parse HEAD` to the report's build commit), run `graphify update .`
+  before relying on it for architectural decisions.
+
+---
+
+## CONVENTIONS LEARNED (Engineering Blueprint v3, 2026-10)
+
+- **Verification is a product feature.** `php artisan naara:verify [area]` / Admin > System Verify. A new area gets a real check in `app/Support/Verify/Checks/` and is listed in `Verifier`; an unbuilt area goes in `NotBuiltYet::PENDING` and shows as WARN, never PASS. Checks are pure reads. SQLite compares a bound float as text, so inline numeric tolerances in raw SQL, and never use `||` for string concatenation (OR on MySQL).
+- **Notifications go through `App\Support\Notifications\Notify`** with a row in `config/notification_events.php` (preferences, quiet hours, once-only delivery, never throws into a money path). Event keys contain dots: read them with `config('x.events')[$event]`, never `config("x.events.$event")`. A raw `Notification` class still needs a row in `notification_catalog.php` (master).
+- **Guided tours are data.** Every step needs a real `data-tour` anchor on a live element (the shared composer declares its own in a `TOUR` map); `TourIntegrity` / `naara:verify tours` fails when one disappears. A new screen worth touring gets anchors and a step in `config/tours.php` in the same change. Tours that describe master-only modules live in `config/tours_n2n.php` / `config/tours_business_suite.php`.
+- **Toasts and flashes:** server flash `->with('flash_toast', [...])` or `dispatch('nx-toast', ...)`; hero toasts for money/identity outcomes, corner toasts for small confirmations. Page-level overlays (share modal, keep-reading, tour) check for each other before opening.
+- **Blade traps:** a directive glued to a word (`word@if`) is not a directive; inline `@php(...)` with nested parentheses breaks; use `@php ... @endphp`. Livewire views need one plain root element.
+- **Master-only naming:** anything master-only carries `N2N`, `MasterMarketing`, `business_suite`/`Business` (support/services paths), or `brain` in its path so `MasterOnlyModules` and the fork boundary tests see it. Shared files that reference it are guarded with `class_exists`.
+- **Tests that run the app as an admin** need `ADMIN_PATH=adminmaster` if the local `.env` sets a custom admin path.

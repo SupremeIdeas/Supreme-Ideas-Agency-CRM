@@ -108,8 +108,11 @@ Route::prefix('v1/white-label')
  | Naara Widgets (merchant embed + WordPress loader) — MASTER-ONLY (docs/build-specs/NAARA-MERCHANT-WIDGETS-BLUEPRINT.md §6).
  | Platform kill switch -> per-key throttle -> live key + Origin-allowlist check -> per-route product scope. Never cached, never `*`.
  */
-// Registered only where the module's code exists (it is master-only), so a stray copy of this file elsewhere can never half-register it.
-if (class_exists(\App\Http\Controllers\Api\V1\MerchantWidget\CatalogueController::class)) {
+// DISCONNECTED (CRM Phase 1 fork-and-strip): the entire merchant-widget
+// block below sells eSIM/number/gift-card products via embed — not a
+// Supreme Ideas CRM product line. Forcing the guard false unroutes it
+// without touching the controllers. See SupremeIdeasCRM_Phase1_ForkAndStrip.md.
+if (false && class_exists(\App\Http\Controllers\Api\V1\MerchantWidget\CatalogueController::class)) {
 Route::prefix('v1/merchant-widget')
     ->middleware(['merchant.widget.enabled', 'throttle:merchant-widget', 'merchant.widget.key'])
     ->name('merchant-widget.')

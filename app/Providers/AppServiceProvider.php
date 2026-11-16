@@ -355,8 +355,10 @@ class AppServiceProvider extends ServiceProvider
         // the domain-agnostic preloader system about their own page types here,
         // rather than the system hardcoding anything feature-specific. Idempotent
         // and DB-guarded, so it's a no-op on a not-yet-migrated install.
-        PreloaderSettings::registerPageType('numbers', 'Numbers & Virtual Lines');
-        PreloaderSettings::registerPageType('gifts', 'Naara Gift');
+        // DISCONNECTED (CRM Phase 1 fork-and-strip): 'numbers' and 'gifts'
+        // page-type registrations removed — not Supreme Ideas CRM products.
+        // Registration only, left the preset files untouched. See
+        // SupremeIdeasCRM_Phase1_ForkAndStrip.md.
         PreloaderSettings::registerPageType('dashboard_home', 'Dashboard home (first visits)');
         if (class_exists(\App\Providers\N2NServiceProvider::class)) {
             PreloaderSettings::registerPageType('n2n', 'Naara Chat');   // N2N is master-only; a stray copy never registers it
