@@ -42,14 +42,15 @@ return [
     |--------------------------------------------------------------------------
     |
     | Stamped into every manifest this instance builds and checked by the
-    | verifier. Set once, at fork time:
-    |   - the master platform (original NaaraSim) stays `naarasim-core`
-    |   - a white-label fork sets NAARA_UPDATE_PRODUCT=naarasim-whitelabel
-    | so a package built for one product line can't be silently applied to the
-    | other.
+    | verifier. Set once, at fork time — this fork (Supreme Ideas CRM) is its
+    | own product line, not a NaaraSim white-label instance, so its default
+    | must never be `naarasim-core`/`naarasim-whitelabel`: that would let a
+    | package built for NaaraSim be silently applied here, or vice versa.
+    | See docs/blueprint/SupremeIdeasCRM_Phase1_ForkAndStrip.md; Phase 2
+    | (Generalize the License Authority) formalizes this further.
     |
     */
 
-    'product_identifier' => env('NAARA_UPDATE_PRODUCT', 'naarasim-core'),
+    'product_identifier' => env('NAARA_UPDATE_PRODUCT', 'supreme-ideas-crm-core'),
 
 ];

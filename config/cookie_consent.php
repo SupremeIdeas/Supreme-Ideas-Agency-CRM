@@ -15,7 +15,14 @@ return [
     ],
     // key => [category, name, provider, purpose, cookies [name, duration], privacy url]
     'services' => [
-        'naara_core' => ['necessary', 'Naara session and security', 'Naara', 'Sign-in session, form protection, your cookie choice, language and theme.', [['naarasim_session', 'Session'], ['XSRF-TOKEN', 'Session'], ['naara_consent', '6 months'], ['naara_ref', '30 days']], null],
+        // The session-cookie name here is computed the same way config/session.php
+        // derives its own default (env('APP_NAME') + Str::slug + '_session'), via
+        // env() rather than config() since this array is itself built while
+        // config/*.php is still loading — calling config() here would depend on
+        // load order. Without this, the list silently goes stale on every
+        // rebrand, which is exactly what happened to the old hardcoded
+        // 'naarasim_session' literal this replaced.
+        'naara_core' => ['necessary', 'Naara session and security', 'Naara', 'Sign-in session, form protection, your cookie choice, language and theme.', [[\Illuminate\Support\Str::slug(env('APP_NAME', 'laravel'), '_').'_session', 'Session'], ['XSRF-TOKEN', 'Session'], ['naara_consent', '6 months'], ['naara_ref', '30 days']], null],
         'google_analytics' => ['analytics', 'Google Analytics 4', 'Google', 'Counts visits and page views so we can improve the product.', [['_ga', '13 months'], ['_ga_*', '13 months']], 'https://policies.google.com/privacy'],
         'meta_pixel' => ['marketing', 'Meta Pixel', 'Meta', 'Measures how well our adverts on Facebook and Instagram work.', [['_fbp', '3 months'], ['_fbc', '3 months']], 'https://www.facebook.com/privacy/policy/'],
         'trustpilot' => ['functional', 'Trustpilot reviews', 'Trustpilot', 'Shows verified customer reviews on our pages.', [['(set by Trustpilot)', 'Per Trustpilot']], 'https://legal.trustpilot.com/for-reviewers/privacy-policy'],

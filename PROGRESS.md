@@ -20,11 +20,12 @@
 2. Once Phase 2's doc is back: read it fully, confirm Phase 1's deliverable checklist still
    holds (nothing has since re-added an eSIM/Numbers/GiftCards route, nav entry, or schedule),
    then start Phase 2.
-3. Rebrand pass is **partial** — only the things Phase 1 touched for disconnect/safety reasons
-   were changed. `config/app.php`, `.env.example`, mail templates, and marketing copy still say
-   "NaaraSim" / use NaaraSim's own name throughout. Phase 1 §3 calls for a full rebrand pass;
-   it was deprioritized this session in favor of the disconnect work and verification. Do this
-   before anything customer-facing ships.
+3. Rebrand pass is **still partial, but the part that mattered for safe co-installation is now
+   done** (see DONE below — `APP_NAME`, `DB_DATABASE`, cache/Redis/Horizon prefixes, session
+   cookie, Wasabi bucket, and the Updater product identifier are all unique to this fork now).
+   What's left is cosmetic, not risky: mail templates, marketing site copy, and any UI text
+   that still literally says "NaaraSim" instead of "Supreme Ideas CRM". Do this before anything
+   customer-facing ships, but it's no longer blocking safe deployment alongside NaaraSim.
 4. **Run `php artisan migrate` + an actual login click-through.** `composer install` finished
    this session (see DONE) and the framework itself is confirmed clean — `artisan about`,
    `route:list`, `route:cache`, and `view:cache` (every Blade template in the app, not just the
@@ -37,6 +38,48 @@
 ---
 
 ## DONE
+
+- **Infra-isolation pass — make this fork impossible to confuse with NaaraSim at the
+  database/cache/storage level (2026-11-16).** Prompted by the owner flagging that installing
+  this on the same server as NaaraSim (or any other fork of it) must never collide. Every value
+  that two Laravel installs sharing infrastructure could clash on was either made explicitly
+  distinct or — where Laravel/Horizon already derive it safely from `APP_NAME` — had a
+  NaaraSim-specific hardcoded override *removed* so the safe derivation applies:
+  - `.env.example`: `APP_NAME` → `"Supreme Ideas CRM"` (this alone drives most of the derived
+    values below), `DB_DATABASE` → `supreme_ideas_crm` (was `naarasim` — a straight MySQL
+    database-name collision if both installs ever point at the same DB server),
+    `WASABI_BUCKET` → `supreme-ideas-crm-prod` (was `naarasim-prod` — **critical**: left
+    as-is, this would have made Supreme Ideas CRM write real uploads into NaaraSim's actual
+    production S3 bucket if the owner ever reused the same Wasabi account), `SUPPORT_EMAIL` and
+    `NAARA_UPDATE_PRODUCT` (→ `supreme-ideas-crm-core`, was `naarasim-core` — stops an Updater
+    package built for one product from being silently applied to the other).
+  - **Removed, not emptied:** the `CACHE_PREFIX=` and `HORIZON_PREFIX=naarasim_horizon:` lines
+    in `.env.example`. Verified directly (`env()` with an empty-but-present key returns `""`,
+    not the function's default argument) that leaving `CACHE_PREFIX=` blank would have meant
+    *zero* cache-key namespacing — worse than the hardcoded NaaraSim value it was disguising.
+    Both now fall through to `config/cache.php`/`config/horizon.php`'s own
+    `Str::slug(APP_NAME).'_...'` defaults, which is Laravel's/Horizon's documented mechanism for
+    exactly this (the Horizon config file's own comment says so verbatim). Confirmed via
+    `php artisan tinker`: `cache.prefix` → `supreme_ideas_crm_cache_`, `horizon.prefix` →
+    `supreme_ideas_crm_horizon:`, `database.redis.options.prefix` (no override existed, derives
+    the same way) → `supreme_ideas_crm_database_`, `session.cookie` → `supreme_ideas_crm_session`,
+    `backup.backup.name` → `Supreme Ideas CRM`.
+  - `config/cookie_consent.php` hardcoded the *old* literal cookie name (`'naarasim_session'`)
+    in the consent-banner's cookie list — a real bug the `APP_NAME` change would otherwise have
+    introduced (banner showing a cookie name that no longer matches what's actually set). Fixed
+    to compute it the same way `config/session.php` does (`Str::slug(env('APP_NAME')).'_session'`
+    via `env()`, not `config()`, since this file is itself mid-load when the array is built) so
+    it can never drift again on a future rebrand.
+  - Cosmetic-but-outbound-facing fallback defaults also updated for consistency, though none of
+    these were cross-install collision risks (each is already overridden by the explicit
+    `.env.example` value above): `config/naara.php` support email/WhatsApp-message default,
+    `config/updater.php` product-identifier default + comment, `config/brand_links.php`'s
+    outbound link-checker User-Agent string.
+  - Re-verified the full boot/route/view suite after these config changes (same commands as the
+    Phase 1 verification below) — all still pass.
+  - **Not done:** `config/app.php`'s generic `'Laravel'` fallback (harmless — `.env.example`
+    always sets `APP_NAME` explicitly, so this only matters if `.env` itself is missing
+    entirely), and the cosmetic marketing-copy/mail-template rebrand (NEXT #3).
 
 - **Fork NaaraSim → Supreme Ideas CRM, Phase 1: Fork & Disconnect (2026-11-16).**
   - Copied NaaraSim's `main` branch working tree (commit `7d062b7`, 2026-10-20, ~165MB /

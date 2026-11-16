@@ -32,7 +32,7 @@ return [
     'links_per_brand' => 5,
     'label_max' => 24,
 
-    'probe' => ['timeout' => 5, 'max_redirects' => 3, 'max_bytes' => 65536, 'user_agent' => 'NaaraLinkCheck/1.0 (+https://naarasim.com)'],
+    'probe' => ['timeout' => 5, 'max_redirects' => 3, 'max_bytes' => 65536, 'user_agent' => 'NaaraLinkCheck/1.0 (+https://supremeideasagency.com)'],
     'recheck_days' => 7,
     'safe_browsing' => ['endpoint' => 'https://safebrowsing.googleapis.com/v4/threatMatches:find'],   // optional; needs SAFE_BROWSING_API_KEY. UNVERIFIED: terms, quotas and availability. Read them before enabling.
 ];

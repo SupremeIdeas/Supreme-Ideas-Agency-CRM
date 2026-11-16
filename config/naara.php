@@ -15,8 +15,8 @@ return [
 
     'support' => [
         'whatsapp' => env('SUPPORT_WHATSAPP', ''),          // e.g. 2348012345678
-        'email' => env('SUPPORT_EMAIL', 'support@naarasim.com'),
-        'whatsapp_message' => env('SUPPORT_WHATSAPP_MESSAGE', 'Hi NaaraSim, I need help with'),
+        'email' => env('SUPPORT_EMAIL', 'support@supremeideasagency.com'),
+        'whatsapp_message' => env('SUPPORT_WHATSAPP_MESSAGE', 'Hi, I need help with'),
     ],
 
     /*
